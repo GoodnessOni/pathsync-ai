@@ -1,0 +1,30 @@
+# PathSync AI — Backend Dependencies
+# Install: pip install -r requirements.txt
+
+# Web framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+
+# AI
+anthropic==0.40.0
+
+# Database
+asyncpg==0.30.0
+supabase==2.7.4
+
+# PDF parsing
+pdfplumber==0.11.4
+PyMuPDF==1.24.10
+
+# NLP / Privacy
+spacy==3.7.6
+# After install run: python -m spacy download en_core_web_sm
+
+# Embeddings (choose one)
+openai==1.50.0               # For text-embedding-3-small
+sentence-transformers==3.3.0 # Offline fallback
+
+# Config
+pydantic-settings==2.5.2
+python-dotenv==1.0.1

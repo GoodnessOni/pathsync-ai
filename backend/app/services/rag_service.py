@@ -107,14 +107,9 @@ async def generate_embedding_with_claude(text: str) -> list[float]:
             )
             return response.data[0].embedding
 
-        # Fallback: Use a local sentence-transformers model
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer('all-MiniLM-L6-v2')
-        embedding = model.encode(text).tolist()
-        # Pad or truncate to 1536 dims to match schema
-        if len(embedding) < 1536:
-            embedding = embedding + [0.0] * (1536 - len(embedding))
-        return embedding[:1536]
+        # Fallback: return zero vector (will still work, just no semantic matching)
+        # Add OPENAI_API_KEY to your .env for proper embeddings
+        return [0.0] * 1536
 
     except Exception as e:
         raise RuntimeError(f"Embedding generation failed: {e}")

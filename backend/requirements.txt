@@ -1,5 +1,4 @@
-# PathSync AI — Backend Dependencies
-# Install: pip install -r requirements.txt
+# PathSync AI — Backend Dependencies (Render-optimised, slim build)
 
 # Web framework
 fastapi==0.115.0
@@ -17,13 +16,11 @@ supabase==2.7.4
 pdfplumber==0.11.4
 PyMuPDF==1.24.10
 
-# NLP / Privacy
+# NLP / Privacy (lightweight only)
 spacy==3.7.6
-# After install run: python -m spacy download en_core_web_sm
 
-# Embeddings (choose one)
-openai==1.50.0               # For text-embedding-3-small
-sentence-transformers==3.3.0 # Offline fallback
+# Embeddings — OpenAI only (sentence-transformers removed — pulls 3GB torch)
+openai==1.50.0
 
 # Config
 pydantic-settings==2.5.2

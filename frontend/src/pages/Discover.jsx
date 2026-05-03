@@ -54,29 +54,44 @@ export default function Discover({ navigate, profile, sessionId }) {
   }, [messages, loading]);
 
   const startConversation = async () => {
-    setLoading(true);
-    try {
-      const firstMessage = buildFirstMessage();
-      const res = await fetch(`${API_BASE}/chat/message`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: sessionId,
-          message: firstMessage,
-        }),
-      });
-      const data = await res.json();
-      setMessages([{ role: "assistant", content: data.response }]);
-      setQuestionCount(1);
-    } catch {
-      setMessages([{
-        role: "assistant",
-        content: "Hey! I've reviewed your profile and I'm ready to find your best scholarship matches. Tell me — outside of what you've shared, is there anything else you do that you're proud of? Any side hustle, community work, or skill?",
-      }]);
-      setQuestionCount(1);
-    }
-    setLoading(false);
-  };
+  setLoading(true);
+  try {
+    // FIRST — seed the backend with the onboarding profile
+    const profileText = `
+Student Profile:
+- University: ${profile.university}
+- Course: ${profile.course}
+- Level: ${profile.level}
+- CGPA: ${profile.cgpa}/${profile.cgpaScale}
+- Demographics: ${profile.demographics?.join(", ") || "None specified"}
+- Leadership: ${profile.leadership}
+- Activities/Projects: ${profile.projects}
+- Goal: ${profile.goal}
+- About themselves: ${profile.about}
+    `.trim();
+
+    // Send profile as first message to seed session in backend
+    const seedRes = await fetch(`${API_BASE}/chat/message`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        session_id: sessionId,
+        message: `[PROFILE_SEED] ${profileText}. Now ask me your first follow-up question in 2 sentences max.`,
+      }),
+    });
+    const seedData = await seedRes.json();
+    setMessages([{ role: "assistant", content: seedData.response }]);
+    setQuestionCount(1);
+  } catch (err) {
+    console.error("Start error:", err);
+    setMessages([{
+      role: "assistant",
+      content: "Hey! I've reviewed your profile. Outside of what you've shared, what's one thing you do that you're genuinely proud of — big or small?",
+    }]);
+    setQuestionCount(1);
+  }
+  setLoading(false);
+};
 
   const buildFirstMessage = () => {
     return `[SYSTEM CONTEXT: ${SYSTEM_CONTEXT(profile)}] 

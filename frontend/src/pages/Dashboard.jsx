@@ -10,22 +10,33 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
   const [loadingTracker, setLoadingTracker] = useState(false);
   const [modal, setModal] = useState(null);
 
-  const generateCv = async () => {
-    setLoadingCv(true);
-    setActiveTab("cv");
-    try {
-      const res = await fetch(`${API_BASE}/generate/cv`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId }),
-      });
-      const data = await res.json();
-      setCv(data.cv);
-    } catch {
-      setCv("Error generating CV. Please try again.");
+ const generateCv = async () => {
+  setLoadingCv(true);
+  setActiveTab("cv");
+  try {
+    const res = await fetch(`${API_BASE}/generate/cv`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    const data = await res.json();
+
+    // Guard against undefined/empty response
+    const cvText = data.cv || data.content || data.text || null;
+
+    if (!cvText) {
+      setCv("PathSync could not generate your CV yet. Please complete the discovery interview first, then try again.");
+      setLoadingCv(false);
+      return;
     }
-    setLoadingCv(false);
-  };
+
+    setCv(cvText);
+  } catch (err) {
+    console.error("CV generation error:", err);
+    setCv("Connection error. Please check your internet and try again.");
+  }
+  setLoadingCv(false);
+};
 
   const generateTracker = async () => {
     setLoadingTracker(true);
@@ -350,17 +361,29 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
           {/* CV TAB */}
           {activeTab === "cv" && (
             <>
-              <div className="cv-actions">
-                <button className="cv-btn" onClick={generateCv} disabled={loadingCv}>
-                  {loadingCv ? "⏳ Generating..." : cv ? "🔄 Regenerate" : "📄 Generate My CV"}
+              {cv && !cv.startsWith("PathSync could not") && !cv.startsWith("Connection") && (
+                <button className="cv-btn outline"
+                  onClick={() => {
+                    if (!cv) {
+                      alert("CV not ready yet. Please generate it first.");
+                      return;
+                    }
+                    navigator.clipboard.writeText(cv)
+                      .then(() => alert("CV copied to clipboard!"))
+                      .catch(() => {
+                        // Fallback for browsers that block clipboard
+                        const el = document.createElement("textarea");
+                        el.value = cv;
+                        document.body.appendChild(el);
+                        el.select();
+                        document.execCommand("copy");
+                        document.body.removeChild(el);
+                        alert("CV copied!");
+                      });
+                  }}>
+                  📋 Copy CV
                 </button>
-                {cv && (
-                  <button className="cv-btn outline"
-                    onClick={() => { navigator.clipboard.writeText(cv); alert("CV copied to clipboard!"); }}>
-                    📋 Copy CV
-                  </button>
-                )}
-              </div>
+              )}
               {loadingCv
                 ? <div className="loading-box"><div className="spinner" />Generating your CV from your profile...</div>
                 : cv

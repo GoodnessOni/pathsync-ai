@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 from app.api import chat, scholarships, profile, health
 from app.core.config import settings
 from app.core.database import init_db
+from app.api import generate
 
 
 @asynccontextmanager
@@ -39,7 +40,7 @@ app.include_router(health.router, prefix="/api/v1", tags=["Health"])
 app.include_router(chat.router, prefix="/api/v1/chat", tags=["Chat"])
 app.include_router(scholarships.router, prefix="/api/v1/scholarships", tags=["Scholarships"])
 app.include_router(profile.router, prefix="/api/v1/profile", tags=["Profile"])
-
+app.include_router(generate.router, prefix="/api/v1/generate", tags=["Generate"])
 
 @app.get("/")
 async def root():

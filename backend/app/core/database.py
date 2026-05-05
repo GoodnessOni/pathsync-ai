@@ -9,7 +9,12 @@ _pool = None
 
 async def init_db():
     global _pool
-    _pool = await asyncpg.create_pool(settings.DATABASE_URL, min_size=2, max_size=10)
+    _pool = await asyncpg.create_pool(
+    settings.DATABASE_URL,
+    min_size=2,
+    max_size=10,
+    statement_cache_size=0
+)
     # Ensure pgvector extension is enabled
     async with _pool.acquire() as conn:
         await conn.execute("CREATE EXTENSION IF NOT EXISTS vector;")

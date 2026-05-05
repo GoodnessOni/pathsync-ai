@@ -387,7 +387,13 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
               {loadingCv
                 ? <div className="loading-box"><div className="spinner" />Generating your CV from your profile...</div>
                 : cv
-                  ? <div className="cv-body">{cv}</div>
+                  ? <div className="cv-body" dangerouslySetInnerHTML={{ __html: cv
+  .replace(/^# (.+)$/gm, '<h2 style="font-size:18px;font-weight:800;margin:16px 0 8px">$1</h2>')
+  .replace(/^## (.+)$/gm, '<h3 style="font-size:14px;font-weight:700;margin:12px 0 6px;color:var(--accent)">$1</h3>')
+  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  .replace(/^---$/gm, '<hr style="border-color:var(--border);margin:12px 0"/>')
+  .replace(/\n/g, '<br/>')
+}} />
                   : <div className="empty-state">Click "Generate My CV" to create your scholarship-optimised CV</div>
               }
             </>

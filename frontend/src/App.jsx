@@ -22,28 +22,20 @@ export default function App() {
   // Check auth and load profile
   useEffect(() => {
     const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
 
-      if (session?.user) {
-        // Check if user has a profile
-        const { data: profileData, error } = await supabase
-          .from('student_profiles')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .single();
-
-        if (profileData && !error) {
-          // User has a profile - load it and go to dashboard
-          setProfile(profileData);
-          setPage("dashboard");
-        } else {
-          // No profile - stay on landing page
+        if (session?.user) {
+          // Temporarily always go to landing
           setPage("landing");
         }
+      } catch (error) {
+        console.error("Auth error:", error);
+        setPage("landing");
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     initAuth();
@@ -52,17 +44,7 @@ export default function App() {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Check profile on auth change
-        const { data: profileData } = await supabase
-          .from('student_profiles')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .single();
-
-        if (profileData) {
-          setProfile(profileData);
-          setPage("dashboard");
-        }
+        setPage("landing");
       } else {
         setProfile(null);
         setPage("landing");

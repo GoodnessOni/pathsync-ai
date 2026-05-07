@@ -1,0 +1,20 @@
+[33mde62278[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m white screen fix
+[33m8b3eca1[m ui final
+[33m9e5c2a9[m ui done
+[33m7eebf41[m ui fixes
+[33m95897dc[m ux fixes
+[33m1ee18d9[m Add Header component with sign out
+[33m802c31e[m ui fixes
+[33mca97b65[m Add Google OAuth authentication
+[33m9f06d91[m Fix: disable asyncpg statement cache for pgbouncer compatibility
+[33me6e1052[m Fix: render CV markdown
+[33m0437864[m Fix: add missing generation_service.py
+[33m4218784[m Fix: register generate router in main.py
+[33me496c21[m Fix: CV/tracker stalling, clipboard undefined, profile context passing
+[33mea0e242[m fixing some bugs
+[33m5395b18[m updatessss
+[33mfb45942[m Fix: add Vercel URL to CORS allowed origins
+[33mb63d1bf[m Fix: use dynamic PORT for Railway deployment
+[33maf4a33e[m Fix: slim Docker image for Render free tier
+[33mc4c15a0[m new readme
+[33m7c000f6[m Initial commit — PathSync AI v1.0

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 import Auth from "./pages/Auth";
+import Header from "./components/Header";
 import Landing from "./pages/Landing";
 import Onboard from "./pages/Onboard";
 import Discover from "./pages/Discover";
@@ -17,7 +18,6 @@ export default function App() {
   );
   const [matches, setMatches] = useState([]);
 
-  // Check if user is logged in on mount
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -40,7 +40,6 @@ export default function App() {
 
   const props = { navigate, profile, sessionId, matches, setProfile, user };
 
-  // Show loading spinner while checking auth
   if (loading) {
     return (
       <div style={{
@@ -63,12 +62,10 @@ export default function App() {
     );
   }
 
-  // If not logged in, show auth page
   if (!user) {
     return <Auth onAuthSuccess={() => setLoading(true)} />;
   }
 
-  // User is logged in, show the app
   return (
     <>
       <style>{`
@@ -125,11 +122,15 @@ export default function App() {
         input, textarea, select { font-family: inherit; }
       `}</style>
 
-      {page === "landing" && <Landing {...props} />}
-      {page === "onboard" && <Onboard {...props} />}
-      {page === "discover" && <Discover {...props} />}
-      {page === "matches" && <Matches {...props} />}
-      {page === "dashboard" && <Dashboard {...props} />}
+      <Header user={user} />
+
+      <div className="page-content">
+        {page === "landing" && <Landing {...props} />}
+        {page === "onboard" && <Onboard {...props} />}
+        {page === "discover" && <Discover {...props} />}
+        {page === "matches" && <Matches {...props} />}
+        {page === "dashboard" && <Dashboard {...props} />}
+      </div>
     </>
   );
 }

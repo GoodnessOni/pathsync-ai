@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 const NIGERIAN_UNIVERSITIES = [
   "University of Lagos (UNILAG)",
@@ -15,20 +16,21 @@ const NIGERIAN_UNIVERSITIES = [
   "Pan-Atlantic University",
   "American University of Nigeria",
   "Redeemer's University",
+  "University of Port Harcourt (UNIPORT)",
   "Other",
 ];
 
 const COURSES = [
-  "Computer Science", "Engineering (Electrical)", "Engineering (Mechanical)",
+  "Computer Science","Systems Engineering","Engineering (Electrical)", "Engineering (Mechanical)",
   "Engineering (Civil)", "Engineering (Chemical)", "Engineering (Petroleum)",
   "Medicine & Surgery", "Pharmacy", "Nursing", "Law", "Economics",
   "Accounting", "Business Administration", "Mass Communication",
   "Political Science", "Sociology", "Psychology", "Education",
   "Agriculture", "Architecture", "Mathematics", "Physics", "Chemistry",
-  "Biology", "Biochemistry", "Microbiology", "Other",
+  "Biology", "Biochemistry", "Microbiology", "fishery", "Other",
 ];
 
-export default function Onboard({ navigate, setProfile }) {
+export default function Onboard({ navigate, setProfile,  sessionId }) {
   const [step, setStep] = useState(1);
   const TOTAL = 7;
 
@@ -67,14 +69,47 @@ export default function Onboard({ navigate, setProfile }) {
     return false;
   };
 
-  const handleNext = () => {
-    if (step < TOTAL) {
-      setStep(s => s + 1);
-    } else {
+  const handleNext = async () => {
+  if (step < TOTAL) {
+    setStep(s => s + 1);
+  } else {
+    // Save profile to database
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const profileData = {
+        user_id: user.id,
+        session_id: sessionId,
+        university: data.university,
+        course: data.course,
+        level: data.level,
+        cgpa: parseFloat(data.cgpa),
+        cgpa_scale: data.cgpaScale,
+        demographics: data.demographics,
+        leadership: data.leadership,
+        projects: data.projects,
+        goal: data.goal,
+        about: data.about,
+      };
+
+      const { error } = await supabase
+        .from('student_profiles')
+        .upsert(profileData, { onConflict: 'user_id' });
+
+      if (error) {
+        console.error('Error saving profile:', error);
+        alert('Failed to save profile. Please try again.');
+        return;
+      }
+
       setProfile(data);
       navigate("discover", { profile: data });
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Something went wrong. Please try again.');
     }
-  };
+  }
+};
 
   const progress = (step / TOTAL) * 100;
 

@@ -13,20 +13,60 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState("landing");
-  const [profile, setProfile] = useState({});
+  const [profile, setProfile] = useState(null);
   const [sessionId] = useState(
     () => "ps_" + Math.random().toString(36).slice(2) + Date.now().toString(36)
   );
   const [matches, setMatches] = useState([]);
 
+  // Check auth and load profile
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-      setLoading(false);
-    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        // Check if user has a profile
+        const { data: profileData, error } = await supabase
+          .from('student_profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (profileData && !error) {
+          // User has a profile - load it and go to dashboard
+          setProfile(profileData);
+          setPage("dashboard");
+        } else {
+          // No profile - stay on landing page
+          setPage("landing");
+        }
+      }
+
+      setLoading(false);
+    };
+
+    initAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Check profile on auth change
+        const { data: profileData } = await supabase
+          .from('student_profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+
+        if (profileData) {
+          setProfile(profileData);
+          setPage("dashboard");
+        }
+      } else {
+        setProfile(null);
+        setPage("landing");
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -123,8 +163,7 @@ export default function App() {
         input, textarea, select { font-family: inherit; }
       `}</style>
 
-      <Header user={user}
-      navigate={navigate} />
+      <Header user={user} navigate={navigate} />
 
       <div className="page-content">
         {page === "landing" && <Landing {...props} />}

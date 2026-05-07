@@ -79,7 +79,7 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
   return (
     <>
       <style>{`
-        .dash { min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; }
+        .dash { min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; padding-top: 60px; }
 
        
 

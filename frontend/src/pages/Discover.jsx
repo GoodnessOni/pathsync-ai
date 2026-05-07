@@ -173,9 +173,11 @@ Student Profile:
     <>
       <style>{`
         .discover {
-          min-height: 100vh; background: var(--bg);
-          display: flex; flex-direction: column;
-        }
+  min-height: 100vh; background: var(--bg);
+  display: flex; flex-direction: column;
+  padding-top: 60px;
+}
+
 
         /* MESSAGES */
         .dc-messages {

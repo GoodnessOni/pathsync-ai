@@ -37,7 +37,7 @@ export default function Matches({ navigate, matches, sessionId }) {
   return (
     <>
       <style>{`
-        .matches-page { min-height: 100vh; background: var(--bg); }
+        .matches-page { min-height: 100vh; background: var(--bg); padding-top: 60px; }
         
 
         .m-hero {

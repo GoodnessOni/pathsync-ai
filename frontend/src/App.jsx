@@ -7,6 +7,7 @@ import Onboard from "./pages/Onboard";
 import Discover from "./pages/Discover";
 import Matches from "./pages/Matches";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -122,7 +123,8 @@ export default function App() {
         input, textarea, select { font-family: inherit; }
       `}</style>
 
-      <Header user={user} />
+      <Header user={user}
+      navigate={navigate} />
 
       <div className="page-content">
         {page === "landing" && <Landing {...props} />}
@@ -130,6 +132,7 @@ export default function App() {
         {page === "discover" && <Discover {...props} />}
         {page === "matches" && <Matches {...props} />}
         {page === "dashboard" && <Dashboard {...props} />}
+        {page === "profile" && <Profile {...props} />}
       </div>
     </>
   );

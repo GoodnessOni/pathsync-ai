@@ -38,12 +38,7 @@ export default function Matches({ navigate, matches, sessionId }) {
     <>
       <style>{`
         .matches-page { min-height: 100vh; background: var(--bg); }
-        .m-nav {
-          background: var(--surface); border-bottom: 1px solid var(--border);
-          padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
-        }
-        .m-logo { font-size: 16px; font-weight: 800; }
-        .m-logo span { color: var(--accent); }
+        
 
         .m-hero {
           background: linear-gradient(135deg, #15803d, #16a34a);
@@ -189,16 +184,7 @@ export default function Matches({ navigate, matches, sessionId }) {
       `}</style>
 
       <div className="matches-page">
-        {/* NAV */}
-        <div className="m-nav">
-          <div className="m-logo">Path<span>Sync</span> AI</div>
-          <button
-            style={{ background: "none", border: "1.5px solid var(--border)", color: "var(--text2)", padding: "7px 14px", borderRadius: 8, fontSize: 13, fontFamily: "inherit" }}
-            onClick={() => navigate("onboard")}
-          >
-            Start Over
-          </button>
-        </div>
+        
 
         {/* HERO */}
         <div className="m-hero">

@@ -36,7 +36,7 @@ export default function Header({ user, navigate }) {
         .header-right {
           display: flex;
           align-items: center;
-          gap: 20px;
+          gap: 16px;
         }
         .header-link {
           font-size: 14px;
@@ -45,6 +45,21 @@ export default function Header({ user, navigate }) {
           transition: color 0.2s;
         }
         .header-link:hover {
+          color: var(--accent);
+        }
+        .header-btn {
+          padding: 8px 16px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          border: 1.5px solid var(--border);
+          background: var(--bg);
+          color: var(--text2);
+          transition: all 0.2s;
+          cursor: pointer;
+        }
+        .header-btn:hover {
+          border-color: var(--accent);
           color: var(--accent);
         }
         .header-cta {
@@ -132,8 +147,11 @@ export default function Header({ user, navigate }) {
           >
             NaijaOpportunities
           </a>
-          <button className="header-cta" onClick={() => navigate("onboard")}>
-            Find My Scholarships →
+          <button className="header-btn" onClick={() => navigate("onboard")}>
+            New Search
+          </button>
+          <button className="header-cta" onClick={() => navigate("dashboard")}>
+            Dashboard
           </button>
           
           <div className="header-user">

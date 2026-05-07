@@ -81,21 +81,7 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
       <style>{`
         .dash { min-height: 100vh; background: var(--bg); display: flex; flex-direction: column; }
 
-        /* NAV */
-        .dash-nav {
-          background: var(--surface); border-bottom: 1px solid var(--border);
-          padding: 14px 24px; display: flex; align-items: center;
-          justify-content: space-between; position: sticky; top: 0; z-index: 10;
-        }
-        .dash-logo { font-size: 16px; font-weight: 800; color: var(--text); }
-        .dash-logo span { color: var(--accent); }
-        .dash-nav-right { display: flex; gap: 8px; }
-        .dash-nav-btn {
-          background: none; border: 1.5px solid var(--border);
-          color: var(--text2); padding: 7px 14px; border-radius: 8px;
-          font-size: 12px; font-family: inherit; transition: all 0.2s;
-        }
-        .dash-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+       
 
         /* TABS */
         .dash-tabs {
@@ -260,14 +246,7 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
       `}</style>
 
       <div className="dash">
-        {/* NAV */}
-        <div className="dash-nav">
-          <div className="dash-logo">Path<span>Sync</span> AI</div>
-          <div className="dash-nav-right">
-            <button className="dash-nav-btn" onClick={() => navigate("matches")}>← Matches</button>
-            <button className="dash-nav-btn" onClick={() => navigate("onboard")}>New Search</button>
-          </div>
-        </div>
+        
 
         {/* TABS */}
         <div className="dash-tabs">

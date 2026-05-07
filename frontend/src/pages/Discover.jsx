@@ -177,21 +177,6 @@ Student Profile:
           display: flex; flex-direction: column;
         }
 
-        /* TOP */
-        .dc-top {
-          background: var(--surface); border-bottom: 1px solid var(--border);
-          padding: 14px 24px;
-          display: flex; align-items: center; justify-content: space-between;
-          position: sticky; top: 0; z-index: 10;
-        }
-        .dc-logo { font-size: 16px; font-weight: 800; color: var(--text); }
-        .dc-logo span { color: var(--accent); }
-        .dc-progress-wrap { flex: 1; max-width: 200px; margin: 0 24px; }
-        .dc-progress-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; text-align: center; }
-        .dc-progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-        .dc-progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s ease; }
-        .dc-q-count { font-size: 12px; color: var(--text2); font-weight: 500; }
-
         /* MESSAGES */
         .dc-messages {
           flex: 1; padding: 24px;
@@ -333,18 +318,7 @@ Student Profile:
       )}
 
       <div className="discover">
-        {/* TOP BAR */}
-        <div className="dc-top">
-          <div className="dc-logo">Path<span>Sync</span> AI</div>
-          <div className="dc-progress-wrap">
-            <div className="dc-progress-label">Discovery {Math.min(questionCount, 3)}/3</div>
-            <div className="dc-progress-bar">
-              <div className="dc-progress-fill" style={{ width: `${progressWidth}%` }} />
-            </div>
-          </div>
-          <div className="dc-q-count">Almost there 🎯</div>
-        </div>
-
+        
         {/* MESSAGES */}
         <div className="dc-messages">
           <div className="dc-intro">

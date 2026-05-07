@@ -33,6 +33,34 @@ export default function Header({ user, navigate }) {
         .header-logo span {
           color: var(--accent);
         }
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+        .header-link {
+          font-size: 14px;
+          color: var(--text2);
+          text-decoration: none;
+          transition: color 0.2s;
+        }
+        .header-link:hover {
+          color: var(--accent);
+        }
+        .header-cta {
+          padding: 8px 18px;
+          border-radius: 8px;
+          background: var(--accent);
+          color: white;
+          font-size: 14px;
+          font-weight: 600;
+          border: none;
+          transition: all 0.2s;
+        }
+        .header-cta:hover {
+          background: var(--accent2);
+          transform: translateY(-1px);
+        }
         .header-user {
           position: relative;
         }
@@ -94,18 +122,33 @@ export default function Header({ user, navigate }) {
         <div className="header-logo" onClick={() => navigate("landing")}>
           Path<span>Sync</span> AI
         </div>
-        <div className="header-user">
-          <div className="header-avatar" onClick={() => setShowDropdown(!showDropdown)}>
-            {initials}
-          </div>
-          {showDropdown && (
-            <div className="header-dropdown">
-              <div className="dropdown-email">{user.email}</div>
-              <button className="dropdown-item" onClick={() => { navigate("profile"); setShowDropdown(false); }}>
-                View Profile
-              </button>
+        
+        <div className="header-right">
+          <a 
+            href="https://naija-opportunities.vercel.app" 
+            target="_blank" 
+            rel="noreferrer" 
+            className="header-link"
+          >
+            NaijaOpportunities
+          </a>
+          <button className="header-cta" onClick={() => navigate("onboard")}>
+            Find My Scholarships →
+          </button>
+          
+          <div className="header-user">
+            <div className="header-avatar" onClick={() => setShowDropdown(!showDropdown)}>
+              {initials}
             </div>
-          )}
+            {showDropdown && (
+              <div className="header-dropdown">
+                <div className="dropdown-email">{user.email}</div>
+                <button className="dropdown-item" onClick={() => { navigate("profile"); setShowDropdown(false); }}>
+                  View Profile
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

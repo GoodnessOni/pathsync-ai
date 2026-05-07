@@ -86,17 +86,7 @@ export default function Onboard({ navigate, setProfile }) {
           display: flex; flex-direction: column;
         }
 
-        /* TOP BAR */
-        .ob-topbar {
-          padding: 16px 24px;
-          display: flex; align-items: center; justify-content: space-between;
-          border-bottom: 1px solid var(--border);
-          background: var(--surface);
-        }
-        .ob-logo { font-size: 16px; font-weight: 800; color: var(--text); }
-        .ob-logo span { color: var(--accent); }
-        .ob-step-label { font-size: 12px; color: var(--text2); font-weight: 500; }
-
+        
         /* PROGRESS */
         .ob-progress-bar {
           height: 3px; background: var(--border);
@@ -217,16 +207,17 @@ export default function Onboard({ navigate, setProfile }) {
       `}</style>
 
       <div className="onboard">
-        {/* TOP BAR */}
-        <div className="ob-topbar">
-          <div className="ob-logo">Path<span>Sync</span> AI</div>
-          <div className="ob-step-label">Step {step} of {TOTAL}</div>
-        </div>
+        
 
-        {/* PROGRESS BAR */}
-        <div className="ob-progress-bar">
-          <div className="ob-progress-fill" style={{ width: `${progress}%` }} />
-        </div>
+       {/* PROGRESS BAR */}
+<div style={{ padding: "12px 24px", background: "var(--surface)", borderBottom: "1px solid var(--border)" }}>
+  <div style={{ fontSize: "12px", color: "var(--text2)", fontWeight: 500, marginBottom: 8, textAlign: "center" }}>
+    Step {step} of {TOTAL}
+  </div>
+  <div className="ob-progress-bar">
+    <div className="ob-progress-fill" style={{ width: `${progress}%` }} />
+  </div>
+</div>
 
         {/* CARD */}
         <div className="ob-content">

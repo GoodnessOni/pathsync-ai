@@ -6,28 +6,7 @@ export default function Landing({ navigate }) {
       <style>{`
         .landing { min-height: 100vh; }
 
-        /* NAV */
-        .nav {
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 16px 24px; border-bottom: 1px solid var(--border);
-          background: var(--surface); position: sticky; top: 0; z-index: 50;
-        }
-        .nav-logo { font-size: 18px; font-weight: 800; color: var(--text); }
-        .nav-logo span { color: var(--accent); }
-        .nav-links { display: flex; align-items: center; gap: 12px; }
-        .nav-link {
-          font-size: 13px; color: var(--text2); background: none;
-          border: none; padding: 6px 12px; border-radius: 8px;
-          transition: all 0.2s;
-        }
-        .nav-link:hover { background: var(--bg2); color: var(--text); }
-        .nav-cta {
-          font-size: 13px; font-weight: 600; color: white;
-          background: var(--accent); border: none;
-          padding: 8px 18px; border-radius: 8px; transition: all 0.2s;
-        }
-        .nav-cta:hover { background: var(--accent2); transform: translateY(-1px); }
-
+        
         /* HERO */
         .hero {
           max-width: 680px; margin: 0 auto;
@@ -172,19 +151,7 @@ export default function Landing({ navigate }) {
       `}</style>
 
       <div className="landing">
-        {/* NAV */}
-        <nav className="nav">
-          <div className="nav-logo">Path<span>Sync</span> AI</div>
-          <div className="nav-links">
-            <a href="https://naija-opportunities.vercel.app" target="_blank" rel="noreferrer" className="nav-link">
-              NaijaOpportunities
-            </a>
-            <button className="nav-cta" onClick={() => navigate("onboard")}>
-              Find My Scholarships →
-            </button>
-          </div>
-        </nav>
-
+        
         {/* HERO */}
         <section className="hero">
           <div className="hero-badge">
@@ -200,19 +167,8 @@ export default function Landing({ navigate }) {
             matches you to real Nigerian scholarships — then writes your application
             letter, CV, and deadline tracker automatically.
           </p>
-          <div className="hero-btns">
-            <button className="btn-primary" onClick={() => navigate("onboard")}>
-              🎓 Find My Scholarships — Free
-            </button>
-            <a
-              href="https://naija-opportunities.vercel.app/scholarships"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-secondary"
-            >
-              Browse Scholarships →
-            </a>
-          </div>
+          
+          
         </section>
 
         {/* STATS */}

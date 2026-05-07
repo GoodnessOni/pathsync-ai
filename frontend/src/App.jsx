@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "./lib/supabase";
+import Auth from "./pages/Auth";
 import Landing from "./pages/Landing";
 import Onboard from "./pages/Onboard";
 import Discover from "./pages/Discover";
@@ -6,12 +8,28 @@ import Matches from "./pages/Matches";
 import Dashboard from "./pages/Dashboard";
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState("landing");
   const [profile, setProfile] = useState({});
   const [sessionId] = useState(
     () => "ps_" + Math.random().toString(36).slice(2) + Date.now().toString(36)
   );
   const [matches, setMatches] = useState([]);
+
+  // Check if user is logged in on mount
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const navigate = (to, data = {}) => {
     if (data.profile) setProfile((prev) => ({ ...prev, ...data.profile }));
@@ -20,8 +38,37 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  const props = { navigate, profile, sessionId, matches, setProfile };
+  const props = { navigate, profile, sessionId, matches, setProfile, user };
 
+  // Show loading spinner while checking auth
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "var(--bg)"
+      }}>
+        <div style={{
+          width: 40,
+          height: 40,
+          border: "3px solid var(--border)",
+          borderTopColor: "var(--accent)",
+          borderRadius: "50%",
+          animation: "spin 0.8s linear infinite"
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  // If not logged in, show auth page
+  if (!user) {
+    return <Auth onAuthSuccess={() => setLoading(true)} />;
+  }
+
+  // User is logged in, show the app
   return (
     <>
       <style>{`

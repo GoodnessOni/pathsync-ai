@@ -1,14 +1,20 @@
 """PathSync AI — Matches Router"""
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 from app.services.rag_service import generate_embedding_with_claude
 from app.core.database import get_pool
+from app.core.config import settings
+from supabase import create_client
 
 router = APIRouter()
 
+# Initialize Supabase client for auth verification
+supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+
 class RegenerateRequest(BaseModel):
-    session_id: str
+    user_id: str  # Changed from session_id to user_id
 
 @router.post("/regenerate")
 async def regenerate_matches(data: RegenerateRequest):
@@ -19,19 +25,17 @@ async def regenerate_matches(data: RegenerateRequest):
     pool = await get_pool()
     
     try:
-        # 1. Load user profile from student_profiles
+        # 1. Load user profile from student_profiles using user_id
         async with pool.acquire() as conn:
             profile = await conn.fetchrow(
                 """SELECT * FROM student_profiles 
-                   WHERE session_id = $1 OR user_id = (
-                       SELECT user_id FROM student_profiles WHERE session_id = $1
-                   )
+                   WHERE user_id = $1
                    LIMIT 1""",
-                data.session_id
+                data.user_id
             )
         
         if not profile:
-            raise HTTPException(status_code=404, detail="Profile not found")
+            raise HTTPException(status_code=404, detail=f"Profile not found for user_id: {data.user_id}")
         
         profile_dict = dict(profile)
         
@@ -44,7 +48,7 @@ async def regenerate_matches(data: RegenerateRequest):
             scholarships = await conn.fetch(
                 """SELECT id, title, provider, description, 
                           eligibility_criteria, amount, deadline, 
-                          application_url, embedding
+                          application_url, embedding, min_cgpa, eligible_majors
                    FROM scholarships 
                    WHERE deadline IS NULL OR deadline >= $1
                    ORDER BY created_at DESC
@@ -90,11 +94,15 @@ async def regenerate_matches(data: RegenerateRequest):
         matches.sort(key=lambda x: x['similarity'], reverse=True)
         
         return {
-            "matches": matches[:4],  # Return top 4 BEST matches
+            "matches": matches[:4],
             "message": f"Found {len(matches[:4])} top matching scholarships"
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
+        import traceback
+        print(f"Error in regenerate_matches: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Error regenerating matches: {str(e)}")
 
 

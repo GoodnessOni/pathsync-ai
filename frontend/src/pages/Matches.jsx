@@ -39,13 +39,13 @@ export default function Matches({ navigate, matches, sessionId, user, setProfile
   };
 
   const regenerateMatches = async () => {
-    setRegenerating(true);
-    try {
-      console.log("🔄 Fetching new matches from backend...");
-      const res = await fetch(`${API_BASE}/matches/regenerate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId }),
+  setRegenerating(true);
+  try {
+    console.log("🔄 Fetching new matches from backend...");
+    const res = await fetch(`${API_BASE}/matches/regenerate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: user.id }), 
       });
       const data = await res.json();
       const newMatches = data.matches || [];

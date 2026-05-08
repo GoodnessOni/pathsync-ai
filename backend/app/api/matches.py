@@ -42,13 +42,18 @@ async def regenerate_matches(data: RegenerateRequest):
             raise HTTPException(status_code=404, detail=f"Profile not found for user_id: {data.user_id}")
         
         profile_dict = dict(profile)
+        print(f"✅ Found profile for user: {profile_dict.get('university')}")
         
         # 2. Build profile text and generate embedding
         profile_text = _build_profile_text(profile_dict)
+        print(f"📝 Profile text: {profile_text[:100]}...")
+        
         profile_embedding = _generate_embedding(profile_text)
         
         if not profile_embedding:
             raise HTTPException(status_code=500, detail="Failed to generate profile embedding")
+        
+        print(f"✅ Generated profile embedding: {len(profile_embedding)} dimensions")
         
         # 3. Fetch active scholarships with embeddings
         async with pool.acquire() as conn:
@@ -63,6 +68,8 @@ async def regenerate_matches(data: RegenerateRequest):
                    LIMIT 100""",
                 datetime.now().date()
             )
+        
+        print(f"📊 Found {len(scholarships)} scholarships with embeddings")
         
         if not scholarships:
             return {"matches": [], "message": "No active scholarships found"}
@@ -83,12 +90,16 @@ async def regenerate_matches(data: RegenerateRequest):
                     )
                     similarity = float(result) if result else 0.75
             
+            print(f"🎯 {s_dict['title'][:50]}: similarity = {similarity:.2f}")
+            
             # Apply eligibility filters
             if not _passes_basic_eligibility(s_dict, profile_dict):
+                print(f"   ❌ Failed eligibility check")
                 continue
             
             # Only include high-quality matches
-            if similarity >= 0.65:
+            if similarity >= 0.225:  # Lowered threshold
+                print(f"   ✅ Added to matches!")
                 matches.append({
                     "id": str(s_dict['id']),
                     "title": s_dict['title'],
@@ -100,9 +111,13 @@ async def regenerate_matches(data: RegenerateRequest):
                     "similarity": round(similarity, 2),
                     "match_reason": _generate_match_reason(s_dict, profile_dict, similarity)
                 })
+            else:
+                print(f"   ❌ Similarity too low ({similarity:.2f} < 0.225)")
         
         # 5. Sort by similarity and return top 4
         matches.sort(key=lambda x: x['similarity'], reverse=True)
+        
+        print(f"🎉 Returning {len(matches[:4])} matches")
         
         return {
             "matches": matches[:4],
@@ -166,13 +181,7 @@ def _generate_embedding(text: str) -> list:
 
 def _passes_basic_eligibility(scholarship: dict, profile: dict) -> bool:
     """Basic eligibility checks."""
-    level = profile.get('level', '').lower()
-    scholarship_level = scholarship.get('level', '').lower()
-    
-    if 'undergraduate' in scholarship_level or 'bachelor' in scholarship_level:
-        if not any(l in level for l in ['100l', '200l', '300l', '400l', '500l']):
-            return False
-    
+    # Temporarily return True to see all matches
     return True
 
 
@@ -196,3 +205,4 @@ def _generate_match_reason(scholarship: dict, profile: dict, similarity: float) 
         reasons.append("tech skills are relevant")
     
     return " — ".join(reasons[:2]) if reasons else "Matches your profile"
+

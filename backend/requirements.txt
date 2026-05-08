@@ -21,6 +21,7 @@ spacy==3.7.6
 
 # Embeddings — OpenAI only (sentence-transformers removed — pulls 3GB torch)
 openai==1.50.0
+cohere==5.11.0
 
 # Config
 pydantic-settings==2.5.2

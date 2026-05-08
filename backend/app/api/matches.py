@@ -1,31 +1,35 @@
-"""PathSync AI — Matches Router"""
-from fastapi import APIRouter, HTTPException, Header
+"""PathSync AI — Matches Router with Cohere Embeddings"""
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
-from app.services.rag_service import generate_embedding_with_claude
+import cohere
 from app.core.database import get_pool
 from app.core.config import settings
-from supabase import create_client
 
 router = APIRouter()
 
-# Initialize Supabase client for auth verification
-supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+# Don't initialize here - do it lazily
+_cohere_client = None
+
+def get_cohere_client():
+    """Lazy initialization of Cohere client."""
+    global _cohere_client
+    if _cohere_client is None:
+        _cohere_client = cohere.Client(settings.COHERE_API_KEY)
+    return _cohere_client
 
 class RegenerateRequest(BaseModel):
-    user_id: str  # Changed from session_id to user_id
+    user_id: str
 
 @router.post("/regenerate")
 async def regenerate_matches(data: RegenerateRequest):
     """
-    Regenerate scholarship matches for a user.
-    Returns top 4 best-matching scholarships based on similarity scores.
+    Regenerate scholarship matches using semantic embeddings.
     """
     pool = await get_pool()
     
     try:
-        # 1. Load user profile from student_profiles using user_id
+        # 1. Load user profile
         async with pool.acquire() as conn:
             profile = await conn.fetchrow(
                 """SELECT * FROM student_profiles 
@@ -39,20 +43,24 @@ async def regenerate_matches(data: RegenerateRequest):
         
         profile_dict = dict(profile)
         
-        # 2. Build profile text for embedding
-        profile_text = _build_profile_text_from_onboarding(profile_dict)
-        profile_embedding = await generate_embedding_with_claude(profile_text)
+        # 2. Build profile text and generate embedding
+        profile_text = _build_profile_text(profile_dict)
+        profile_embedding = _generate_embedding(profile_text)
         
-        # 3. Fetch active scholarships from NaijaOpportunities table
+        if not profile_embedding:
+            raise HTTPException(status_code=500, detail="Failed to generate profile embedding")
+        
+        # 3. Fetch active scholarships with embeddings
         async with pool.acquire() as conn:
             scholarships = await conn.fetch(
-                """SELECT id, title, provider, description, 
-                          eligibility_criteria, amount, deadline, 
-                          application_url, embedding, min_cgpa, eligible_majors
+                """SELECT id, title, provider, country, level, description, 
+                          eligibility, benefits, amount, deadline, apply_url,
+                          documents_needed, duration, embedding
                    FROM scholarships 
-                   WHERE deadline IS NULL OR deadline >= $1
+                   WHERE (deadline IS NULL OR deadline >= $1)
+                   AND embedding IS NOT NULL
                    ORDER BY created_at DESC
-                   LIMIT 50""",
+                   LIMIT 100""",
                 datetime.now().date()
             )
         
@@ -64,20 +72,23 @@ async def regenerate_matches(data: RegenerateRequest):
         for scholarship in scholarships:
             s_dict = dict(scholarship)
             
-            similarity = 0.85
+            # Calculate cosine similarity
+            similarity = 0.75  # Default
             if s_dict.get('embedding') and profile_embedding:
                 async with pool.acquire() as conn:
                     result = await conn.fetchval(
                         "SELECT 1 - ($1::vector <=> $2::vector) as similarity",
-                        profile_embedding,
+                        str(profile_embedding),
                         s_dict['embedding']
                     )
-                    similarity = float(result) if result else 0.85
+                    similarity = float(result) if result else 0.75
             
-            if not _passes_eligibility(s_dict, profile_dict):
+            # Apply eligibility filters
+            if not _passes_basic_eligibility(s_dict, profile_dict):
                 continue
             
-            if similarity >= 0.60:
+            # Only include high-quality matches
+            if similarity >= 0.65:
                 matches.append({
                     "id": str(s_dict['id']),
                     "title": s_dict['title'],
@@ -85,12 +96,12 @@ async def regenerate_matches(data: RegenerateRequest):
                     "description": s_dict.get('description', ''),
                     "amount": s_dict.get('amount'),
                     "deadline": s_dict['deadline'].isoformat() if s_dict.get('deadline') else None,
-                    "application_url": s_dict.get('application_url'),
+                    "application_url": s_dict.get('apply_url'),
                     "similarity": round(similarity, 2),
                     "match_reason": _generate_match_reason(s_dict, profile_dict, similarity)
                 })
         
-        # 5. Sort by similarity (best matches first) and return top 4
+        # 5. Sort by similarity and return top 4
         matches.sort(key=lambda x: x['similarity'], reverse=True)
         
         return {
@@ -103,11 +114,11 @@ async def regenerate_matches(data: RegenerateRequest):
     except Exception as e:
         import traceback
         print(f"Error in regenerate_matches: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Error regenerating matches: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 
 
-def _build_profile_text_from_onboarding(profile: dict) -> str:
-    """Build rich profile text from onboarding data for embedding."""
+def _build_profile_text(profile: dict) -> str:
+    """Build rich profile text for embedding."""
     parts = []
     
     if profile.get("university"):
@@ -122,7 +133,7 @@ def _build_profile_text_from_onboarding(profile: dict) -> str:
     if profile.get("leadership"):
         parts.append(f"Leadership: {profile['leadership']}")
     if profile.get("projects"):
-        parts.append(f"Projects and activities: {profile['projects']}")
+        parts.append(f"Projects: {profile['projects']}")
     if profile.get("demographics"):
         parts.append(f"Background: {', '.join(profile['demographics'])}")
     if profile.get("about"):
@@ -138,53 +149,50 @@ def _build_profile_text_from_onboarding(profile: dict) -> str:
     return ". ".join(parts)
 
 
-def _passes_eligibility(scholarship: dict, profile: dict) -> bool:
-    """Check if student meets hard eligibility requirements."""
+def _generate_embedding(text: str) -> list:
+    """Generate embedding using Cohere."""
+    try:
+        co = get_cohere_client()  # Use lazy initialization
+        response = co.embed(
+            texts=[text[:2000]],
+            model='embed-english-v3.0',
+            input_type='search_query'
+        )
+        return response.embeddings[0]
+    except Exception as e:
+        print(f"Embedding error: {e}")
+        return None
+
+
+def _passes_basic_eligibility(scholarship: dict, profile: dict) -> bool:
+    """Basic eligibility checks."""
+    level = profile.get('level', '').lower()
+    scholarship_level = scholarship.get('level', '').lower()
     
-    if scholarship.get("min_cgpa") and profile.get("cgpa"):
-        student_cgpa = float(profile['cgpa'])
-        cgpa_scale = float(profile.get('cgpa_scale', '5.0'))
-        
-        if cgpa_scale == 4.0:
-            student_cgpa = (student_cgpa / 4.0) * 5.0
-        
-        if student_cgpa < float(scholarship['min_cgpa']):
+    if 'undergraduate' in scholarship_level or 'bachelor' in scholarship_level:
+        if not any(l in level for l in ['100l', '200l', '300l', '400l', '500l']):
             return False
-    
-    if scholarship.get("eligible_majors") and profile.get("course"):
-        eligible_majors = scholarship['eligible_majors']
-        if eligible_majors and len(eligible_majors) > 0:
-            student_course = profile['course'].lower()
-            if not any(major.lower() in student_course or student_course in major.lower() 
-                      for major in eligible_majors):
-                if "all" not in str(eligible_majors).lower():
-                    return False
     
     return True
 
 
 def _generate_match_reason(scholarship: dict, profile: dict, similarity: float) -> str:
-    """Generate a simple match reason based on profile and scholarship."""
+    """Generate match reason."""
     reasons = []
     
     if similarity >= 0.90:
-        reasons.append("Excellent profile match")
+        reasons.append("Excellent semantic match")
     elif similarity >= 0.80:
         reasons.append("Strong profile alignment")
     else:
-        reasons.append("Good fit for your profile")
+        reasons.append("Good fit for your background")
     
-    if profile.get("cgpa") and scholarship.get("min_cgpa"):
-        if float(profile['cgpa']) >= float(scholarship['min_cgpa']) + 0.5:
-            reasons.append("your CGPA exceeds requirements")
+    course = profile.get('course', '').lower()
+    description = scholarship.get('description', '').lower()
     
-    if profile.get("leadership"):
-        if "leadership" in scholarship.get("eligibility_criteria", "").lower():
-            reasons.append("your leadership experience is valued")
-    
-    if profile.get("course") and scholarship.get("eligible_majors"):
-        if any(profile['course'].lower() in major.lower() 
-               for major in scholarship.get("eligible_majors", [])):
-            reasons.append("your course is specifically eligible")
+    if 'engineering' in course and 'engineering' in description:
+        reasons.append("engineering background valued")
+    elif 'computer' in course and ('tech' in description or 'computer' in description):
+        reasons.append("tech skills are relevant")
     
     return " — ".join(reasons[:2]) if reasons else "Matches your profile"

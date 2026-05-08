@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     # Embeddings
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     OPENAI_API_KEY: str = ""
+    COHERE_API_KEY: str = "AYGOyDHRiRAxuaH73ejfRw4KX14q2sV6Hl6lquBW"  
 
     class Config:
         env_file = ".env"

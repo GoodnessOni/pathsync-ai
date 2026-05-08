@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
-export default function Matches({ navigate, matches, sessionId }) {
+export default function Matches({ navigate, matches, sessionId, user, setProfile }) {
   const [generatingLetter, setGeneratingLetter] = useState(null);
   const [modal, setModal] = useState(null);
+  const [regenerating, setRegenerating] = useState(false);
+  const [localMatches, setLocalMatches] = useState(matches || []);
 
   const handleLetter = async (s) => {
     setGeneratingLetter(s.id);
@@ -26,13 +29,71 @@ export default function Matches({ navigate, matches, sessionId }) {
     setGeneratingLetter(null);
   };
 
+  const regenerateMatches = async () => {
+    setRegenerating(true);
+    try {
+      // Fetch new matches from backend
+      const res = await fetch(`${API_BASE}/matches/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+      const data = await res.json();
+      const newMatches = data.matches || [];
+
+      // Merge logic: keep valid old matches, remove expired, add new
+      const today = new Date();
+      const validOldMatches = localMatches.filter(oldMatch => {
+        if (!oldMatch.deadline) return true;
+        const deadline = new Date(oldMatch.deadline);
+        return deadline >= today;
+      });
+
+      // Find truly new scholarships (not in valid old matches)
+      const newScholarships = newMatches.filter(newMatch => 
+        !validOldMatches.some(oldMatch => 
+          oldMatch.title === newMatch.title && oldMatch.provider === newMatch.provider
+        )
+      );
+
+      // Combine: valid old + new
+      const mergedMatches = [...validOldMatches, ...newScholarships];
+
+      setLocalMatches(mergedMatches);
+
+      // Save to database
+      const { error } = await supabase
+        .from('student_profiles')
+        .update({ 
+          matches: mergedMatches, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error saving matches:', error);
+        alert('Matches updated but failed to save. Please try again.');
+      } else {
+        // Update parent state
+        if (setProfile) {
+          setProfile(prev => ({ ...prev, matches: mergedMatches }));
+        }
+        alert(`✅ Matches updated! Found ${newScholarships.length} new scholarships.`);
+      }
+    } catch (err) {
+      console.error('Error regenerating matches:', err);
+      alert('Failed to regenerate matches. Please check your connection and try again.');
+    }
+    setRegenerating(false);
+  };
+
   const sampleMatches = [
     { id: "1", title: "MTN Foundation Science & Technology Scholarship", provider: "MTN Nigeria", amount: "₦200,000/year", match_reason: "Your CGPA and STEM course make you a strong candidate", similarity: 0.91, deadline: "2026-07-31", application_url: "https://mtnfoundation.org" },
     { id: "2", title: "Shell Nigeria University Scholarship", provider: "Shell Nigeria", amount: "₦500,000/year", match_reason: "Your leadership roles align perfectly with Shell's criteria", similarity: 0.87, deadline: "2026-06-30", application_url: "https://shell.com.ng" },
     { id: "3", title: "NLNG National Scholarship", provider: "NLNG", amount: "₦2,000,000/year", match_reason: "Your community engagement and academic excellence match NLNG's profile", similarity: 0.83, deadline: "2026-09-15", application_url: "https://nlng.com" },
   ];
 
-  const displayMatches = matches?.length > 0 ? matches : sampleMatches;
+  const displayMatches = localMatches?.length > 0 ? localMatches : sampleMatches;
 
   return (
     <>
@@ -57,6 +118,26 @@ export default function Matches({ navigate, matches, sessionId }) {
           font-size: 18px; font-weight: 800; color: var(--text);
           margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
         }
+
+        .m-regenerate-bar {
+          background: var(--surface); border: 1px solid var(--border);
+          border-radius: 12px; padding: 16px; margin-bottom: 20px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 12px; flex-wrap: wrap;
+        }
+        .m-regen-text {
+          flex: 1; min-width: 200px;
+        }
+        .m-regen-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .m-regen-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+        .btn-regenerate {
+          background: var(--accent); color: white; border: none;
+          font-size: 13px; font-weight: 600; padding: 10px 20px;
+          border-radius: 9px; font-family: inherit; transition: all 0.2s;
+          white-space: nowrap;
+        }
+        .btn-regenerate:hover:not(:disabled) { background: var(--accent2); }
+        .btn-regenerate:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .scard {
           background: var(--surface); border: 1px solid var(--border);
@@ -197,6 +278,23 @@ export default function Matches({ navigate, matches, sessionId }) {
 
         {/* MATCHES */}
         <div className="m-content">
+          {/* REGENERATE BAR */}
+          <div className="m-regenerate-bar">
+            <div className="m-regen-text">
+              <div className="m-regen-title">🔄 Keep your matches fresh</div>
+              <div className="m-regen-desc">
+                Regenerate to find new scholarships while keeping your existing valid matches
+              </div>
+            </div>
+            <button 
+              className="btn-regenerate" 
+              onClick={regenerateMatches}
+              disabled={regenerating}
+            >
+              {regenerating ? "⏳ Updating..." : "🔄 Regenerate Matches"}
+            </button>
+          </div>
+
           <div className="m-section-title">
             🏆 Your Top Matches
           </div>

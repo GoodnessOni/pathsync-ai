@@ -22,21 +22,36 @@ export default function App() {
   // Check auth and load profile
   useEffect(() => {
     const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    setUser(session?.user ?? null);
 
-        if (session?.user) {
-          // Temporarily always go to landing
-          setPage("landing");
-        }
-      } catch (error) {
-        console.error("Auth error:", error);
-        setPage("landing");
-      } finally {
-        setLoading(false);
+    if (session?.user) {
+      // Check if user has a profile
+      const { data: profileData } = await supabase
+        .from('student_profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (profileData) {
+        // User has completed onboarding - go to dashboard
+        setProfile(profileData);
+        setMatches(profileData.matches || []);
+        setPage("dashboard");
+      } else {
+        // New user - go to onboarding
+        setPage("onboard");
       }
-    };
+    }
+  } catch (error) {
+    console.error("Auth error:", error);
+    setPage("onboard");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     initAuth();
 

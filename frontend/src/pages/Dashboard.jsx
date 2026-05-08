@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
-export default function Dashboard({ navigate, sessionId, matches, profile }) {
+export default function Dashboard({ navigate, sessionId, matches, profile, user }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [cv, setCv] = useState("");
   const [tracker, setTracker] = useState([]);
@@ -10,33 +11,52 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
   const [loadingTracker, setLoadingTracker] = useState(false);
   const [modal, setModal] = useState(null);
 
- const generateCv = async () => {
-  setLoadingCv(true);
-  setActiveTab("cv");
-  try {
-    const res = await fetch(`${API_BASE}/generate/cv`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId }),
-    });
-    const data = await res.json();
-
-    // Guard against undefined/empty response
-    const cvText = data.cv || data.content || data.text || null;
-
-    if (!cvText) {
-      setCv("PathSync could not generate your CV yet. Please complete the discovery interview first, then try again.");
-      setLoadingCv(false);
-      return;
+  // Load CV and tracker from profile on mount
+  useEffect(() => {
+    if (profile?.cv) {
+      setCv(profile.cv);
     }
+    if (profile?.tracker) {
+      setTracker(profile.tracker);
+    }
+  }, [profile]);
 
-    setCv(cvText);
-  } catch (err) {
-    console.error("CV generation error:", err);
-    setCv("Connection error. Please check your internet and try again.");
-  }
-  setLoadingCv(false);
-};
+  const generateCv = async () => {
+    setLoadingCv(true);
+    setActiveTab("cv");
+    try {
+      const res = await fetch(`${API_BASE}/generate/cv`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+      const data = await res.json();
+
+      const cvText = data.cv || data.content || data.text || null;
+
+      if (!cvText) {
+        setCv("PathSync could not generate your CV yet. Please complete the discovery interview first, then try again.");
+        setLoadingCv(false);
+        return;
+      }
+
+      setCv(cvText);
+
+      // Save CV to database
+      const { error } = await supabase
+        .from('student_profiles')
+        .update({ cv: cvText, updated_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error saving CV:', error);
+      }
+    } catch (err) {
+      console.error("CV generation error:", err);
+      setCv("Connection error. Please check your internet and try again.");
+    }
+    setLoadingCv(false);
+  };
 
   const generateTracker = async () => {
     setLoadingTracker(true);
@@ -48,7 +68,18 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
         body: JSON.stringify({ session_id: sessionId }),
       });
       const data = await res.json();
-      setTracker(data.tracker || []);
+      const newTracker = data.tracker || [];
+      setTracker(newTracker);
+
+      // Save tracker to database
+      const { error } = await supabase
+        .from('student_profiles')
+        .update({ tracker: newTracker, updated_at: new Date().toISOString() })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error saving tracker:', error);
+      }
     } catch {
       setTracker([]);
     }
@@ -251,13 +282,18 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
         {/* TABS */}
         <div className="dash-tabs">
           {[
-            { id: "overview", label: "🏠 Overview" },
-            { id: "cv", label: "📄 My CV" },
-            { id: "tracker", label: "📅 Deadlines" },
-          ].map(t => (
-            <button key={t.id} className={`dash-tab ${activeTab === t.id ? "active" : ""}`}
-              onClick={() => setActiveTab(t.id)}>{t.label}</button>
-          ))}
+  { id: "overview", label: "🏠 Overview" },
+  { id: "matches", label: "🎯 Matches", isLink: true },
+  { id: "cv", label: "📄 My CV" },
+  { id: "tracker", label: "📅 Deadlines" },
+].map(t => (
+  <button key={t.id} 
+    className={`dash-tab ${activeTab === t.id ? "active" : ""}`}
+    onClick={() => t.isLink ? navigate("matches") : setActiveTab(t.id)}>
+    {t.label}
+  </button>
+))}
+
         </div>
 
         <div className="dash-content">
@@ -281,7 +317,7 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
                   <div className="action-title">Generate My CV</div>
                   <div className="action-desc">Scholarship-optimised CV built from your profile and activities</div>
                   <button className="action-btn" onClick={generateCv}>
-                    {loadingCv ? "⏳ Generating..." : "Generate CV"}
+                    {loadingCv ? "⏳ Generating..." : cv ? "🔄 Regenerate CV" : "Generate CV"}
                   </button>
                 </div>
                 <div className="action-card">
@@ -289,7 +325,7 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
                   <div className="action-title">Deadline Tracker</div>
                   <div className="action-desc">Step-by-step action plans for every matched scholarship</div>
                   <button className="action-btn" onClick={generateTracker}>
-                    {loadingTracker ? "⏳ Loading..." : "View Tracker"}
+                    {loadingTracker ? "⏳ Loading..." : tracker.length > 0 ? "🔄 Refresh Tracker" : "View Tracker"}
                   </button>
                 </div>
               </div>
@@ -340,29 +376,35 @@ export default function Dashboard({ navigate, sessionId, matches, profile }) {
           {/* CV TAB */}
           {activeTab === "cv" && (
             <>
-              {cv && !cv.startsWith("PathSync could not") && !cv.startsWith("Connection") && (
-                <button className="cv-btn outline"
-                  onClick={() => {
-                    if (!cv) {
-                      alert("CV not ready yet. Please generate it first.");
-                      return;
-                    }
-                    navigator.clipboard.writeText(cv)
-                      .then(() => alert("CV copied to clipboard!"))
-                      .catch(() => {
-                        // Fallback for browsers that block clipboard
-                        const el = document.createElement("textarea");
-                        el.value = cv;
-                        document.body.appendChild(el);
-                        el.select();
-                        document.execCommand("copy");
-                        document.body.removeChild(el);
-                        alert("CV copied!");
-                      });
-                  }}>
-                  📋 Copy CV
-                </button>
-              )}
+              <div className="cv-actions">
+                {cv && !cv.startsWith("PathSync could not") && !cv.startsWith("Connection") && (
+                  <>
+                    <button className="cv-btn" onClick={generateCv}>
+                      🔄 Regenerate CV
+                    </button>
+                    <button className="cv-btn outline"
+                      onClick={() => {
+                        if (!cv) {
+                          alert("CV not ready yet. Please generate it first.");
+                          return;
+                        }
+                        navigator.clipboard.writeText(cv)
+                          .then(() => alert("CV copied to clipboard!"))
+                          .catch(() => {
+                            const el = document.createElement("textarea");
+                            el.value = cv;
+                            document.body.appendChild(el);
+                            el.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(el);
+                            alert("CV copied!");
+                          });
+                      }}>
+                      📋 Copy CV
+                    </button>
+                  </>
+                )}
+              </div>
               {loadingCv
                 ? <div className="loading-box"><div className="spinner" />Generating your CV from your profile...</div>
                 : cv

@@ -164,7 +164,7 @@ export default function Landing({ navigate }) {
           </h1>
           <p className="hero-sub">
             PathSync AI has a conversation with you, discovers your hidden achievements,
-            matches you to real Nigerian scholarships — then writes your application
+            matches you to real Nigerian scholarships - then writes your application
             letter, CV, and deadline tracker automatically.
           </p>
           

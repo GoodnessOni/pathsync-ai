@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
@@ -8,6 +8,15 @@ export default function Matches({ navigate, matches, sessionId, user, setProfile
   const [modal, setModal] = useState(null);
   const [regenerating, setRegenerating] = useState(false);
   const [localMatches, setLocalMatches] = useState(matches || []);
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  // Load initial matches on mount if none exist
+  useEffect(() => {
+    if (initialLoad && (!matches || matches.length === 0)) {
+      regenerateMatches();
+      setInitialLoad(false);
+    }
+  }, []);
 
   const handleLetter = async (s) => {
     setGeneratingLetter(s.id);
@@ -29,85 +38,149 @@ export default function Matches({ navigate, matches, sessionId, user, setProfile
     setGeneratingLetter(null);
   };
 
- const regenerateMatches = async () => {
-  setRegenerating(true);
-  try {
-    const res = await fetch(`${API_BASE}/matches/regenerate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId }),
-    });
-    const data = await res.json();
-    const newMatches = data.matches || [];
+  const regenerateMatches = async () => {
+    setRegenerating(true);
+    try {
+      console.log("🔄 Fetching new matches from backend...");
+      const res = await fetch(`${API_BASE}/matches/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+      const data = await res.json();
+      const newMatches = data.matches || [];
+      
+      console.log("📥 Backend returned:", newMatches.length, "matches");
+      console.log("📋 Current local matches:", localMatches.length);
 
-    // Keep valid old matches (non-expired)
-    const today = new Date();
-    const validOldMatches = localMatches.filter(oldMatch => {
-      if (!oldMatch.deadline) return true;
-      const deadline = new Date(oldMatch.deadline);
-      return deadline >= today;
-    });
+      // Keep valid old matches (non-expired)
+      const today = new Date();
+      const validOldMatches = localMatches.filter(oldMatch => {
+        if (!oldMatch.deadline) return true;
+        const deadline = new Date(oldMatch.deadline);
+        return deadline >= today;
+      });
 
-    // Find truly new scholarships (not in valid old matches)
-    const newScholarships = newMatches.filter(newMatch => 
-      !validOldMatches.some(oldMatch => 
-        oldMatch.title === newMatch.title && oldMatch.provider === newMatch.provider
-      )
-    );
+      console.log("✅ Valid old matches:", validOldMatches.length);
 
-    // Sort new scholarships by similarity (best first) and take top 2
-    newScholarships.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
-    const bestNewScholarships = newScholarships.slice(0, 2);
+      // Find truly new scholarships (not in valid old matches)
+      const newScholarships = newMatches.filter(newMatch => 
+        !validOldMatches.some(oldMatch => 
+          oldMatch.title === newMatch.title && oldMatch.provider === newMatch.provider
+        )
+      );
 
-    // Combine and sort all by similarity
-    const mergedMatches = [...validOldMatches, ...bestNewScholarships];
-    mergedMatches.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+      console.log("🆕 New scholarships found:", newScholarships.length);
 
-    setLocalMatches(mergedMatches);
+      // Sort new scholarships by similarity (best first) and take top 2
+      newScholarships.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+      const bestNewScholarships = newScholarships.slice(0, 2);
 
-    // Save to database
-    const { error } = await supabase
-      .from('student_profiles')
-      .update({ 
-        matches: mergedMatches, 
-        updated_at: new Date().toISOString() 
-      })
-      .eq('user_id', user.id);
+      // Combine and sort all by similarity
+      const mergedMatches = [...validOldMatches, ...bestNewScholarships];
+      mergedMatches.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
 
-    if (error) {
-      console.error('Error saving matches:', error);
-      alert('Matches updated but failed to save. Please try again.');
-    } else {
-      if (setProfile) {
-        setProfile(prev => ({ ...prev, matches: mergedMatches }));
+      console.log("📊 Final merged matches:", mergedMatches.length);
+
+      setLocalMatches(mergedMatches);
+
+      // Save to database
+      const { error } = await supabase
+        .from('student_profiles')
+        .update({ 
+          matches: mergedMatches, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error saving matches:', error);
+        alert('Matches updated but failed to save. Please try again.');
+      } else {
+        if (setProfile) {
+          setProfile(prev => ({ ...prev, matches: mergedMatches }));
+        }
+        const expiredCount = localMatches.length - validOldMatches.length;
+        const message = bestNewScholarships.length > 0 
+          ? `✅ Added ${bestNewScholarships.length} top new matches!${expiredCount > 0 ? ` Removed ${expiredCount} expired.` : ''}`
+          : `✅ All matches are valid!${expiredCount > 0 ? ` Removed ${expiredCount} expired.` : ' No new scholarships found.'}`;
+        alert(message);
       }
-      const expiredCount = localMatches.length - validOldMatches.length;
-      const message = bestNewScholarships.length > 0 
-        ? `✅ Added ${bestNewScholarships.length} top new matches!${expiredCount > 0 ? ` Removed ${expiredCount} expired.` : ''}`
-        : `✅ All matches are valid!${expiredCount > 0 ? ` Removed ${expiredCount} expired.` : ' No new scholarships found.'}`;
-      alert(message);
+    } catch (err) {
+      console.error('Error regenerating matches:', err);
+      alert('Failed to regenerate matches. Please check your connection and try again.');
     }
-  } catch (err) {
-    console.error('Error regenerating matches:', err);
-    alert('Failed to regenerate matches. Please check your connection and try again.');
+    setRegenerating(false);
+  };
+
+  // Show empty state if no matches
+  if (localMatches.length === 0 && !regenerating) {
+    return (
+      <>
+        <style>{`
+          .matches-page { min-height: 100vh; background: var(--bg); padding-top: 60px; }
+          .m-hero {
+            background: linear-gradient(135deg, #15803d, #16a34a);
+            padding: 48px 24px; text-align: center; color: white;
+          }
+          .m-hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            font-size: 12px; font-weight: 600; padding: 6px 16px;
+            border-radius: 20px; margin-bottom: 16px;
+          }
+          .m-hero-title { font-size: clamp(24px,4vw,36px); font-weight: 800; margin-bottom: 10px; }
+          .m-hero-sub { font-size: 15px; color: rgba(255,255,255,0.85); }
+          .m-content { max-width: 680px; margin: 0 auto; padding: 32px 24px; }
+          .m-regenerate-bar {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; flex-wrap: wrap;
+          }
+          .m-regen-text { flex: 1; min-width: 200px; }
+          .m-regen-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+          .m-regen-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+          .btn-regenerate {
+            background: var(--accent); color: white; border: none;
+            font-size: 13px; font-weight: 600; padding: 10px 20px;
+            border-radius: 9px; font-family: inherit; transition: all 0.2s;
+            white-space: nowrap;
+          }
+          .btn-regenerate:hover:not(:disabled) { background: var(--accent2); }
+          .btn-regenerate:disabled { opacity: 0.6; cursor: not-allowed; }
+        `}</style>
+        <div className="matches-page">
+          <div className="m-hero">
+            <div className="m-hero-badge">🎯 Finding Your Matches</div>
+            <div className="m-hero-title">No matches yet</div>
+            <div className="m-hero-sub">Click regenerate to find scholarships that match your profile</div>
+          </div>
+          <div className="m-content">
+            <div className="m-regenerate-bar">
+              <div className="m-regen-text">
+                <div className="m-regen-title">🔄 Generate your first matches</div>
+                <div className="m-regen-desc">
+                  We'll search the database for scholarships that fit your profile
+                </div>
+              </div>
+              <button 
+                className="btn-regenerate" 
+                onClick={regenerateMatches}
+                disabled={regenerating}
+              >
+                {regenerating ? "⏳ Searching..." : "🔍 Find Matches"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </>
+    );
   }
-  setRegenerating(false);
-};
-
-
-  const sampleMatches = [
-    { id: "1", title: "MTN Foundation Science & Technology Scholarship", provider: "MTN Nigeria", amount: "₦200,000/year", match_reason: "Your CGPA and STEM course make you a strong candidate", similarity: 0.91, deadline: "2026-07-31", application_url: "https://mtnfoundation.org" },
-    { id: "2", title: "Shell Nigeria University Scholarship", provider: "Shell Nigeria", amount: "₦500,000/year", match_reason: "Your leadership roles align perfectly with Shell's criteria", similarity: 0.87, deadline: "2026-06-30", application_url: "https://shell.com.ng" },
-    { id: "3", title: "NLNG National Scholarship", provider: "NLNG", amount: "₦2,000,000/year", match_reason: "Your community engagement and academic excellence match NLNG's profile", similarity: 0.83, deadline: "2026-09-15", application_url: "https://nlng.com" },
-  ];
-
-  const displayMatches = localMatches?.length > 0 ? localMatches : sampleMatches;
 
   return (
     <>
       <style>{`
         .matches-page { min-height: 100vh; background: var(--bg); padding-top: 60px; }
-        
 
         .m-hero {
           background: linear-gradient(135deg, #15803d, #16a34a);
@@ -273,13 +346,11 @@ export default function Matches({ navigate, matches, sessionId, user, setProfile
       `}</style>
 
       <div className="matches-page">
-        
-
         {/* HERO */}
         <div className="m-hero">
           <div className="m-hero-badge">🎯 Your Results Are Ready</div>
           <div className="m-hero-title">
-            {displayMatches.length} scholarship{displayMatches.length !== 1 ? "s" : ""} matched to your profile
+            {localMatches.length} scholarship{localMatches.length !== 1 ? "s" : ""} matched to your profile
           </div>
           <div className="m-hero-sub">Based on your academics, activities, and hidden achievements</div>
         </div>
@@ -307,7 +378,7 @@ export default function Matches({ navigate, matches, sessionId, user, setProfile
             🏆 Your Top Matches
           </div>
 
-          {displayMatches.map((s, i) => (
+          {localMatches.map((s, i) => (
             <div className="scard" key={s.id || i}>
               <div className="scard-top">
                 <div className="scard-rank">{i + 1}</div>

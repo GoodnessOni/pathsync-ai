@@ -29,63 +29,71 @@ export default function Matches({ navigate, matches, sessionId, user, setProfile
     setGeneratingLetter(null);
   };
 
-  const regenerateMatches = async () => {
-    setRegenerating(true);
-    try {
-      // Fetch new matches from backend
-      const res = await fetch(`${API_BASE}/matches/regenerate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId }),
-      });
-      const data = await res.json();
-      const newMatches = data.matches || [];
+ const regenerateMatches = async () => {
+  setRegenerating(true);
+  try {
+    const res = await fetch(`${API_BASE}/matches/regenerate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    const data = await res.json();
+    const newMatches = data.matches || [];
 
-      // Merge logic: keep valid old matches, remove expired, add new
-      const today = new Date();
-      const validOldMatches = localMatches.filter(oldMatch => {
-        if (!oldMatch.deadline) return true;
-        const deadline = new Date(oldMatch.deadline);
-        return deadline >= today;
-      });
+    // Keep valid old matches (non-expired)
+    const today = new Date();
+    const validOldMatches = localMatches.filter(oldMatch => {
+      if (!oldMatch.deadline) return true;
+      const deadline = new Date(oldMatch.deadline);
+      return deadline >= today;
+    });
 
-      // Find truly new scholarships (not in valid old matches)
-      const newScholarships = newMatches.filter(newMatch => 
-        !validOldMatches.some(oldMatch => 
-          oldMatch.title === newMatch.title && oldMatch.provider === newMatch.provider
-        )
-      );
+    // Find truly new scholarships (not in valid old matches)
+    const newScholarships = newMatches.filter(newMatch => 
+      !validOldMatches.some(oldMatch => 
+        oldMatch.title === newMatch.title && oldMatch.provider === newMatch.provider
+      )
+    );
 
-      // Combine: valid old + new
-      const mergedMatches = [...validOldMatches, ...newScholarships];
+    // Sort new scholarships by similarity (best first) and take top 2
+    newScholarships.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+    const bestNewScholarships = newScholarships.slice(0, 2);
 
-      setLocalMatches(mergedMatches);
+    // Combine and sort all by similarity
+    const mergedMatches = [...validOldMatches, ...bestNewScholarships];
+    mergedMatches.sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
 
-      // Save to database
-      const { error } = await supabase
-        .from('student_profiles')
-        .update({ 
-          matches: mergedMatches, 
-          updated_at: new Date().toISOString() 
-        })
-        .eq('user_id', user.id);
+    setLocalMatches(mergedMatches);
 
-      if (error) {
-        console.error('Error saving matches:', error);
-        alert('Matches updated but failed to save. Please try again.');
-      } else {
-        // Update parent state
-        if (setProfile) {
-          setProfile(prev => ({ ...prev, matches: mergedMatches }));
-        }
-        alert(`✅ Matches updated! Found ${newScholarships.length} new scholarships.`);
+    // Save to database
+    const { error } = await supabase
+      .from('student_profiles')
+      .update({ 
+        matches: mergedMatches, 
+        updated_at: new Date().toISOString() 
+      })
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error saving matches:', error);
+      alert('Matches updated but failed to save. Please try again.');
+    } else {
+      if (setProfile) {
+        setProfile(prev => ({ ...prev, matches: mergedMatches }));
       }
-    } catch (err) {
-      console.error('Error regenerating matches:', err);
-      alert('Failed to regenerate matches. Please check your connection and try again.');
+      const expiredCount = localMatches.length - validOldMatches.length;
+      const message = bestNewScholarships.length > 0 
+        ? `✅ Added ${bestNewScholarships.length} top new matches!${expiredCount > 0 ? ` Removed ${expiredCount} expired.` : ''}`
+        : `✅ All matches are valid!${expiredCount > 0 ? ` Removed ${expiredCount} expired.` : ' No new scholarships found.'}`;
+      alert(message);
     }
-    setRegenerating(false);
-  };
+  } catch (err) {
+    console.error('Error regenerating matches:', err);
+    alert('Failed to regenerate matches. Please check your connection and try again.');
+  }
+  setRegenerating(false);
+};
+
 
   const sampleMatches = [
     { id: "1", title: "MTN Foundation Science & Technology Scholarship", provider: "MTN Nigeria", amount: "₦200,000/year", match_reason: "Your CGPA and STEM course make you a strong candidate", similarity: 0.91, deadline: "2026-07-31", application_url: "https://mtnfoundation.org" },

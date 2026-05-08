@@ -14,7 +14,7 @@ class RegenerateRequest(BaseModel):
 async def regenerate_matches(data: RegenerateRequest):
     """
     Regenerate scholarship matches for a user.
-    Fetches fresh scholarships from NaijaOpportunities and matches against user profile.
+    Returns top 4 best-matching scholarships based on similarity scores.
     """
     pool = await get_pool()
     
@@ -40,7 +40,6 @@ async def regenerate_matches(data: RegenerateRequest):
         profile_embedding = await generate_embedding_with_claude(profile_text)
         
         # 3. Fetch active scholarships from NaijaOpportunities table
-        # Filter: deadline >= today
         async with pool.acquire() as conn:
             scholarships = await conn.fetch(
                 """SELECT id, title, provider, description, 
@@ -61,10 +60,8 @@ async def regenerate_matches(data: RegenerateRequest):
         for scholarship in scholarships:
             s_dict = dict(scholarship)
             
-            # Calculate cosine similarity if embeddings exist
-            similarity = 0.85  # Default similarity
+            similarity = 0.85
             if s_dict.get('embedding') and profile_embedding:
-                # Cosine similarity: 1 - cosine_distance
                 async with pool.acquire() as conn:
                     result = await conn.fetchval(
                         "SELECT 1 - ($1::vector <=> $2::vector) as similarity",
@@ -73,12 +70,10 @@ async def regenerate_matches(data: RegenerateRequest):
                     )
                     similarity = float(result) if result else 0.85
             
-            # 5. Apply hard filters (CGPA, major, etc.)
             if not _passes_eligibility(s_dict, profile_dict):
                 continue
             
-            # 6. Add to matches if similarity is high enough
-            if similarity >= 0.60:  # Threshold
+            if similarity >= 0.60:
                 matches.append({
                     "id": str(s_dict['id']),
                     "title": s_dict['title'],
@@ -91,12 +86,12 @@ async def regenerate_matches(data: RegenerateRequest):
                     "match_reason": _generate_match_reason(s_dict, profile_dict, similarity)
                 })
         
-        # 7. Sort by similarity and return top matches
+        # 5. Sort by similarity (best matches first) and return top 4
         matches.sort(key=lambda x: x['similarity'], reverse=True)
         
         return {
-            "matches": matches[:10],  # Return top 10 matches
-            "message": f"Found {len(matches)} matching scholarships"
+            "matches": matches[:4],  # Return top 4 BEST matches
+            "message": f"Found {len(matches[:4])} top matching scholarships"
         }
         
     except Exception as e:
@@ -138,9 +133,7 @@ def _build_profile_text_from_onboarding(profile: dict) -> str:
 def _passes_eligibility(scholarship: dict, profile: dict) -> bool:
     """Check if student meets hard eligibility requirements."""
     
-    # Check CGPA requirement
     if scholarship.get("min_cgpa") and profile.get("cgpa"):
-        # Normalize CGPA to 5.0 scale
         student_cgpa = float(profile['cgpa'])
         cgpa_scale = float(profile.get('cgpa_scale', '5.0'))
         
@@ -150,15 +143,12 @@ def _passes_eligibility(scholarship: dict, profile: dict) -> bool:
         if student_cgpa < float(scholarship['min_cgpa']):
             return False
     
-    # Check major/course eligibility
     if scholarship.get("eligible_majors") and profile.get("course"):
         eligible_majors = scholarship['eligible_majors']
         if eligible_majors and len(eligible_majors) > 0:
-            # Check if student's course matches any eligible major
             student_course = profile['course'].lower()
             if not any(major.lower() in student_course or student_course in major.lower() 
                       for major in eligible_majors):
-                # Allow "All disciplines" or empty list
                 if "all" not in str(eligible_majors).lower():
                     return False
     

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+import { API_BASE } from "../config";
 
 export default function Dashboard({ navigate, sessionId, matches, profile, user }) {
   const [activeTab, setActiveTab] = useState("overview");

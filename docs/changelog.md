@@ -9,3 +9,4 @@
 - 2026-11-01: Added data-model.md placeholder, to be completed in Phase 1. Docs updated: data-model.md, changelog.md.
 
 - 2026-11-01: Decision 0001: backend hosting moved to Heroku, paid by GitHub Student Pack credit (ADR 0001). Docs updated: decisions/0001-hosting.md, changelog.md.
+

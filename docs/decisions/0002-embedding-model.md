@@ -26,3 +26,6 @@ Use Cohere for all embeddings. Remove the OpenAI embedding path from rag_service
 - No file imports OpenAI for embeddings after removal (grep).
 - The matching route returns results on a test profile.
 - Cohere output dimension is confirmed as 1024 for the model in use.
+
+Status: proposed. Decision deferred until the labelled test is run. See docs/audit/rag_service.md.
+

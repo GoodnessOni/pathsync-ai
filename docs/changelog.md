@@ -10,3 +10,4 @@
 
 - 2026-11-01: Decision 0001: backend hosting moved to Heroku, paid by GitHub Student Pack credit (ADR 0001). Docs updated: decisions/0001-hosting.md, changelog.md.
 
+- 2026-11-01: Audit of rag_service.py (matching path) recorded. Proposed direction: rules first, models on a shortlist only, pending labelled test. ADR 0002 status set to proposed. Docs updated: audit/rag_service.md, decisions/0002-embedding-model.md, changelog.md.

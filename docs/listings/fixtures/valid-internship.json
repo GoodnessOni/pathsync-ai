@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0.0",
+  "listing_id": "lst_01ARZ3NDEKTSV4RRFFQ69G5FAW",
+  "kind": "internship",
+  "synthetic": true,
+  "revision": 1,
+  "title": "River Trust Campus Internship 2027",
+  "summary": "Synthetic 12-week paid internship for Nigerian university students in computer science.",
+  "description": "A fictional Lagos host offers a 12-week paid internship. Applications stay open on a rolling basis. This record is synthetic and is not a real internship.",
+  "provider": {
+    "name": "River Trust",
+    "type": "foundation",
+    "country": "NG",
+    "url": "https://rivertrust.example"
+  },
+  "source": {
+    "name": "synthetic-directory",
+    "kind": "aggregator",
+    "url": "https://directory.example/listings/river-trust-intern-2027",
+    "retrieved_at": "2026-11-08T09:00:00Z"
+  },
+  "application": {
+    "url": "https://apply.rivertrust.example/interns/2027",
+    "url_kind": "official_programme_page",
+    "contact_email": null
+  },
+  "eligibility": {
+    "education_levels": [
+      "postgraduate",
+      "undergraduate"
+    ],
+    "audience_tags": [
+      "nigerian_university_student",
+      "open_international"
+    ],
+    "fields_of_study": [
+      "computer_science"
+    ],
+    "year_of_study": [
+      "any"
+    ],
+    "min_cgpa": {
+      "scale": "unknown",
+      "minimum_hundredths": null,
+      "class_equivalent": null
+    },
+    "institutions": {
+      "scope": "any_accredited_nigerian_tertiary",
+      "names": []
+    },
+    "demographic_focus": [],
+    "criteria_stated": true,
+    "criteria_text": "Open to Nigerian university students in computer science. No minimum CGPA is stated by the source.",
+    "citizenship": {
+      "requirement": "unconstrained",
+      "countries": [
+        "*"
+      ]
+    }
+  },
+  "deadline": {
+    "kind": "rolling",
+    "form": null,
+    "stated_timezone": null,
+    "resolved_timezone": null,
+    "display_date": null,
+    "local_time": null,
+    "boundary": null,
+    "fixed_at": null,
+    "raw_text": "Applications are accepted on a rolling basis until positions are filled."
+  },
+  "award": {
+    "kind": "stipend",
+    "summary": "150000 NGN per month.",
+    "currency": "NGN",
+    "amount_minor": 15000000,
+    "period": "per_month"
+  },
+  "location": {
+    "country": "NG",
+    "locality": "Lagos",
+    "arrangement": "hybrid"
+  },
+  "employment": {
+    "employment_type": "internship",
+    "duration_text": "12 weeks",
+    "paid": true
+  },
+  "documents_required": [
+    "CV",
+    "University ID"
+  ],
+  "how_to_apply": "Submit the synthetic internship form on the programme page.",
+  "lifecycle": {
+    "publication_status": "published",
+    "status": "open",
+    "closed_reason": null
+  },
+  "verification": {
+    "state": "machine_checked",
+    "last_checked_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z",
+    "method": "page_fetch"
+  },
+  "timestamps": {
+    "created_at": "2026-10-01T08:00:00Z",
+    "updated_at": "2026-11-08T09:00:00Z",
+    "published_at": "2026-10-01T08:00:00Z",
+    "expired_at": null,
+    "closed_at": null,
+    "withdrawn_at": null
+  },
+  "dedupe_key": "b1d7db3f769b7fc8a52a021d37bd8c8e77cb5834ca6795e897621e4bdfbfc984",
+  "content_hash": "bbe4c50ecfd12ed5e149e6a2134b78d7a59d9918ae2f0deda8e2471f40449897",
+  "supersedes": null
+}

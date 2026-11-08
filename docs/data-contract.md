@@ -1,5 +1,29 @@
 # Listings data contract
 
+## Plain-English summary
+
+This document is the listings agreement between PathSync and NaijaOpportunities. The whole contract is still pending Goodness's approval. No planner card starts until the approval record names a git commit. Three points below are already decided. They are instructions, not questions.
+
+PathSync helps Nigerian university students find scholarships, internships, and jobs, then prepare a letter, a CV, and a deadline plan. It does not send the application. NaijaOpportunities produces the listings. PathSync reads them. Today they do not share one record: PathSync stores scholarships locally, a deadline is a date or empty, and empty is treated as still open. NaijaOpportunities keeps jobs and scholarships apart and identifies a row by its link. This contract uses one record instead. The live databases were not opened. There is no count of listings that lack citizenship.
+
+Jobs stay in student matching. A job is shown as a job. It is not dropped for its kind, and it is not relabelled as a scholarship.
+
+Onboarding will ask each student for nationality. That screen is specified here and is not built in this change. PathSync withholds a listing for citizenship only when the listing gives an explicit list of allowed nationalities and the student's nationality is not on it. That is a confirmed mismatch. If the source says nationality is unconstrained, the listing stays. If the source never says, the metadata is unknown and the listing stays. The provider's country, the word "international", and a blank field are not a mismatch.
+
+A fixed deadline stores the zone the source stated, the source words, and the UTC instant those words resolve to. A date with a named zone ends at 23:59:59 in that zone. West Africa Time (Africa/Lagos) applies only when the source gave no zone. An explicit clock time is that time in the stated zone, not the end of the day. The listing is open through that exact second and expired on the next one. Offsets and daylight-saving time come from the IANA timezone data. A spring-forward gap is rejected rather than shifted. A repeated autumn time uses the earlier occurrence. Rolling and genuinely unknown deadlines contain no invented date. Checks use a supplied evaluation instant, not the wall clock.
+
+Four proposals still need a decision.
+
+Freshness. A machine-checked listing would leave the active feed 7 days after its last check, and a human-checked listing after at most 90 days. The row stays in history. Stale is not the same as past the deadline.
+
+Education. A scholarship or internship with an unknown education level would stay off the student feed. A job marked not applicable would not. Secondary-school-only listings would stay off this university product.
+
+Demographics and marks. Tags such as women students or a region would not hard-block a student who left the box unticked. A missing CGPA or course hides a listing only when both sides give a value and the student falls short.
+
+Withdrawal. A removed listing keeps its id. The same application link would stay reserved for 730 days.
+
+The five samples are synthetic. Their hashes come from running `docs/listings/compute_listing_hashes.py`. Approval accepts these four proposals or records amendments. Until a commit is named, no card starts.
+
 | Item | Value |
 | --- | --- |
 | Document | `docs/data-contract.md` |
@@ -35,9 +59,9 @@ The producer validator and the PathSync student-surface filter are different fun
 
 **Fact.** The PathSync README describes PathSync AI as an AI-powered scholarship discovery, matching, and application system for Nigerian university students. It names a discovery interview, a hidden-achievement reading of everyday student language, scholarship matching, an application letter, a CV, a deadline tracker, and a privacy gateway that is supposed to keep identifiers away from the model. The same README's product sentence says the system finds scholarships, writes the letter, builds the CV, and tracks deadlines, and that it does not submit the application.
 
-**Proposed.** Priority 1 of the OGverse rebuild is PathSync for Nigerian university students who are finding and applying for scholarships and internships. PathSync reads listings that NaijaOpportunities publishes. Priority 2 is a NaijaOpportunities rebuild that keeps scholarships, internships, and jobs accurate and current, and that publishes them under this consumer contract. The two products stay in separate repositories. This file is the contract between them.
+**Proposed.** Priority 1 of the OGverse rebuild is PathSync for Nigerian university students who are finding and applying for scholarships, internships, and jobs. Jobs stay in student matching. PathSync reads listings that NaijaOpportunities publishes. Priority 2 is a NaijaOpportunities rebuild that keeps scholarships, internships, and jobs accurate and current, and that publishes them under this consumer contract. The two products stay in separate repositories. This file is the contract between them. The README fact above describes the product as shipped: scholarships. Jobs in matching is the settled rebuild instruction.
 
-The contract exists so a student is not shown a closed scholarship, a fabricated deadline, a placeholder provider, or a job dressed up as a scholarship, and so a later validator can accept or reject a listing without calling a network or a clock.
+The contract exists so a student is not shown a closed listing, a fabricated deadline, or a placeholder provider, and so a job stays a job inside matching. A later validator must be able to accept or reject a listing without calling the wall clock.
 
 ### In scope
 
@@ -45,7 +69,7 @@ One JSON listing shape for `scholarship`, `internship`, and `job`. Identity, eli
 
 ### Out of scope
 
-Matching scores, embeddings, model choice, hosting, the student-profile database, chat, CV and letter prompts, scraper implementation, HTTP servers, and any edit outside this file. Architecture decision 0001 (hosting) and architecture decision 0002 (embeddings) are not settled here. `docs/data-model.md` on this branch is still a placeholder and is not this contract.
+Matching scores, embeddings, model choice, hosting, the student-profile database, chat, CV and letter prompts, scraper implementation, and HTTP servers. The hash script and synthetic fixtures in section 16 are documentation for this contract, not a product validator. Architecture decision 0001 (hosting) and architecture decision 0002 (embeddings) are not settled here. `docs/data-model.md` on this branch is still a placeholder and is not this contract. Onboarding nationality is specified as consumer policy and is not implemented.
 
 ## 3. Parties and responsibilities
 
@@ -104,40 +128,52 @@ Observed 8 November 2026, read-only, default-branch tip commit `c737b4f` (20 Jun
 | URL or title+provider identifies a row | `listing_id` is stable. `apply_url` is not the id. Title slugs are display-only. |
 | One scholarships table and a separate jobs shape | One listing object. `kind` is `scholarship`, `internship`, or `job`. |
 | Null deadline means several different things | `deadline.kind` is `fixed`, `rolling`, or `unknown`. No fabricated date. |
-| `DATE` plus the server clock or the browser clock | A caller-supplied `evaluation_time`. Date-only deadlines end at 23:59:59 Africa/Lagos. |
+| `DATE` plus the server clock or the browser clock | A caller-supplied `evaluation_time`. A date-only deadline ends at 23:59:59 in the source's stated zone. Africa/Lagos is used only when the source states no zone. |
 | Expired rows can remain in match results | Active feed rejects an open listing whose fixed deadline has passed. Historical feed keeps the same facts once `status` is `expired`. |
 | Upsert on URL, no tombstone | Revisioned updates. Withdrawal is a tombstone. Ids are not reused. |
 | `Various`, `See listing`, free-text amount | Named provider, structured award, honest `url_kind`. |
 | No schema version | `schema_version` `1.0.0` and the compatibility rules in section 6. |
 | No sync API | Section 19 is a proposed logical operation. It is not a live endpoint. |
 
-## 5. Three owner checks
+## 5. Settled instructions and remaining decisions
 
-The rest of this proposal is what approval would adopt or amend as a whole. These three change what a student sees. They are the checks to make before approval.
+The plain-English summary at the top is the owner-facing list. This section is the same split in the words the rest of the contract uses. The whole document is still pending approval. The three settled instructions are not questions.
 
-### Check 1 — What PathSync shows
+### Settled — jobs stay in student matching
 
-**Proposed.** NaijaOpportunities validates and stores all three kinds. PathSync match, application letter, and deadline tracker show only `scholarship` and `internship` listings that pass the student-surface filter in section 11. `job` listings are valid records and are not shown on those surfaces in schema 1.0.0. The current "browse jobs" link can remain a link to NaijaOpportunities. It is not a PathSync match.
+**Settled instruction.** `scholarship`, `internship`, and `job` are all eligible for PathSync match, application letter, and deadline tracker when the rest of section 11 passes. A job is shown as a job. `kind` is never a reason to drop it. `goal` does not have to be `build_career`. The outbound link to NaijaOpportunities can remain; it is not a substitute for matching.
 
-The alternative that approval would be rejecting is to start matching jobs inside PathSync in the same release. This proposal does not do that. `goal = build_career` does not by itself put jobs on those surfaces.
+### Settled — nationality, explicit requirements, unknown metadata, confirmed mismatch
 
-### Check 2 — Deadlines, clock, and history
+**Settled instruction.** Onboarding asks the student for `nationality`, one ISO 3166-1 alpha-2 code. `frontend/src/pages/Onboard.jsx` does not ask that today. This contract does not change that screen.
 
-**Proposed.** A date written on a source page without a clock time means the end of that calendar date in Africa/Lagos (23:59:59 WAT, stored as `T22:59:59Z`). The listing is still open at that exact second and expired at the next second. Tests pass an `evaluation_time`. They do not call the wall clock.
+Four meanings stay separate:
 
-A rolling deadline stays `rolling`, with the source sentence kept, and with every date field null. An unstated deadline stays `unknown`, with every date field null. Neither is stored as a guessed day, and neither is treated as expired. Both may stay on the active feed. The student-facing label is "Rolling admission" or "Deadline not stated", with no day countdown.
+| Meaning | Where it lives | Effect on matching |
+| --- | --- | --- |
+| Nationality | Student profile, not the listing | The country the student states |
+| Explicit citizenship requirement | `eligibility.citizenship.requirement` = `explicit` and `countries` is a list of ISO codes | Withhold only when the student's nationality is present and is not in `countries` |
+| Unconstrained | `requirement` = `unconstrained` and `countries` is `["*"]` | Do not withhold for citizenship |
+| Unknown listing metadata | `requirement` = `unknown` and `countries` is `[]` | Do not withhold for citizenship |
 
-An open listing whose fixed instant is before `evaluation_time` is rejected from the active feed. The error names `deadline.fixed_at`. The same facts are retained on the historical feed only after the producer sets `lifecycle.status` to `expired`. Deleting the row, or moving the date forward to keep it on the feed, is not allowed.
+A confirmed mismatch is only the explicit-list case. Provider country, location country, audience tags, and words such as "international" or "Africa" do not create a requirement and do not create a mismatch. If onboarding has not stored a nationality yet, an explicit list is not a confirmed mismatch, because the consumer cannot yet say the student lacks it.
 
-### Check 3 — What is withheld, and freshness
+### Settled — stated zone, and West Africa Time only when no zone is given
 
-**Proposed.** If `nigerian_citizens` is `unknown`, or education level is `unknown`, PathSync withholds the listing from student surfaces. The record can still be schema-valid. "International" or "Africa" in a headline is not enough to set `nigerian_citizens` to `yes`. The producer sets `yes` only when the source states that Nigerian citizens may apply, or states no citizenship limit (`citizenship_iso` is `["*"]`).
+**Settled instruction.** Section 10 is the rule. A date-only deadline with a stated IANA zone ends at 23:59:59 in that zone. Africa/Lagos (WAT, UTC+1, no daylight-saving transition in current IANA data) is the resolved zone only when `stated_timezone` is null. An explicit clock time uses that clock time, not end of day. The stored `fixed_at` is the UTC instant of that local time. The listing is open at `fixed_at` and expired when `evaluation_time` is greater than `fixed_at`.
 
-A machine-checked listing is fresh for exactly 168 hours after `verification.last_checked_at` (7 days). A human-verified listing may be fresh for up to 2160 hours (90 days). After `fresh_until`, an otherwise open listing leaves the active feed with `stale_listing` on `verification.fresh_until`. It is kept historically. Stale is not the same as expired.
+Rolling stays `rolling`, with the source sentence and with every date and zone field null. Unknown stays `unknown`, with those fields null. Neither is expired, and neither is given a guessed day.
 
-Demographic focus (female students, disability, and the other onboard groups) is stored and is not a hard exclude in 1.0.0. A missed checkbox must not hide a scholarship. Citizenship is the fail-closed rule. Demographics are not.
+An open listing whose `fixed_at` is before `evaluation_time` is rejected from the active feed. The error names `deadline.fixed_at`. The same instant is kept on the historical feed only after `lifecycle.status` is `expired`.
 
-CGPA and course exclude a student only when both the listing and the profile state a comparable value and the student is below it or outside it. A missing CGPA does not hide the listing.
+### Still needs Goodness
+
+These four are proposals. They are not settled by the instructions above.
+
+1. Freshness: 168 hours after `verification.last_checked_at` for `machine_checked` and `unverified`, and at most 2160 hours for `human_verified`. After `fresh_until`, an open listing leaves the active feed with `stale_listing` on `verification.fresh_until` and stays in history.
+2. Education: `education_levels` of `["unknown"]` withholds a scholarship or internship. It does not withhold a job. `["not_applicable"]` does not withhold any kind. `["secondary"]` withholds every kind from this university product.
+3. Demographics are stored and are not a hard exclude. CGPA and course exclude only when both sides state a comparable value and the student is outside it. A missing CGPA or course does not hide the listing.
+4. After withdrawal, `dedupe_key` stays reserved for 730 × 24 hours.
 
 ## 6. Schema identity, versioning, and compatibility
 
@@ -160,30 +196,53 @@ CGPA and course exclude a student only when both the listing and the profile sta
 
 and is a real UTC instant (Gregorian calendar, leap days included, hour 00–23, minute and second 00–59). Offsets other than `Z`, fractional seconds, and naive datetimes are invalid. Because the form is fixed width, chronological order is the same as byte order.
 
-`evaluation_time` is an argument to the active-feed and historical validators and to the PathSync filter. It uses the same timestamp form. Those functions MUST NOT read a clock, a timezone database, or the network. The samples in this document are defined at
+`evaluation_time` is an argument to the active-feed and historical validators and to the PathSync filter. It uses the same timestamp form. Expiry compares that instant with the stored `fixed_at`. Those comparisons MUST NOT read the wall clock or the network. Resolving a local date or clock time into `fixed_at` uses the IANA timezone database through Python `zoneinfo`. The measured samples in this revision used tzdata `2026e`, which is what `docs/listings/compute_listing_hashes.py` prints. The samples are defined at
 
 `CONTRACT_EVALUATION_TIME = 2026-11-08T12:00:00Z`
 
-Africa/Lagos is UTC+1 with no daylight-saving rule used by this version. One hour ahead of a `Z` timestamp is the Lagos civil time. If that offset ever changes, this schema needs a new major version rather than a silent fix.
+Africa/Lagos in that timezone data is a fixed UTC+1 offset. It is not the zone for every listing. It is the default only when the source names no zone.
 
 Adding hours means the unique UTC timestamp that many elapsed seconds later. Sample oracles:
 
 | Start | Hours | Result |
 | --- | ---: | --- |
 | `2026-11-08T09:00:00Z` | 168 | `2026-11-15T09:00:00Z` |
-| `2026-10-31T23:00:00Z` | 168 | `2026-11-07T23:00:00Z` |
+| `2026-11-01T00:00:00Z` | 168 | `2026-11-08T00:00:00Z` |
 | `2026-11-08T10:00:00Z` | 2160 | `2027-02-06T10:00:00Z` |
 
-A date-only source deadline of `D` in Africa/Lagos has `fixed_at` equal to `D + "T22:59:59Z"`. The same date interpreted as the end of a UTC day would be `D + "T23:59:59Z"`. Version 1.0.0 allows only `Africa/Lagos` and `UTC`. A source zone that is neither is converted by the producer into a UTC `instant`, `timezone` is `UTC`, and the original phrase is copied into `deadline.raw_text`. The validator does not consult a zone database.
+Worked deadlines, each instant measured by the script in section 16:
 
-Worked fixed deadline: the source says "Closes 31 March 2027" and gives no clock time.
+No zone, date only. The source says "Closes 31 March 2027" and gives no clock time and no zone.
 
-- `display_date` = `2027-03-31`
-- `timezone` = `Africa/Lagos`
+- `form` = `date_only`
+- `stated_timezone` = null
+- `resolved_timezone` = `Africa/Lagos`
+- `local_time` = `23:59:59`
 - `boundary` = `inclusive_end_of_local_day`
 - `fixed_at` = `2027-03-31T22:59:59Z`
 - Open when `evaluation_time` is `2027-03-31T22:59:59Z`
 - Expired when `evaluation_time` is `2027-03-31T23:00:00Z`
+
+Stated zone, date only. The source says "Closes 31 October 2026 (United Kingdom)."
+
+- `form` = `date_only`
+- `stated_timezone` = `Europe/London`
+- `resolved_timezone` = `Europe/London`
+- `local_time` = `23:59:59`
+- `fixed_at` = `2026-10-31T23:59:59Z`
+- On this date Britain is on GMT (UTC+0). The same calendar date with no zone would have been `2026-10-31T22:59:59Z` in Africa/Lagos. Those instants are not interchangeable.
+
+Explicit clock time. A source that says 15:00 in Paris on 1 June 2027, which is Central European Summer Time (UTC+2) in tzdata 2026e:
+
+- `form` = `instant`
+- `stated_timezone` = `Europe/Paris`
+- `resolved_timezone` = `Europe/Paris`
+- `local_time` = `15:00:00`
+- `boundary` = `instant`
+- `display_date` = `2027-06-01`
+- `fixed_at` = `2027-06-01T13:00:00Z`
+
+This last row is an oracle in the script output. It is not one of the five full samples.
 
 `timestamps.updated_at` more than 24 hours after `evaluation_time` is `timestamp_in_future` on `timestamps.updated_at`. That check uses the supplied instant, not the clock. 24 hours after `2026-11-08T12:00:00Z` is `2026-11-09T12:00:00Z`.
 
@@ -268,8 +327,7 @@ PathSync MUST use an "Apply" label only when `url_kind` is `direct_application` 
 
 | Field | Type | Required | Null | Constraints |
 | --- | --- | --- | --- | --- |
-| `citizenship_iso` | array of string | yes | no | 0..20 items. `["*"]` means the source states no citizenship limit. `[]` is allowed only with `nigerian_citizens` `unknown`. Otherwise ISO alpha-2, unique, sorted |
-| `nigerian_citizens` | string | yes | no | `yes`, `no`, `unknown` |
+| `citizenship` | object | yes | no | `requirement` plus `countries`. This is not the student's nationality |
 | `education_levels` | array of string | yes | no | 1..6. Tokens below. `any`, `unknown`, and `not_applicable` must be the sole item |
 | `audience_tags` | array of string | yes | no | 0..6, unique, sorted |
 | `fields_of_study` | array of string | yes | no | 1..20. `any` and `unknown` must be the sole item |
@@ -280,13 +338,19 @@ PathSync MUST use an "Apply" label only when `url_kind` is `direct_application` 
 | `criteria_stated` | boolean | yes | no | `false` requires a fixed sentence, except tombstones |
 | `criteria_text` | string | yes | no | 1..4000 |
 
-Citizenship consistency, all stage 2, no clock:
+`citizenship` fields:
 
-- `["*"]` requires `nigerian_citizens` `yes`.
-- An array that contains `NG` requires `nigerian_citizens` `yes`.
-- A non-empty array that contains neither `*` nor `NG` requires `nigerian_citizens` `no`.
-- `[]` requires `nigerian_citizens` `unknown`.
-- Any other combination is `invalid_constraint` on `eligibility.nigerian_citizens`.
+| Field | Type | Required | Null | Constraints |
+| --- | --- | --- | --- | --- |
+| `requirement` | string | yes | no | `explicit`, `unconstrained`, `unknown` |
+| `countries` | array of string | yes | no | See the pairs below. Unique, sorted by UTF-8 |
+
+Pairs, all stage 2, no clock:
+
+- `explicit`: `countries` is 1..20 ISO 3166-1 alpha-2 codes. `*` is forbidden. This is an explicit citizenship requirement.
+- `unconstrained`: `countries` is exactly `["*"]`. The source says nationality is not a limit.
+- `unknown`: `countries` is exactly `[]`. The source does not say. This is unknown metadata, not a ban and not an open invitation written as fact.
+- Any other pair is `invalid_constraint` on `eligibility.citizenship.requirement`.
 
 `education_levels` tokens: `secondary`, `undergraduate`, `postgraduate`, `any`, `unknown`, `not_applicable`.
 
@@ -369,24 +433,29 @@ When set, `published_at`, `expired_at`, and `closed_at` are `>= created_at` and 
 | Field | Type | Required | Null | Constraints |
 | --- | --- | --- | --- | --- |
 | `kind` | string | yes | no | `fixed`, `rolling`, `unknown` |
-| `fixed_at` | string | yes | yes | UTC timestamp when `kind` is `fixed`, otherwise null |
-| `timezone` | string | yes | yes | `Africa/Lagos` or `UTC` when `kind` is `fixed`, otherwise null |
+| `form` | string | yes | yes | `date_only` or `instant` when `kind` is `fixed`, otherwise null |
+| `stated_timezone` | string | yes | yes | Canonical IANA name when the source names a zone, otherwise null |
+| `resolved_timezone` | string | yes | yes | The IANA name used to compute `fixed_at`. Null when `kind` is not `fixed` |
 | `display_date` | string | yes | yes | `YYYY-MM-DD` when `kind` is `fixed`, otherwise null |
+| `local_time` | string | yes | yes | `HH:MM:SS` in `resolved_timezone` when `kind` is `fixed`, otherwise null |
 | `boundary` | string | yes | yes | `inclusive_end_of_local_day` or `instant` when `kind` is `fixed`, otherwise null |
-| `raw_text` | string | yes | yes | See below |
+| `fixed_at` | string | yes | yes | UTC timestamp of `display_date` plus `local_time` in `resolved_timezone` when `kind` is `fixed`, otherwise null |
+| `raw_text` | string | yes | yes | Source words. Required for `fixed` and `rolling`. Null for `unknown` |
 
-**Proposed.**
+**Settled instruction.**
 
-- `fixed` requires `fixed_at`, `timezone`, `display_date`, `boundary`, and `raw_text` (1..300 characters, the phrase from the source).
-- `inclusive_end_of_local_day` plus `Africa/Lagos` requires `fixed_at` to be `display_date + "T22:59:59Z"`.
-- `inclusive_end_of_local_day` plus `UTC` requires `fixed_at` to be `display_date + "T23:59:59Z"`.
-- `instant` plus `UTC` requires `display_date` to be the date part of `fixed_at`.
-- `instant` plus `Africa/Lagos` requires `display_date` to be the date part of `fixed_at` plus one hour. Example: `fixed_at` `2027-03-31T23:30:00Z` is 00:30 on 1 April in Lagos, so `display_date` is `2027-04-01`.
-- `rolling` requires `fixed_at`, `timezone`, `display_date`, and `boundary` to be null, and `raw_text` 1..300 characters quoting the source. A rolling record MUST NOT contain a date in `fixed_at` or `display_date`.
-- `unknown` requires `fixed_at`, `timezone`, `display_date`, `boundary`, and `raw_text` all null.
-- Forbidden stand-ins, in any date field or in `raw_text` when they are the whole value: `Not specified`, `Not available`, `Varies`, `TBC`, `TBA`, `null`, `2099-12-31`, `1970-01-01`, `9999-12-31`. The current scraper maps several of these to SQL null. This schema does not.
+- `date_only` sets `local_time` to `23:59:59` and `boundary` to `inclusive_end_of_local_day`. End of day is 23:59:59 in `resolved_timezone`, not a fixed UTC offset chosen in advance.
+- If the source names a zone, `stated_timezone` and `resolved_timezone` are that zone's canonical IANA name (`ZoneInfo(name).key == name`).
+- If the source does not name a zone, `stated_timezone` is null and `resolved_timezone` is `Africa/Lagos`. That is the only use of West Africa Time as a default.
+- `instant` means the source gave a clock time. `boundary` is `instant` and `local_time` is that clock time, not forced to `23:59:59`. A stated zone is stored when the source gave one. If an explicit clock time has no zone, `stated_timezone` is null and `resolved_timezone` is `Africa/Lagos`, and the clock time is kept. It is not rewritten to end of day.
+- `fixed_at` is that local civil time converted with the IANA data. The conversion attaches the zone with `fold=0` (the earlier occurrence when a clock time happens twice). If the local time does not exist because clocks sprang forward, the record is `invalid_constraint` on `deadline.local_time`. Do not move it to the next valid minute.
+- `display_date` is the civil date in `resolved_timezone`, which is the date the source stated for a date-only deadline.
+- `raw_text` is 1..300 characters copied from the source for `fixed` and `rolling`.
+- `rolling` sets `form`, `stated_timezone`, `resolved_timezone`, `display_date`, `local_time`, `boundary`, and `fixed_at` to null.
+- `unknown` sets those fields and `raw_text` to null.
+- Forbidden stand-ins, when they are the whole of `raw_text` or are written into a date field: `Not specified`, `Not available`, `Varies`, `TBC`, `TBA`, `null`, `2099-12-31`, `1970-01-01`, `9999-12-31`. The current scraper maps several of these to SQL null. This schema does not.
 
-A fixed deadline is expired at `evaluation_time` when `evaluation_time` > `fixed_at`. Equality is still open. Rolling and unknown are never expired.
+A fixed deadline is expired at `evaluation_time` when `evaluation_time` > `fixed_at`. Equality is still open. Rolling and unknown are never expired. The expiry test reads `fixed_at`. It does not apply a second timezone conversion.
 
 ## 11. Eligibility and the PathSync consumer filter
 
@@ -394,7 +463,7 @@ A fixed deadline is expired at `evaluation_time` when `evaluation_time` > `fixed
 
 **Proposed.** The producer MUST set citizenship and education from the source text, not from the scraper host and not from a model guess. Hardcoded `Various`, `International`, and `various` in the current scholarship payload are not acceptable values for `provider.name`, a country, or an education level.
 
-`audience_tags` MUST include `nigerian_university_student` only when the source covers Nigerian university students (undergraduates, or undergraduates and postgraduates together). `nigerian_postgraduate` is for postgraduate-only calls. `open_international` is additional, not a substitute for the citizenship field. `african_student` is for a source that says Africans, or African students, may apply. The producer then also sets `nigerian_citizens` to `yes` because the source included them as Africans. A headline that merely says "international" does not justify `african_student`.
+`audience_tags` MUST include `nigerian_university_student` only when the source covers Nigerian university students (undergraduates, or undergraduates and postgraduates together). `nigerian_postgraduate` is for postgraduate-only calls. `open_international` and `african_student` describe audience. They are not a citizenship requirement. A headline that says "international" or "Africa" does not set `citizenship.requirement` to `explicit` and does not put `NG` in `countries`. The producer sets `explicit` only from an actual nationality list, `unconstrained` only when the source says there is no nationality limit, and `unknown` when the source does not say.
 
 ### 11.2 Student-surface filter
 
@@ -402,7 +471,9 @@ A fixed deadline is expired at `evaluation_time` when `evaluation_time` > `fixed
 
 `pathsync_student_surface(listing, student, evaluation_time) -> include | exclude(reason)`
 
-`student` is the signed-in profile, not a listing. Current onboard fields used here, and no others: `level`, CGPA and its scale, `course`, demographic selections, and `goal`. `goal` is not an exclude rule in 1.0.0 (check 1). Free-text leadership, projects, and about are for the later letter and CV. They MUST NOT be copied onto the listing.
+`student` is the signed-in profile, not a listing. Fields the consumer may use: `nationality` (to be collected at onboarding; not collected today), `level`, CGPA and its scale, `course`, and demographic selections. `goal` is not an exclude rule. Free-text leadership, projects, and about are for the later letter and CV. They MUST NOT be copied onto the listing.
+
+Citizenship rule 4 is a settled instruction. Education rules 5 and 6 are the proposals in section 5.
 
 Exclude reasons, first match wins:
 
@@ -410,17 +481,17 @@ Exclude reasons, first match wins:
 | --- | --- | --- |
 | 1 | `synthetic` is true | `synthetic` |
 | 2 | `validate_active_feed` returns any error | `not_active` |
-| 3 | `kind` is `job` | `kind_job` |
-| 4 | `kind` is not `scholarship` or `internship` | `kind` |
-| 5 | `nigerian_citizens` is not `yes` | `citizenship` |
-| 6 | `education_levels` is `["unknown"]`, `["not_applicable"]`, or `["secondary"]` | `education` |
+| 3 | `kind` is not `scholarship`, `internship`, or `job` | `kind` |
+| 4 | `citizenship.requirement` is `explicit`, `student.nationality` is present, and it is not in `citizenship.countries` | `citizenship_mismatch` |
+| 5 | `education_levels` is `["secondary"]` | `education` |
+| 6 | `kind` is `scholarship` or `internship` and `education_levels` is `["unknown"]` | `education` |
 | 7 | `education_levels` is exactly `["postgraduate"]` and `student.level` is present and is not `Postgraduate` | `education` |
 | 8 | `year_of_study` is a specific list and `student.level` maps to a token outside that list | `year` |
 | 9 | `fields_of_study` contains neither `any` nor `unknown`, the course maps to a token other than `other`, and that token is absent | `field` |
 | 10 | Both CGPA sides are known and the converted student hundredths are below `minimum_hundredths` | `cgpa` |
 | 11 | Otherwise | include |
 
-Missing student level, course, or CGPA skips rules 7, 8, 9, or 10 respectively. It does not include a listing that failed an earlier rule.
+`unconstrained`, `unknown` citizenship, `not_applicable` education, and a job with unknown education do not match rows 4 or 6. A missing `student.nationality` skips row 4. Missing student level, course, or CGPA skips rules 7, 8, 9, or 10 respectively. Skipping does not include a listing that failed an earlier rule.
 
 Level map: `100L`→`100`, `200L`→`200`, `300L`→`300`, `400L`→`400`, `500L`→`500`, `Postgraduate`→`postgraduate`.
 
@@ -470,11 +541,11 @@ Demographic map, stored for display and ranking later, not for rule 1–11: `Fem
 
 Deadline-tracker labels for an included listing:
 
-- `fixed`: show `display_date`. Day count is the Lagos calendar date of `evaluation_time` subtracted from `display_date`. `0` means "closes today". No negative numbers, because an expired listing is not included.
+- `fixed`: show `display_date` and `resolved_timezone`. Day count is that zone's calendar date of `evaluation_time` subtracted from `display_date`. `0` means "closes today". No negative numbers, because an expired listing is not included.
 - `rolling`: the words `Rolling admission`. No day count and no invented end date.
 - `unknown`: the words `Deadline not stated`. No day count and no invented end date.
 
-If `synthetic` were ignored, at `CONTRACT_EVALUATION_TIME` the samples in section 21 would decide as follows: the open scholarship and the rolling internship include; the job excludes as `kind_job` and would also exclude as `citizenship` because its citizenship is unknown; the historical scholarship and the tombstone exclude as `not_active`. With `synthetic: true`, which is how they are actually written, all of them exclude as `synthetic`. They are fixtures, not a live feed.
+If `synthetic` were ignored, at `CONTRACT_EVALUATION_TIME` the open scholarship, the rolling internship, and the job would all be included. The job's unknown citizenship does not withhold it, and its kind does not withhold it. The historical scholarship and the tombstone exclude as `not_active`. With `synthetic: true`, which is how they are written, all five exclude as `synthetic`. They are fixtures, not a live feed.
 
 ## 12. Source provenance and URLs
 
@@ -571,11 +642,102 @@ The record validator does not check the 730-day reservation or the previous revi
 
 ## 16. Canonical JSON, dedupe key, and content hash
 
-**Proposed.** `content_hash` is SHA-256, lowercase hex, of the UTF-8 JSON Canonicalization Scheme (RFC 8785) encoding of the listing object with the `content_hash` member removed. This version uses no fractional numbers, so an integer-only encoder that sorts object keys by Unicode code point and emits no insignificant whitespace matches JCS for these values. Strings are escaped as JSON requires. The hash is of the parsed values, not of a particular pretty-print.
+**Settled instruction for the digest algorithm.** The runnable copy is `docs/listings/compute_listing_hashes.py`. It uses the Python standard library only (`hashlib`, `json`, `unicodedata`, `zoneinfo`, `urllib.parse`).
 
-`dedupe_key` is SHA-256, lowercase hex, of the UTF-8 bytes of `kind`, a single newline (`U+000A`), and `application.url`.
+From the repository root:
 
-Stage 2 recomputes both and requires an exact match. Error codes: `hash_mismatch` on `content_hash`, `dedupe_mismatch` on `dedupe_key`. Stage 1 does not compute them. The missing-field and bad-type samples intentionally carry hashes that are not the hash of those broken objects. Implementations that stop after stage 1 MUST NOT report a hash error for them.
+```text
+python3 docs/listings/compute_listing_hashes.py
+```
+
+Inputs are the five synthetic fixtures:
+
+- `docs/listings/fixtures/valid-scholarship.json`
+- `docs/listings/fixtures/valid-internship.json`
+- `docs/listings/fixtures/valid-job.json`
+- `docs/listings/fixtures/valid-historical-expired.json`
+- `docs/listings/fixtures/valid-tombstone.json`
+
+The same five objects are embedded in section 21. The script refuses to pass if a fixture and the embedded object differ. The measured run is also stored at `docs/listings/hash-output.txt`. These files are documentation. They are not a product validator.
+
+Algorithm, which the script performs and then checks:
+
+1. Parse the JSON object. Duplicate keys are invalid. Pretty printing does not matter.
+2. Apply Unicode NFC to every string. The hash is of those strings, encoded as UTF-8. Non-ASCII characters are not forced into `\u` escapes. `/` is not escaped.
+3. Designated arrays must already be unique and sorted by UTF-8 bytes: `citizenship.countries`, `education_levels`, `audience_tags`, `fields_of_study`, `year_of_study`, `demographic_focus`, `institutions.names`, and `documents_required`. The hash does not silently reorder them. A different order is a different hash.
+4. `application.url`, `source.url`, and a non-null `provider.url` must already be canonical: lowercase host, no userinfo, no port, no fragment, no tracking query (`utm_*`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `igshid`, `ref`), remaining query sorted by key then value, no trailing slash unless the path is empty. Identity: `listing_id` matches `^lst_[0-9A-HJKMNP-TV-Z]{26}$`.
+5. JSON null is kept. An absent key is not the same value and is not invented before hashing.
+6. `dedupe_key` is SHA-256, lowercase hex, of the UTF-8 bytes of `kind`, one newline (`U+000A`), and the canonical `application.url`. The stored field must already equal that digest.
+7. `content_hash` is SHA-256, lowercase hex, of the UTF-8 JSON Canonicalization Scheme (RFC 8785) encoding of the object with `content_hash` removed and every other field kept, including `dedupe_key` and JSON null. This version has no fractional numbers, so sorted keys and no insignificant whitespace match JCS for these values.
+8. A fixed `fixed_at` must equal the `zoneinfo` conversion of `display_date` and `local_time` in `resolved_timezone`, using `fold=0`. The script measures that. It does not accept a hand-typed offset.
+9. Among the five fixtures, `listing_id` values must differ and `dedupe_key` values must differ. A later store treats the same `dedupe_key` on another id as `duplicate_listing`. The same `listing_id` and `revision` with a different `content_hash` is `revision_conflict`.
+
+Stage 2 of a future validator recomputes both digests. Error codes: `hash_mismatch` on `content_hash`, `dedupe_mismatch` on `dedupe_key`. Stage 1 does not compute them. The missing-field and bad-type samples set `content_hash` to 64 zeroes on purpose. Implementations that stop after stage 1 MUST NOT report a hash error for them.
+
+Measured output of the command above, tzdata `2026e`, Python 3.12.3. This block is the script's stdout, not a hand-written hash:
+
+```text
+synthetic: true
+not_production_data: true
+command: python3 docs/listings/compute_listing_hashes.py
+python: 3.12.3
+tzdata: version 2026e
+hash_excludes: content_hash
+hash_includes: dedupe_key and every other stored field, including JSON null
+collision_rule: same dedupe_key with a different listing_id is duplicate_listing
+version_rule: same listing_id and revision with a different content_hash is revision_conflict
+self_check_null_vs_absent: null=d091f9c83c091f79652fe8786375b3fe4ce0861a56f5bfbafedbe431877ff0e8 absent=44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+self_check_unicode_nfc: composed=86028b41ba792eaf82aa26a45b218f6734f7f1096a86f1746c8296e088a0ccb4
+self_check_array_order: GH before NG differs from NG before GH
+self_check_url: https://apply.river.example/Path?a=1&b=2
+self_check_identity: crockford listing_id accepted; I rejected
+fixture: docs/listings/fixtures/valid-scholarship.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAV
+kind: scholarship
+revision: 1
+dedupe_key: fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609
+content_hash: eea1f8f31f86b2fb2a726acf4d2c2ac0aa01e7146f546166bb1fb8182c96d885
+deadline_fixed_at: 2027-03-31T22:59:59Z
+assert: match
+fixture: docs/listings/fixtures/valid-internship.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAW
+kind: internship
+revision: 1
+dedupe_key: b1d7db3f769b7fc8a52a021d37bd8c8e77cb5834ca6795e897621e4bdfbfc984
+content_hash: bbe4c50ecfd12ed5e149e6a2134b78d7a59d9918ae2f0deda8e2471f40449897
+deadline_fixed_at: n/a
+assert: match
+fixture: docs/listings/fixtures/valid-job.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAX
+kind: job
+revision: 1
+dedupe_key: 007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb
+content_hash: 025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa
+deadline_fixed_at: n/a
+assert: match
+fixture: docs/listings/fixtures/valid-historical-expired.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAY
+kind: scholarship
+revision: 2
+dedupe_key: 40c390e2260ade57b9af50863b4d13e1b9edc72123a261f9c880eb62c4385a5a
+content_hash: b7d35504f741c15389b79ee5f1c5e1cdb59fb8bb4fd17ec9ddf4aded25b3318c
+deadline_fixed_at: 2026-10-31T23:59:59Z
+assert: match
+fixture: docs/listings/fixtures/valid-tombstone.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FB3
+kind: scholarship
+revision: 2
+dedupe_key: 2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c
+content_hash: acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12
+deadline_fixed_at: 2027-03-31T22:59:59Z
+assert: match
+oracle: date_only_no_zone stated=none resolved=Africa/Lagos local=2027-03-31T23:59:59 fixed_at=2027-03-31T22:59:59Z
+oracle: date_only_europe_london stated=Europe/London resolved=Europe/London local=2026-10-31T23:59:59 fixed_at=2026-10-31T23:59:59Z
+oracle: date_only_wat_default_check stated=none resolved=Africa/Lagos local=2026-01-15T23:59:59 fixed_at=2026-01-15T22:59:59Z
+oracle: instant_europe_paris stated=Europe/Paris resolved=Europe/Paris local=2027-06-01T15:00:00 fixed_at=2027-06-01T13:00:00Z
+fixtures_checked: 5
+result: ok
+```
 
 ## 17. Privacy and sanitisation
 
@@ -615,7 +777,7 @@ Error = {
 
 `field` is a dot path. Array indexes use `[0]`. The evaluation argument uses `$evaluation_time`. The whole document uses `$`.
 
-No function reads a clock, a file, the network, a database, or a random source. No function rewrites the listing.
+No function reads the wall clock, the network, or a random source. Checking that `fixed_at` matches `resolved_timezone` reads the IANA timezone data, the same way section 16 does. No function rewrites the listing.
 
 ### Stage 1 — presence, types, unknown keys
 
@@ -647,7 +809,7 @@ After approval, the validator card in NaijaOpportunities is measured against thi
 | --- | --- | --- |
 | `valid-scholarship` | `validate_record`, `validate_active_feed`, `validate_historical` | no errors |
 | `valid-internship` | all three | no errors |
-| `valid-job` | all three | no errors. PathSync still hides it. The producer validator does not |
+| `valid-job` | all three | no errors. With `synthetic` false it stays in student matching. Unknown citizenship does not remove it |
 | `valid-historical-expired` | `validate_record`, `validate_historical` | no errors |
 | `valid-historical-expired` | `validate_active_feed` | `not_on_active_feed` on `lifecycle.status` |
 | `valid-tombstone` | `validate_record`, `validate_historical` | no errors |
@@ -742,13 +904,13 @@ This task does not add that lock, does not open a pull request in the other repo
 
 All seven fixtures use `synthetic: true`. Hosts end in `.example`. They are not live programmes. Hashes below are properties of the JSON objects, recomputed by the algorithm in section 16. Pretty printing is not significant. Key order in these blocks is for reading.
 
-The two stage-1 failures copy `dedupe_key` and `content_hash` from an earlier draft of another object. Those fields are not the defect. Stage 1 must stop before hashing.
+The two stage-1 failures set `content_hash` to 64 zeroes. `dedupe_key` is the real digest of kind and application URL. Those fields are not the defect. Stage 1 must stop before hashing.
 
 `CONTRACT_EVALUATION_TIME` for every judgement in this section is `2026-11-08T12:00:00Z`.
 
 ### 21.1 Valid scholarship — fixed deadline, still open
 
-Passes all three validator functions. Would pass the student-surface filter if `synthetic` were false: kind, Nigerian undergraduates, engineering and computer science, CGPA 3.50/5.0, deadline after the pin, fresh until `2026-11-15T09:00:00Z`.
+Passes all three validator functions. The source date has no zone, so the resolved zone is Africa/Lagos and `fixed_at` is the measured instant `2027-03-31T22:59:59Z`. Citizenship is an explicit `NG` requirement. Ignoring `synthetic`, a student whose nationality is `NG` and whose course and CGPA fit would be included. Fresh until `2026-11-15T09:00:00Z`.
 
 <!-- sample:valid-scholarship -->
 ```json
@@ -779,10 +941,6 @@ Passes all three validator functions. Would pass the student-surface filter if `
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "NG"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "undergraduate"
     ],
@@ -809,14 +967,23 @@ Passes all three validator functions. Would pass the student-surface filter if `
     },
     "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
   },
   "deadline": {
     "kind": "fixed",
-    "fixed_at": "2027-03-31T22:59:59Z",
-    "timezone": "Africa/Lagos",
+    "form": "date_only",
+    "stated_timezone": null,
+    "resolved_timezone": "Africa/Lagos",
     "display_date": "2027-03-31",
+    "local_time": "23:59:59",
     "boundary": "inclusive_end_of_local_day",
+    "fixed_at": "2027-03-31T22:59:59Z",
     "raw_text": "Closes 31 March 2027."
   },
   "award": {
@@ -857,14 +1024,14 @@ Passes all three validator functions. Would pass the student-surface filter if `
     "withdrawn_at": null
   },
   "dedupe_key": "fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609",
-  "content_hash": "7b984ed187450dd562a954fbb0c0c1e76c5311d4606a525d127c58cde93fa2c9",
+  "content_hash": "eea1f8f31f86b2fb2a726acf4d2c2ac0aa01e7146f546166bb1fb8182c96d885",
   "supersedes": null
 }
 ```
 
 ### 21.2 Valid internship — rolling deadline
 
-Passes all three functions. `deadline.kind` is `rolling`. No date was invented. Citizenship `["*"]` with `nigerian_citizens` `yes` means the fictional source stated no citizenship limit. Would be eligible for student surfaces if `synthetic` were false.
+Passes all three functions. `deadline.kind` is `rolling`. No date was invented. `citizenship.requirement` is `unconstrained`, which means the fictional source stated no nationality limit. Ignoring `synthetic`, it would be included for any student nationality.
 
 <!-- sample:valid-internship -->
 ```json
@@ -895,10 +1062,6 @@ Passes all three functions. `deadline.kind` is `rolling`. No date was invented. 
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "*"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "postgraduate",
       "undergraduate"
@@ -924,14 +1087,23 @@ Passes all three functions. `deadline.kind` is `rolling`. No date was invented. 
     },
     "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Open to Nigerian university students in computer science. No minimum CGPA is stated by the source."
+    "criteria_text": "Open to Nigerian university students in computer science. No minimum CGPA is stated by the source.",
+    "citizenship": {
+      "requirement": "unconstrained",
+      "countries": [
+        "*"
+      ]
+    }
   },
   "deadline": {
     "kind": "rolling",
-    "fixed_at": null,
-    "timezone": null,
+    "form": null,
+    "stated_timezone": null,
+    "resolved_timezone": null,
     "display_date": null,
+    "local_time": null,
     "boundary": null,
+    "fixed_at": null,
     "raw_text": "Applications are accepted on a rolling basis until positions are filled."
   },
   "award": {
@@ -976,14 +1148,14 @@ Passes all three functions. `deadline.kind` is `rolling`. No date was invented. 
     "withdrawn_at": null
   },
   "dedupe_key": "b1d7db3f769b7fc8a52a021d37bd8c8e77cb5834ca6795e897621e4bdfbfc984",
-  "content_hash": "ffd5bdf87f9d0af751d21f55c57c32ebd7eea42e0262e0637f51ac0226479716",
+  "content_hash": "bbe4c50ecfd12ed5e149e6a2134b78d7a59d9918ae2f0deda8e2471f40449897",
   "supersedes": null
 }
 ```
 
 ### 21.3 Valid job — unknown deadline and unknown citizenship
 
-Passes all three functions. The unknown deadline is not expired and is not a fabricated date. PathSync student surfaces still exclude it (`kind_job`, and `citizenship` if the kind rule were absent). This is the producer/consumer split.
+Passes all three functions. The unknown deadline is not expired and is not a fabricated date. `citizenship.requirement` is `unknown`, so the listing is not withheld for citizenship. `kind` is `job`, and jobs stay in student matching. Ignoring `synthetic`, this fixture would be included.
 
 <!-- sample:valid-job -->
 ```json
@@ -1014,8 +1186,6 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [],
-    "nigerian_citizens": "unknown",
     "education_levels": [
       "not_applicable"
     ],
@@ -1037,14 +1207,21 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     },
     "demographic_focus": [],
     "criteria_stated": false,
-    "criteria_text": "Not stated by the source."
+    "criteria_text": "Not stated by the source.",
+    "citizenship": {
+      "requirement": "unknown",
+      "countries": []
+    }
   },
   "deadline": {
     "kind": "unknown",
-    "fixed_at": null,
-    "timezone": null,
+    "form": null,
+    "stated_timezone": null,
+    "resolved_timezone": null,
     "display_date": null,
+    "local_time": null,
     "boundary": null,
+    "fixed_at": null,
     "raw_text": null
   },
   "award": {
@@ -1086,14 +1263,14 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "withdrawn_at": null
   },
   "dedupe_key": "007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb",
-  "content_hash": "d410fb261de00ffd6edbd390323f39be35454858a6d9b7c7cdc387dd5567d86f",
+  "content_hash": "025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa",
   "supersedes": null
 }
 ```
 
 ### 21.4 Valid historical scholarship — expired and retained
 
-`fixed_at` is `2026-10-31T22:59:59Z`, which is before the pin. `status` is `expired`. `expired_at` is the next second, `2026-10-31T23:00:00Z`. The row is also stale at the pin (`fresh_until` `2026-11-07T23:00:00Z`). Historical mode allows that. Active mode fails with `not_on_active_feed` on `lifecycle.status`, not with `expired_deadline`, because the producer already marked it expired.
+The source names the United Kingdom, so `stated_timezone` and `resolved_timezone` are `Europe/London`. End of 31 October 2026 in that zone is the measured instant `2026-10-31T23:59:59Z`, which is before the pin. The same date with no stated zone would have been `2026-10-31T22:59:59Z` in Africa/Lagos. `status` is `expired`. `expired_at` is `2026-11-01T00:00:00Z`, the next second. The row is also stale at the pin (`fresh_until` `2026-11-08T00:00:00Z`). Historical mode allows that. Active mode fails with `not_on_active_feed` on `lifecycle.status`, not with `expired_deadline`, because the producer already marked it expired.
 
 <!-- sample:valid-historical-expired -->
 ```json
@@ -1105,7 +1282,7 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
   "revision": 2,
   "title": "River Trust Bridge Award 2026",
   "summary": "Synthetic award retained after its deadline for history. It is not open.",
-  "description": "A fictional award whose closing date has passed. The producer keeps the record and marks it expired instead of deleting the facts or inventing a new date. This record is synthetic.",
+  "description": "A fictional award whose closing date has passed. The source names the United Kingdom, so the deadline uses Europe/London rather than West Africa Time. The producer keeps the record and marks it expired. This record is synthetic.",
   "provider": {
     "name": "River Trust",
     "type": "foundation",
@@ -1116,7 +1293,7 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "name": "synthetic-directory",
     "kind": "aggregator",
     "url": "https://directory.example/listings/river-trust-bridge-2026",
-    "retrieved_at": "2026-10-31T23:00:00Z"
+    "retrieved_at": "2026-11-01T00:00:00Z"
   },
   "application": {
     "url": "https://apply.rivertrust.example/bridge-2026",
@@ -1124,10 +1301,6 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "NG"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "undergraduate"
     ],
@@ -1154,15 +1327,24 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     },
     "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
   },
   "deadline": {
     "kind": "fixed",
-    "fixed_at": "2026-10-31T22:59:59Z",
-    "timezone": "Africa/Lagos",
+    "form": "date_only",
+    "stated_timezone": "Europe/London",
+    "resolved_timezone": "Europe/London",
     "display_date": "2026-10-31",
+    "local_time": "23:59:59",
     "boundary": "inclusive_end_of_local_day",
-    "raw_text": "Closes 31 October 2026."
+    "fixed_at": "2026-10-31T23:59:59Z",
+    "raw_text": "Closes 31 October 2026 (United Kingdom)."
   },
   "award": {
     "kind": "cash",
@@ -1189,20 +1371,20 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
   },
   "verification": {
     "state": "machine_checked",
-    "last_checked_at": "2026-10-31T23:00:00Z",
-    "fresh_until": "2026-11-07T23:00:00Z",
+    "last_checked_at": "2026-11-01T00:00:00Z",
+    "fresh_until": "2026-11-08T00:00:00Z",
     "method": "page_fetch"
   },
   "timestamps": {
     "created_at": "2026-09-01T08:00:00Z",
-    "updated_at": "2026-10-31T23:00:00Z",
+    "updated_at": "2026-11-01T00:00:00Z",
     "published_at": "2026-09-01T08:00:00Z",
-    "expired_at": "2026-10-31T23:00:00Z",
+    "expired_at": "2026-11-01T00:00:00Z",
     "closed_at": null,
     "withdrawn_at": null
   },
   "dedupe_key": "40c390e2260ade57b9af50863b4d13e1b9edc72123a261f9c880eb62c4385a5a",
-  "content_hash": "979e452e4797b80c2aaa10c57bbc43cb116302a08bccc62ea183cf468131a6d6",
+  "content_hash": "b7d35504f741c15389b79ee5f1c5e1cdb59fb8bb4fd17ec9ddf4aded25b3318c",
   "supersedes": null
 }
 ```
@@ -1240,10 +1422,6 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "NG"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "undergraduate"
     ],
@@ -1270,14 +1448,23 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     },
     "demographic_focus": [],
     "criteria_stated": false,
-    "criteria_text": "[withdrawn]"
+    "criteria_text": "[withdrawn]",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
   },
   "deadline": {
     "kind": "fixed",
-    "fixed_at": "2027-03-31T22:59:59Z",
-    "timezone": "Africa/Lagos",
+    "form": "date_only",
+    "stated_timezone": null,
+    "resolved_timezone": "Africa/Lagos",
     "display_date": "2027-03-31",
+    "local_time": "23:59:59",
     "boundary": "inclusive_end_of_local_day",
+    "fixed_at": "2027-03-31T22:59:59Z",
     "raw_text": "Closes 31 March 2027."
   },
   "award": {
@@ -1315,7 +1502,7 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "withdrawn_at": "2026-11-08T10:00:00Z"
   },
   "dedupe_key": "2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c",
-  "content_hash": "89253c5e83167a943d394069b6d5c49fc3527072760fff843e16d4603382f95f",
+  "content_hash": "acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12",
   "supersedes": null
 }
 ```
@@ -1360,10 +1547,6 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "NG"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "undergraduate"
     ],
@@ -1390,14 +1573,23 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     },
     "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
   },
   "deadline": {
     "kind": "fixed",
-    "fixed_at": "2027-03-31T22:59:59Z",
-    "timezone": "Africa/Lagos",
+    "form": "date_only",
+    "stated_timezone": null,
+    "resolved_timezone": "Africa/Lagos",
     "display_date": "2027-03-31",
+    "local_time": "23:59:59",
     "boundary": "inclusive_end_of_local_day",
+    "fixed_at": "2027-03-31T22:59:59Z",
     "raw_text": "Closes 31 March 2027."
   },
   "award": {
@@ -1438,7 +1630,7 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "withdrawn_at": null
   },
   "dedupe_key": "fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609",
-  "content_hash": "b519073d276e937bf37a562bcc8219004f8d651d7464b553a1b6771ea6e1dfc4",
+  "content_hash": "0000000000000000000000000000000000000000000000000000000000000000",
   "supersedes": null
 }
 ```
@@ -1486,10 +1678,6 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "NG"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "undergraduate"
     ],
@@ -1516,14 +1704,23 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     },
     "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
   },
   "deadline": {
     "kind": "fixed",
-    "fixed_at": "2027-03-31T22:59:59Z",
-    "timezone": "Africa/Lagos",
+    "form": "date_only",
+    "stated_timezone": null,
+    "resolved_timezone": "Africa/Lagos",
     "display_date": "2027-03-31",
+    "local_time": "23:59:59",
     "boundary": "inclusive_end_of_local_day",
+    "fixed_at": "2027-03-31T22:59:59Z",
     "raw_text": "Closes 31 March 2027."
   },
   "award": {
@@ -1564,7 +1761,7 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "withdrawn_at": null
   },
   "dedupe_key": "fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609",
-  "content_hash": "b519073d276e937bf37a562bcc8219004f8d651d7464b553a1b6771ea6e1dfc4",
+  "content_hash": "0000000000000000000000000000000000000000000000000000000000000000",
   "supersedes": null
 }
 ```
@@ -1611,10 +1808,6 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
     "contact_email": null
   },
   "eligibility": {
-    "citizenship_iso": [
-      "NG"
-    ],
-    "nigerian_citizens": "yes",
     "education_levels": [
       "undergraduate"
     ],
@@ -1641,14 +1834,23 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
     },
     "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
   },
   "deadline": {
     "kind": "fixed",
-    "fixed_at": "2026-01-15T22:59:59Z",
-    "timezone": "Africa/Lagos",
+    "form": "date_only",
+    "stated_timezone": null,
+    "resolved_timezone": "Africa/Lagos",
     "display_date": "2026-01-15",
+    "local_time": "23:59:59",
     "boundary": "inclusive_end_of_local_day",
+    "fixed_at": "2026-01-15T22:59:59Z",
     "raw_text": "Closes 15 January 2026."
   },
   "award": {
@@ -1689,7 +1891,7 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
     "withdrawn_at": null
   },
   "dedupe_key": "8c74fbc06dcf6a0657d31d2ea77e949657dd5a5e51c01ae01667d7557d2988d6",
-  "content_hash": "9d727409ca97b4259166e55df00e3ab24de81fe534047850ff7f3e51f6334e5d",
+  "content_hash": "c36f3fe721781eb394690bd583e64d735e9af1a869630020bb890a517c4e8493",
   "supersedes": null
 }
 ```
@@ -1709,11 +1911,12 @@ These were not resolved by inventing a value.
 9. Architecture decision 0002's heading says accepted and its closing lines say proposed. This contract does not resolve that. Embeddings stay out of the listing.
 10. The README deployment story (Render) and decision 0001 (Heroku) disagree. Hosting is out of scope.
 11. Whether a human editor currently reviews listings before they reach students is unknown. The `human_verified` state is available for when that happens. It is not a claim that it happens today.
-12. The 7-day and 90-day freshness windows, the 730-day dedupe reservation, and the Lagos end-of-day boundary are proposed product rules (checks 2 and 3, and section 15). They are not measurements of current scraper behaviour.
+12. The 7-day and 90-day freshness windows and the 730-day dedupe reservation are still proposals (section 5). They are not measurements of current scraper behaviour. West Africa Time as the default for a date with no stated zone is a settled instruction. The sample instants were measured with tzdata 2026e.
+13. No count was made of live listings that lack a citizenship value. Coverage is unknown.
 
 ## 23. Out of scope and non-goals
 
-This file does not implement a validator, a scraper, a migration, or a sync client. It does not start the planner card. It does not change NaijaOpportunities, `main`, account settings, or billing. It does not authorise deployment. It does not submit scholarship applications. It does not decide embeddings, hosting, or the student-profile schema. Personal student data is not copied into the samples.
+This file does not implement a product validator, a scraper, a migration, or a sync client. `docs/listings/compute_listing_hashes.py` only recomputes the documented digests for the synthetic fixtures. This revision does not start the planner card. It does not change NaijaOpportunities, `main`, account settings, or billing. It does not authorise deployment. It does not submit applications. It does not decide embeddings, hosting, or edit the onboarding screen. Personal student data is not copied into the samples.
 
 ## 24. Approval record
 
@@ -1736,11 +1939,11 @@ The lead considers this document complete for approval review only when each lin
 - Field tables give name, type, required, nullability, and constraints.
 - Stable `listing_id` is defined and is not a URL or a title slug.
 - Scholarship, internship, and job are specified, and the PathSync filter is separate from producer validity.
-- Nigerian-student eligibility is fail-closed when citizenship is unknown.
+- Jobs stay in student matching. Unknown listing citizenship does not withhold a student. Only an explicit list that misses the student's nationality does.
 - Source and application URLs, provenance, verification, and freshness are specified.
 - Publication, closed, expired, and withdrawn states are specified.
 - Deduplication, immutable application URL, revisioned update, and tombstone deletion are specified.
-- Timestamps are UTC to the second. Date-only deadlines use Africa/Lagos end of day. `evaluation_time` is an argument.
+- Timestamps are UTC to the second. A date-only deadline ends at 23:59:59 in the stated zone, or in Africa/Lagos when no zone is stated. `evaluation_time` is an argument.
 - Rolling and unknown deadlines have no fabricated dates.
 - Version `1.0.0` and major/minor/patch rules are specified.
 - Sync and pagination are proposed and labelled as not an existing endpoint.

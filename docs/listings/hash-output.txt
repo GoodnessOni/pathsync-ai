@@ -1,0 +1,60 @@
+synthetic: true
+not_production_data: true
+command: python3 docs/listings/compute_listing_hashes.py
+python: 3.12.3
+tzdata: version 2026e
+hash_excludes: content_hash
+hash_includes: dedupe_key and every other stored field, including JSON null
+collision_rule: same dedupe_key with a different listing_id is duplicate_listing
+version_rule: same listing_id and revision with a different content_hash is revision_conflict
+self_check_null_vs_absent: null=d091f9c83c091f79652fe8786375b3fe4ce0861a56f5bfbafedbe431877ff0e8 absent=44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+self_check_unicode_nfc: composed=86028b41ba792eaf82aa26a45b218f6734f7f1096a86f1746c8296e088a0ccb4
+self_check_array_order: GH before NG differs from NG before GH
+self_check_url: https://apply.river.example/Path?a=1&b=2
+self_check_identity: crockford listing_id accepted; I rejected
+fixture: docs/listings/fixtures/valid-scholarship.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAV
+kind: scholarship
+revision: 1
+dedupe_key: fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609
+content_hash: eea1f8f31f86b2fb2a726acf4d2c2ac0aa01e7146f546166bb1fb8182c96d885
+deadline_fixed_at: 2027-03-31T22:59:59Z
+assert: match
+fixture: docs/listings/fixtures/valid-internship.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAW
+kind: internship
+revision: 1
+dedupe_key: b1d7db3f769b7fc8a52a021d37bd8c8e77cb5834ca6795e897621e4bdfbfc984
+content_hash: bbe4c50ecfd12ed5e149e6a2134b78d7a59d9918ae2f0deda8e2471f40449897
+deadline_fixed_at: n/a
+assert: match
+fixture: docs/listings/fixtures/valid-job.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAX
+kind: job
+revision: 1
+dedupe_key: 007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb
+content_hash: 025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa
+deadline_fixed_at: n/a
+assert: match
+fixture: docs/listings/fixtures/valid-historical-expired.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAY
+kind: scholarship
+revision: 2
+dedupe_key: 40c390e2260ade57b9af50863b4d13e1b9edc72123a261f9c880eb62c4385a5a
+content_hash: b7d35504f741c15389b79ee5f1c5e1cdb59fb8bb4fd17ec9ddf4aded25b3318c
+deadline_fixed_at: 2026-10-31T23:59:59Z
+assert: match
+fixture: docs/listings/fixtures/valid-tombstone.json
+listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FB3
+kind: scholarship
+revision: 2
+dedupe_key: 2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c
+content_hash: acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12
+deadline_fixed_at: 2027-03-31T22:59:59Z
+assert: match
+oracle: date_only_no_zone stated=none resolved=Africa/Lagos local=2027-03-31T23:59:59 fixed_at=2027-03-31T22:59:59Z
+oracle: date_only_europe_london stated=Europe/London resolved=Europe/London local=2026-10-31T23:59:59 fixed_at=2026-10-31T23:59:59Z
+oracle: date_only_wat_default_check stated=none resolved=Africa/Lagos local=2026-01-15T23:59:59 fixed_at=2026-01-15T22:59:59Z
+oracle: instant_europe_paris stated=Europe/Paris resolved=Europe/Paris local=2027-06-01T15:00:00 fixed_at=2027-06-01T13:00:00Z
+fixtures_checked: 5
+result: ok

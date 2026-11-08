@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0.0",
+  "listing_id": "lst_01ARZ3NDEKTSV4RRFFQ69G5FAX",
+  "kind": "job",
+  "synthetic": true,
+  "revision": 1,
+  "title": "River Trust Operations Analyst",
+  "summary": "Synthetic full-time role. Citizenship requirements are not stated.",
+  "description": "A fictional employer lists an operations analyst role in Abuja. The source does not state a closing date or a citizenship rule. This record is synthetic and is not a real job.",
+  "provider": {
+    "name": "River Transit Ltd",
+    "type": "company",
+    "country": "NG",
+    "url": "https://rivertransit.example"
+  },
+  "source": {
+    "name": "synthetic-board",
+    "kind": "aggregator",
+    "url": "https://directory.example/listings/river-transit-analyst",
+    "retrieved_at": "2026-11-08T09:00:00Z"
+  },
+  "application": {
+    "url": "https://apply.rivertrust.example/jobs/analyst",
+    "url_kind": "aggregator_page",
+    "contact_email": null
+  },
+  "eligibility": {
+    "education_levels": [
+      "not_applicable"
+    ],
+    "audience_tags": [],
+    "fields_of_study": [
+      "unknown"
+    ],
+    "year_of_study": [
+      "not_applicable"
+    ],
+    "min_cgpa": {
+      "scale": "none",
+      "minimum_hundredths": null,
+      "class_equivalent": null
+    },
+    "institutions": {
+      "scope": "not_applicable",
+      "names": []
+    },
+    "demographic_focus": [],
+    "criteria_stated": false,
+    "criteria_text": "Not stated by the source.",
+    "citizenship": {
+      "requirement": "unknown",
+      "countries": []
+    }
+  },
+  "deadline": {
+    "kind": "unknown",
+    "form": null,
+    "stated_timezone": null,
+    "resolved_timezone": null,
+    "display_date": null,
+    "local_time": null,
+    "boundary": null,
+    "fixed_at": null,
+    "raw_text": null
+  },
+  "award": {
+    "kind": "not_stated",
+    "summary": null,
+    "currency": null,
+    "amount_minor": null,
+    "period": null
+  },
+  "location": {
+    "country": "NG",
+    "locality": "Abuja",
+    "arrangement": "on_site"
+  },
+  "employment": {
+    "employment_type": "full_time",
+    "duration_text": null,
+    "paid": null
+  },
+  "documents_required": [],
+  "how_to_apply": "Not stated by the source.",
+  "lifecycle": {
+    "publication_status": "published",
+    "status": "open",
+    "closed_reason": null
+  },
+  "verification": {
+    "state": "machine_checked",
+    "last_checked_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z",
+    "method": "page_fetch"
+  },
+  "timestamps": {
+    "created_at": "2026-10-01T08:00:00Z",
+    "updated_at": "2026-11-08T09:00:00Z",
+    "published_at": "2026-10-01T08:00:00Z",
+    "expired_at": null,
+    "closed_at": null,
+    "withdrawn_at": null
+  },
+  "dedupe_key": "007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb",
+  "content_hash": "025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa",
+  "supersedes": null
+}

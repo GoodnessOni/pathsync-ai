@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "listing_id": "lst_01ARZ3NDEKTSV4RRFFQ69G5FB3",
+  "kind": "scholarship",
+  "synthetic": true,
+  "revision": 2,
+  "title": "River Trust Withdrawn Example 2027",
+  "summary": "[withdrawn]",
+  "description": "[withdrawn]",
+  "provider": {
+    "name": "River Trust",
+    "type": "foundation",
+    "country": "NG",
+    "url": "https://rivertrust.example"
+  },
+  "source": {
+    "name": "synthetic-directory",
+    "kind": "aggregator",
+    "url": "https://directory.example/listings/river-trust-withdrawn-2027",
+    "retrieved_at": "2026-11-08T09:00:00Z"
+  },
+  "application": {
+    "url": "https://apply.rivertrust.example/withdrawn-2027",
+    "url_kind": "official_programme_page",
+    "contact_email": null
+  },
+  "eligibility": {
+    "education_levels": [
+      "undergraduate"
+    ],
+    "audience_tags": [
+      "nigerian_university_student"
+    ],
+    "fields_of_study": [
+      "computer_science",
+      "engineering"
+    ],
+    "year_of_study": [
+      "200",
+      "300",
+      "400"
+    ],
+    "min_cgpa": {
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "class_equivalent": "second_class_upper"
+    },
+    "institutions": {
+      "scope": "any_accredited_nigerian_tertiary",
+      "names": []
+    },
+    "demographic_focus": [],
+    "criteria_stated": false,
+    "criteria_text": "[withdrawn]",
+    "citizenship": {
+      "requirement": "explicit",
+      "countries": [
+        "NG"
+      ]
+    }
+  },
+  "deadline": {
+    "kind": "fixed",
+    "form": "date_only",
+    "stated_timezone": null,
+    "resolved_timezone": "Africa/Lagos",
+    "display_date": "2027-03-31",
+    "local_time": "23:59:59",
+    "boundary": "inclusive_end_of_local_day",
+    "fixed_at": "2027-03-31T22:59:59Z",
+    "raw_text": "Closes 31 March 2027."
+  },
+  "award": {
+    "kind": "not_stated",
+    "summary": null,
+    "currency": null,
+    "amount_minor": null,
+    "period": null
+  },
+  "location": {
+    "country": "NG",
+    "locality": null,
+    "arrangement": "on_site"
+  },
+  "employment": null,
+  "documents_required": [],
+  "how_to_apply": "[withdrawn]",
+  "lifecycle": {
+    "publication_status": "withdrawn",
+    "status": "closed",
+    "closed_reason": "removed_by_producer"
+  },
+  "verification": {
+    "state": "human_verified",
+    "last_checked_at": "2026-11-08T10:00:00Z",
+    "fresh_until": "2027-02-06T10:00:00Z",
+    "method": "manual_review"
+  },
+  "timestamps": {
+    "created_at": "2026-10-01T08:00:00Z",
+    "updated_at": "2026-11-08T10:00:00Z",
+    "published_at": "2026-10-01T08:00:00Z",
+    "expired_at": null,
+    "closed_at": null,
+    "withdrawn_at": "2026-11-08T10:00:00Z"
+  },
+  "dedupe_key": "2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c",
+  "content_hash": "acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12",
+  "supersedes": null
+}

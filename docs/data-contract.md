@@ -35,7 +35,7 @@ The five samples are synthetic. Their hashes come from running `docs/listings/co
 | Pinned evaluation instant used by every sample | `2026-11-08T12:00:00Z` (13:00 Africa/Lagos, WAT, UTC+1) |
 | Approval | Not granted. This file does not record an approval. |
 
-This is the lead's contract for listings. It is not a planner card, not a validator, and not product code. No card may start until Goodness approves this document. Approval means Goodness accepts this text, or a later commit replaces it and names the accepted git SHA. Until that happens, every "MUST" below is a proposed obligation, not approved policy.
+This is the lead's contract for listings. It is not a planner card, not a validator, and not product code. No card may start until Goodness approves this document. Approval means Goodness accepts this text, or a later commit replaces it and names the accepted git SHA. The jobs, nationality, and time-zone rules in the summary are settled instructions. The other normative rules are proposals until that approval.
 
 The first card after approval, and not before, is a listings validator in the NaijaOpportunities repository against a pinned SHA of this file. That card is done when the valid samples in this document pass and a missing required field, an invalid type, and an expired deadline each fail with an error that names the field. This document does not start that card and does not change the NaijaOpportunities repository.
 

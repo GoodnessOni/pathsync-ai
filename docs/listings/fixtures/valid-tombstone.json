@@ -25,31 +25,9 @@
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": false,
     "criteria_text": "[withdrawn]",
     "citizenship": {
@@ -57,6 +35,39 @@
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "[withdrawn]"
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -91,10 +102,17 @@
     "closed_reason": "removed_by_producer"
   },
   "verification": {
-    "state": "human_verified",
-    "last_checked_at": "2026-11-08T10:00:00Z",
-    "fresh_until": "2027-02-06T10:00:00Z",
-    "method": "manual_review"
+    "state": "verified",
+    "outcome": "confirmed_withdrawn",
+    "method": "human_review",
+    "reviewed_by": "human",
+    "reviewer_id": "editor-synthetic-01",
+    "source_checked_url": "https://apply.rivertrust.example/withdrawn-2027",
+    "evidence": "Official provider page says this round was withdrawn. Open status, deadline, eligibility, and the application link were checked. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T10:00:00Z",
+    "last_attempt_outcome": "confirmed_withdrawn",
+    "last_success_at": "2026-11-08T10:00:00Z",
+    "fresh_until": "2026-11-15T10:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -104,7 +122,13 @@
     "closed_at": null,
     "withdrawn_at": "2026-11-08T10:00:00Z"
   },
-  "dedupe_key": "2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c",
-  "content_hash": "acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12",
-  "supersedes": null
+  "dedupe_key": "7eb7658492e0e678f476dcc16e5830feb49afc1e13ee480b6d218f07f2d4d6a3",
+  "content_hash": "6a664c2050a125fbee1e56590467fd3d48d48c9963ed3f121c60a35ca57ab9ab",
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "withdrawn-example",
+    "round_key": "2027",
+    "round_evidence": "The source names the 2027 example round."
+  },
+  "previous_round_id": null
 }

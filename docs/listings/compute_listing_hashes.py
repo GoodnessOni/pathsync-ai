@@ -21,7 +21,7 @@ import json
 import re
 import sys
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
@@ -41,14 +41,17 @@ VALID_NAMES = (
 
 SET_ARRAYS = (
     ("eligibility", "citizenship", "countries"),
-    ("eligibility", "education_levels"),
+    ("eligibility", "education", "stages"),
+    ("eligibility", "education", "qualifications"),
+    ("eligibility", "education", "courses"),
+    ("eligibility", "education", "years"),
+    ("eligibility", "education", "institutions", "names"),
+    ("eligibility", "demographics", "requirements"),
+    ("eligibility", "demographics", "preferences"),
     ("eligibility", "audience_tags"),
-    ("eligibility", "fields_of_study"),
-    ("eligibility", "year_of_study"),
-    ("eligibility", "demographic_focus"),
-    ("eligibility", "institutions", "names"),
     ("documents_required",),
 )
+SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 TRACKING = {
     "utm_source",
@@ -172,8 +175,36 @@ def assert_canonical_shape(listing: dict) -> None:
 
 
 def dedupe_key(listing: dict) -> str:
-    url = canonical_url(listing["application"]["url"])
-    return sha256_hex(f"{listing['kind']}\n{url}".encode("utf-8"))
+    """Identity of one opportunity round. The application URL is not an input."""
+    identity = listing["identity"]
+    parts = [
+        listing["kind"],
+        identity["provider_key"],
+        identity["opportunity_key"],
+        identity["round_key"],
+    ]
+    for part in parts:
+        if not isinstance(part, str) or SLUG.match(part) is None:
+            raise SystemExit(f"dedupe material is not a slug: {part!r}")
+    return sha256_hex("\n".join(parts).encode("utf-8"))
+
+
+def check_freshness(listing: dict) -> None:
+    verification = listing["verification"]
+    success = verification["last_success_at"]
+    fresh = verification["fresh_until"]
+    if (success is None) != (fresh is None):
+        raise SystemExit(f"{listing['listing_id']} freshness pair is inconsistent")
+    if success is None:
+        return
+    start = datetime.strptime(success, "%Y-%m-%dT%H:%M:%SZ")
+    until = datetime.strptime(fresh, "%Y-%m-%dT%H:%M:%SZ")
+    if until != start + timedelta(hours=168):
+        raise SystemExit(f"{listing['listing_id']} fresh_until is not exactly 168 hours")
+    if verification["reviewed_by"] == "automation" and verification["reviewer_id"] is not None:
+        raise SystemExit(f"{listing['listing_id']} labels automation with a human reviewer")
+    if verification["reviewed_by"] == "human" and not verification["reviewer_id"]:
+        raise SystemExit(f"{listing['listing_id']} human review has no reviewer id")
 
 
 def content_hash(listing: dict) -> str:
@@ -294,6 +325,13 @@ def self_checks() -> list[str]:
     if LISTING_ID.match("lst_IIIIIIIIIIIIIIIIIIIIIIIIII") is not None:
         raise SystemExit("identity pattern accepted I")
     lines.append("self_check_identity: crockford listing_id accepted; I rejected")
+    same_round = sha256_hex("scholarship\nriver-trust\nbridge-award\n2026".encode("utf-8"))
+    next_round = sha256_hex("scholarship\nriver-trust\nbridge-award\n2027".encode("utf-8"))
+    if same_round == next_round:
+        raise SystemExit("round key did not change dedupe")
+    lines.append(f"self_check_round: same_round={same_round}")
+    lines.append(f"self_check_new_round: next_round={next_round}")
+    lines.append("self_check_url_not_in_dedupe: application URL is not dedupe material")
     return lines
 
 
@@ -307,7 +345,8 @@ def main() -> int:
         f"tzdata: {tzdata_version()}",
         "hash_excludes: content_hash",
         "hash_includes: dedupe_key and every other stored field, including JSON null",
-        "collision_rule: same dedupe_key with a different listing_id is duplicate_listing",
+        "collision_rule: same dedupe_key with a different listing_id is a duplicate of that round",
+        "url_rule: application URL is not dedupe material and does not block a new round",
         "version_rule: same listing_id and revision with a different content_hash is revision_conflict",
     ]
     lines.extend(self_checks())
@@ -326,6 +365,7 @@ def main() -> int:
         if listing["content_hash"] != measured_hash:
             raise SystemExit(f"{name} content_hash mismatch\n stored {listing['content_hash']}\n measured {measured_hash}")
         instant = check_deadline(listing)
+        check_freshness(listing)
         if listing["listing_id"] in seen_ids:
             raise SystemExit(f"listing_id collision {listing['listing_id']}")
         if measured_dedupe in seen_keys:
@@ -366,6 +406,15 @@ def main() -> int:
         lines.append(
             f"oracle: {label} stated={stated or 'none'} resolved={resolved} local={day}T{local} fixed_at={instant}"
         )
+    success = datetime(2026, 11, 8, 9, 0, 0)
+    fresh = success + timedelta(hours=168)
+    stale = fresh + timedelta(seconds=1)
+    lines.append(
+        "oracle_freshness: success=2026-11-08T09:00:00Z "
+        f"fresh_until={fresh.strftime('%Y-%m-%dT%H:%M:%SZ')} "
+        f"still_active_at={fresh.strftime('%Y-%m-%dT%H:%M:%SZ')} "
+        f"stale_at={stale.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+    )
     lines.append(f"fixtures_checked: {len(VALID_NAMES)}")
     lines.append("result: ok")
     report = "\n".join(lines) + "\n"

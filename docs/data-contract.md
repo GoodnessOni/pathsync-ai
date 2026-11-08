@@ -2,27 +2,19 @@
 
 ## Plain-English summary
 
-This document is the listings agreement between PathSync and NaijaOpportunities. The whole contract is still pending Goodness's approval. No planner card starts until the approval record names a git commit. Three points below are already decided. They are instructions, not questions.
+This document is the listings agreement between PathSync and NaijaOpportunities. Goodness agreed four policies on 9 November 2026 (WAT), replacing the four older proposals. This revision still awaits final approval of the commit. No planner card starts until the approval record names that commit.
 
-PathSync helps Nigerian university students find scholarships, internships, and jobs, then prepare a letter, a CV, and a deadline plan. It does not send the application. NaijaOpportunities produces the listings. PathSync reads them. Today they do not share one record: PathSync stores scholarships locally, a deadline is a date or empty, and empty is treated as still open. NaijaOpportunities keeps jobs and scholarships apart and identifies a row by its link. This contract uses one record instead. The live databases were not opened. There is no count of listings that lack citizenship.
+Jobs stay in student matching, including jobs with no degree requirement. Onboarding will ask for nationality, institution, qualification, level or year, course, and expected graduation, and those answers can be updated. The screen is not built here. Citizenship withholds a listing only when an explicit nationality list omits the student's nationality. Unconstrained citizenship can be included. Unknown citizenship stays discoverable as Check eligibility and is not called a match. Provider country and the word international are not a mismatch. A named time zone is used as stated. A date-only deadline ends at 23:59:59 in that zone. West Africa Time applies only when no zone was given. Rolling and unknown deadlines have no invented date.
 
-Jobs stay in student matching. A job is shown as a job. It is not dropped for its kind, and it is not relabelled as a scholarship.
+Freshness is agreed. Every active listing must be successfully rechecked at least every seven days, by automation or a person. There is no 90-day exception. Seven days means 168 elapsed hours: still active at that exact second, stale on the next. Stale is not expired. Never-verified listings stay off the active feed. Success means the official provider source was read for open status, deadline, eligibility, and the application link. HTTP success alone does not count. Failed or inconclusive attempts are recorded and do not renew the window. Closed, withdrawn, or expired evidence hides the listing immediately. NaijaOpportunities checks and PathSync enforces the same rule. An unreachable source may hide a genuine listing. Ambiguous evidence goes to a person, and a bot check is never labelled human. A stale listing returns only after a new success.
 
-Onboarding will ask each student for nationality. That screen is specified here and is not built in this change. PathSync withholds a listing for citizenship only when the listing gives an explicit list of allowed nationalities and the student's nationality is not on it. That is a confirmed mismatch. If the source says nationality is unconstrained, the listing stays. If the source never says, the metadata is unknown and the listing stays. The provider's country, the word "international", and a blank field are not a mismatch.
+Education is agreed. Each listing is unrestricted, restricted, or unknown, with the source words kept. A confirmed fit is matched. A confirmed mismatch is left out of that student's matches, with the reason. Unknown rules or an incomplete profile stay discoverable as Check education eligibility. They are not called eligible and they are not hidden. Listings with no stated restriction can be included. Secondary-school-only awards are excluded from university students' matches. If several stages are allowed, any fitting stage is enough. Nothing is inferred from the title or provider.
 
-A fixed deadline stores the zone the source stated, the source words, and the UTC instant those words resolve to. A date with a named zone ends at 23:59:59 in that zone. West Africa Time (Africa/Lagos) applies only when the source gave no zone. An explicit clock time is that time in the stated zone, not the end of the day. The listing is open through that exact second and expired on the next one. Offsets and daylight-saving time come from the IANA timezone data. A spring-forward gap is rejected rather than shifted. A repeated autumn time uses the earlier occurrence. Rolling and genuinely unknown deadlines contain no invented date. Checks use a supplied evaluation instant, not the wall clock.
+Demographics and marks are agreed. Hard requirements differ from preferences. A confirmed demographic mismatch is excluded from personalised matches, with an explanation. An unanswered question is unknown, not a no, and stays discoverable as Check eligibility. Those questions are optional, their purpose is explained, and nothing is inferred from a name or photo. A minimum grade applies only on the same stated scale. Unlike scales are not converted. A confirmed grade or course mismatch is excluded with a reason. Missing or ambiguous facts stay discoverable and are not called eligible. Preferences never hard-exclude. A match is guidance, not a guarantee.
 
-Four proposals still need a decision.
+Withdrawals are agreed. A withdrawn listing leaves active matching and keeps its id, history, reason, and time. Saved listings say Withdrawn. The same round keeps that id if restored, and the revision increases. A new round gets a new id even if the link is reused, and confirmed rounds are linked. The link alone does not decide identity. A minimal withdrawal record is kept 730 days so saved copies can be updated and the same round is not imported twice. That period does not reserve the link and does not keep sensitive text.
 
-Freshness. A machine-checked listing would leave the active feed 7 days after its last check, and a human-checked listing after at most 90 days. The row stays in history. Stale is not the same as past the deadline.
-
-Education. A scholarship or internship with an unknown education level would stay off the student feed. A job marked not applicable would not. Secondary-school-only listings would stay off this university product.
-
-Demographics and marks. Tags such as women students or a region would not hard-block a student who left the box unticked. A missing CGPA or course hides a listing only when both sides give a value and the student falls short.
-
-Withdrawal. A removed listing keeps its id. The same application link would stay reserved for 730 days.
-
-The five samples are synthetic. Their hashes come from running `docs/listings/compute_listing_hashes.py`. Approval accepts these four proposals or records amendments. Until a commit is named, no card starts.
+The five samples are synthetic. Hashes come from docs/listings/compute_listing_hashes.py. Preference ranking is not defined and is not agreed.
 
 | Item | Value |
 | --- | --- |
@@ -135,45 +127,72 @@ Observed 8 November 2026, read-only, default-branch tip commit `c737b4f` (20 Jun
 | No schema version | `schema_version` `1.0.0` and the compatibility rules in section 6. |
 | No sync API | Section 19 is a proposed logical operation. It is not a live endpoint. |
 
-## 5. Settled instructions and remaining decisions
+## 5. Decision register
 
-The plain-English summary at the top is the owner-facing list. This section is the same split in the words the rest of the contract uses. The whole document is still pending approval. The three settled instructions are not questions.
+The plain-English summary is the owner-facing account. This section is the same register in the words the rest of the contract uses.
+
+Policies 1 to 4 below were agreed by Goodness on 9 November 2026 (WAT). They replace the four proposals in commit `cb68a3c7e32121681f4bae04d661fd3fad735b27`. Agreement to these policies, and to revising this contract, is not final approval of a commit for implementation. This revised text stays pending that final approval. No card starts before it.
 
 ### Settled — jobs stay in student matching
 
-**Settled instruction.** `scholarship`, `internship`, and `job` are all eligible for PathSync match, application letter, and deadline tracker when the rest of section 11 passes. A job is shown as a job. `kind` is never a reason to drop it. `goal` does not have to be `build_career`. The outbound link to NaijaOpportunities can remain; it is not a substitute for matching.
+**Settled instruction.** `scholarship`, `internship`, and `job` are all eligible for PathSync match, letter, and deadline tracker when the rest of section 11 passes. A job with no degree requirement stays in matching. A job is shown as a job.
 
-### Settled — nationality, explicit requirements, unknown metadata, confirmed mismatch
+### Settled — nationality and citizenship
 
-**Settled instruction.** Onboarding asks the student for `nationality`, one ISO 3166-1 alpha-2 code. `frontend/src/pages/Onboard.jsx` does not ask that today. This contract does not change that screen.
+**Settled instruction.** Onboarding asks for `nationality`, one ISO 3166-1 alpha-2 code. The current screen does not ask it. This contract does not build the screen.
 
-Four meanings stay separate:
-
-| Meaning | Where it lives | Effect on matching |
+| Meaning | Where it lives | Effect |
 | --- | --- | --- |
-| Nationality | Student profile, not the listing | The country the student states |
-| Explicit citizenship requirement | `eligibility.citizenship.requirement` = `explicit` and `countries` is a list of ISO codes | Withhold only when the student's nationality is present and is not in `countries` |
-| Unconstrained | `requirement` = `unconstrained` and `countries` is `["*"]` | Do not withhold for citizenship |
-| Unknown listing metadata | `requirement` = `unknown` and `countries` is `[]` | Do not withhold for citizenship |
+| Nationality | Student profile | The country the student states |
+| Explicit citizenship requirement | `citizenship.requirement` = `explicit` | Exclude from that student's matches only when their nationality is present and is not in `countries`. Say why. |
+| Unconstrained | `requirement` = `unconstrained` and `countries` is `["*"]` | Citizenship does not exclude |
+| Unknown listing metadata | `requirement` = `unknown` and `countries` is `[]` | Keep discoverable, label `Check eligibility`. Do not claim a match. Do not hide the listing for this reason. |
 
-A confirmed mismatch is only the explicit-list case. Provider country, location country, audience tags, and words such as "international" or "Africa" do not create a requirement and do not create a mismatch. If onboarding has not stored a nationality yet, an explicit list is not a confirmed mismatch, because the consumer cannot yet say the student lacks it.
+Provider country, location, audience tags, and words such as "international" are not a citizenship requirement. A missing student nationality is unknown, not a mismatch.
 
-### Settled — stated zone, and West Africa Time only when no zone is given
+### Settled — stated time zone
 
-**Settled instruction.** Section 10 is the rule. A date-only deadline with a stated IANA zone ends at 23:59:59 in that zone. Africa/Lagos (WAT, UTC+1, no daylight-saving transition in current IANA data) is the resolved zone only when `stated_timezone` is null. An explicit clock time uses that clock time, not end of day. The stored `fixed_at` is the UTC instant of that local time. The listing is open at `fixed_at` and expired when `evaluation_time` is greater than `fixed_at`.
+**Settled instruction.** Section 10. A date-only deadline ends at 23:59:59 in the stated IANA zone. `Africa/Lagos` is used only when `stated_timezone` is null. An explicit clock time is not rewritten to end of day. Open through `fixed_at`, expired on the next second.
 
-Rolling stays `rolling`, with the source sentence and with every date and zone field null. Unknown stays `unknown`, with those fields null. Neither is expired, and neither is given a guessed day.
+### Agreed 1 — Freshness, 9 November 2026 WAT
 
-An open listing whose `fixed_at` is before `evaluation_time` is rejected from the active feed. The error names `deadline.fixed_at`. The same instant is kept on the historical feed only after `lifecycle.status` is `expired`.
+**Agreed policy.** Every listing on the active feed must have been successfully rechecked at least every seven days. Seven days means exactly 168 elapsed UTC hours after `verification.last_success_at`, not seven local midnights. `fresh_until` is that instant. The listing remains active when `evaluation_time` equals `fresh_until` and is stale when `evaluation_time` is greater. There is no 90-day human exception. A human success and an automated success start the same 168-hour window.
 
-### Still needs Goodness
+A listing with no successful verification (`last_success_at` null) is unverified and stays out of the active feed. A successful check reads the official provider source and records open status, the deadline, eligibility, and the application link. HTTP success alone is not a successful check. `verification.evidence` must say what was read. An inconclusive or failed attempt is stored in `last_attempt_at` and `last_attempt_outcome` and does not change `last_success_at` or `fresh_until`.
 
-These four are proposals. They are not settled by the instructions above.
+Explicit evidence of closed, withdrawn, or expired changes `lifecycle` immediately. That hide does not wait for `fresh_until`. Stale means the window passed while the listing is otherwise still open. Stale hides it from matching and keeps the history. It does not set `status` to `expired`.
 
-1. Freshness: 168 hours after `verification.last_checked_at` for `machine_checked` and `unverified`, and at most 2160 hours for `human_verified`. After `fresh_until`, an open listing leaves the active feed with `stale_listing` on `verification.fresh_until` and stays in history.
-2. Education: `education_levels` of `["unknown"]` withholds a scholarship or internship. It does not withhold a job. `["not_applicable"]` does not withhold any kind. `["secondary"]` withholds every kind from this university product.
-3. Demographics are stored and are not a hard exclude. CGPA and course exclude only when both sides state a comparable value and the student is outside it. A missing CGPA or course does not hide the listing.
-4. After withdrawal, `dedupe_key` stays reserved for 730 × 24 hours.
+NaijaOpportunities performs verification. PathSync applies the same freshness rule when it reads and matches. Automation does the routine check. Ambiguous, inaccessible, changed, or conflicting evidence is a human review. `reviewed_by` is `automation` or `human`. `reviewer_id` is set only for a human, and it is an opaque slug, not a student's name. A bot review must not be stored as `human`.
+
+A stale listing returns to the active feed only after a new successful check whose outcome is `confirmed_open` and whose facts are still accurate. That success starts a new 168-hour window.
+
+Trade-off: if the official source cannot be reached, a genuine listing can stay hidden. That is accepted so an unchecked listing is not shown as current.
+
+### Agreed 2 — Education, 9 November 2026 WAT
+
+**Agreed policy.** Onboarding collects institution, qualification studied, current level or year, course, and expected graduation date. The student can update them. This contract does not build that screen. The producer records `education.requirement` as `unrestricted`, `restricted`, or `unknown`, plus the stages, qualifications, courses, years, institutions, and `source_wording`. PathSync compares that record with the student profile. It does not invent a restriction from the title or the provider name.
+
+A confirmed fit is included. A confirmed mismatch is excluded from that student's matches, with a reason. Unknown listing rules, or an incomplete student answer on a restricted point, stay discoverable with the label `Check education eligibility`. They are not called eligible and they are not hidden. `unrestricted` does not exclude, for scholarships, internships, and jobs. A job with no degree requirement is `unrestricted` and stays in matching. `stages` of exactly `["secondary"]` is excluded from university students' matches. If several stages are listed, the student is included when any one of them fits.
+
+### Agreed 3 — Demographics and academics, 9 November 2026 WAT
+
+**Agreed policy.** `demographics.requirements` are hard. `demographics.preferences` are not. A confirmed mismatch with a hard requirement is excluded from personalised matches, with an explanation. An unanswered demographic question is unknown, not "no", and the listing stays discoverable with `Check eligibility`. Sensitive demographic questions are optional and the product explains why they are asked. Nothing is inferred from a name or a photo.
+
+`grade.requirement` of `explicit` is applied only when the student supplies a grade on the same `scale`. Unlike scales are not converted. A confirmed shortfall on that same scale, or a confirmed course mismatch, is excluded with a reason. A missing or ambiguous grade, scale, course, or requirement stays discoverable with `Check eligibility`, with no eligibility claim and no automatic hide. Preferences may affect ranking and never hard-exclude. The ranking formula is not defined in this contract and is not an agreed rule. A match is guidance, not a guarantee of an award or a job.
+
+Citizenship in the settled rule above uses the same three outcomes: include, exclude on a confirmed mismatch, or leave discoverable when the fact is unknown.
+
+### Agreed 4 — Withdrawal and identity, 9 November 2026 WAT
+
+**Agreed policy.** A withdrawn listing leaves active matching and keeps its `listing_id`, history, reason, and `withdrawn_at`. A saved PathSync row displays Withdrawn rather than a broken reference. Withdrawn, expired, and stale stay different, as defined above.
+
+The same round restored or reopened keeps the same `listing_id` after a successful verification, and `revision` increases. A new annual or application round is a new `listing_id` even if `application.url` is reused. When the producer confirms the link between rounds, `previous_round_id` names the earlier id.
+
+`dedupe_key` is the hash of kind, provider, opportunity, and round. The application URL is not part of it and must not block a new round or force two rounds into one id. Section 16.
+
+For 730 × 24 hours after `withdrawn_at`, the producer keeps a minimal tombstone in the historical feed so a consumer can mark saved copies Withdrawn and so the same round is not imported again as a second id. That retention is not a 730-day reservation of the URL. A new `round_key` may be published at once. The tombstone does not keep sensitive or personal text.
+
+After those 730 days the tombstone may leave the feed. Reconciliation then uses kind, `provider_key`, `opportunity_key`, and `round_key`. If either side still knows the old `listing_id` for that round, the restore uses that id. A new id is only a last resort when nobody still has the id, and it must not be minted merely because the URL looks familiar.
 
 ## 6. Schema identity, versioning, and compatibility
 
@@ -208,7 +227,7 @@ Adding hours means the unique UTC timestamp that many elapsed seconds later. Sam
 | --- | ---: | --- |
 | `2026-11-08T09:00:00Z` | 168 | `2026-11-15T09:00:00Z` |
 | `2026-11-01T00:00:00Z` | 168 | `2026-11-08T00:00:00Z` |
-| `2026-11-08T10:00:00Z` | 2160 | `2027-02-06T10:00:00Z` |
+| `2026-11-08T09:00:00Z` | 168 | `2026-11-15T09:00:00Z` |
 
 Worked deadlines, each instant measured by the script in section 16:
 
@@ -283,9 +302,10 @@ Constraints that need more than a cell are in sections 10–16. "Required" means
 | `lifecycle` | object | yes | no | Section 14 |
 | `verification` | object | yes | no | Section 13 |
 | `timestamps` | object | yes | no | Section 9.9 |
-| `dedupe_key` | string | yes | no | 64 lowercase hex. Section 16 |
+| `identity` | object | yes | no | Provider, opportunity, and round. Section 15 |
+| `dedupe_key` | string | yes | no | 64 lowercase hex of that identity. Section 16 |
 | `content_hash` | string | yes | no | 64 lowercase hex. Section 16 |
-| `supersedes` | string | yes | yes | Null, or a `listing_id` other than this row's id |
+| `previous_round_id` | string | yes | yes | Null, or the `listing_id` of the previous confirmed round |
 
 ### 9.2 `provider`
 
@@ -317,7 +337,7 @@ Constraints that need more than a cell are in sections 10–16. "Required" means
 | `url_kind` | string | yes | no | `direct_application`, `official_programme_page`, `aggregator_page`, `unknown` |
 | `contact_email` | string | yes | yes | Null, or one address, syntax only, length 1..120 |
 
-**Proposed.** `application.url` does not change for a given `listing_id`. A replacement URL is a new `listing_id` whose `supersedes` names the previous id. The previous row is withdrawn with `closed_reason` `superseded` or `removed_by_producer`.
+**Agreed policy.** `application.url` may change on a later revision of the same round. A changed link does not by itself create a new `listing_id`. A new round does, even when the link is unchanged.
 
 PathSync MUST use an "Apply" label only when `url_kind` is `direct_application` or `official_programme_page`. For `aggregator_page` and `unknown` the label is "Source page".
 
@@ -328,13 +348,10 @@ PathSync MUST use an "Apply" label only when `url_kind` is `direct_application` 
 | Field | Type | Required | Null | Constraints |
 | --- | --- | --- | --- | --- |
 | `citizenship` | object | yes | no | `requirement` plus `countries`. This is not the student's nationality |
-| `education_levels` | array of string | yes | no | 1..6. Tokens below. `any`, `unknown`, and `not_applicable` must be the sole item |
-| `audience_tags` | array of string | yes | no | 0..6, unique, sorted |
-| `fields_of_study` | array of string | yes | no | 1..20. `any` and `unknown` must be the sole item |
-| `year_of_study` | array of string | yes | no | 1..8. `any`, `unknown`, and `not_applicable` must be the sole item |
-| `min_cgpa` | object | yes | no | Below |
-| `institutions` | object | yes | no | Below |
-| `demographic_focus` | array of string | yes | no | 0..7, unique, sorted. Empty means not stated |
+| `education` | object | yes | no | `unrestricted`, `restricted`, or `unknown`, plus source wording |
+| `grade` | object | yes | no | Explicit minimum, none, or unknown. No cross-scale conversion |
+| `demographics` | object | yes | no | `requirements` are hard. `preferences` are not |
+| `audience_tags` | array of string | yes | no | 0..6 descriptive labels, unique, sorted. Not a hard gate |
 | `criteria_stated` | boolean | yes | no | `false` requires a fixed sentence, except tombstones |
 | `criteria_text` | string | yes | no | 1..4000 |
 
@@ -352,30 +369,36 @@ Pairs, all stage 2, no clock:
 - `unknown`: `countries` is exactly `[]`. The source does not say. This is unknown metadata, not a ban and not an open invitation written as fact.
 - Any other pair is `invalid_constraint` on `eligibility.citizenship.requirement`.
 
-`education_levels` tokens: `secondary`, `undergraduate`, `postgraduate`, `any`, `unknown`, `not_applicable`.
+`education`:
 
-`audience_tags` tokens: `nigerian_university_student`, `nigerian_postgraduate`, `nigerian_secondary`, `african_student`, `open_international`.
+| Field | Type | Required | Null | Constraints |
+| --- | --- | --- | --- | --- |
+| `requirement` | string | yes | no | `unrestricted`, `restricted`, `unknown` |
+| `stages` | array of string | yes | no | `secondary`, `undergraduate`, `postgraduate`. Empty unless `restricted`. Unique, sorted |
+| `qualifications` | array of string | yes | no | `secondary_school`, `bachelor`, `master`, `doctorate`. Empty unless `restricted`. Unique, sorted |
+| `courses` | array of string | yes | no | Tokens below, empty unless `restricted`. Unique, sorted |
+| `years` | array of string | yes | no | `100`, `200`, `300`, `400`, `500`, `postgraduate`. Empty unless `restricted`. Unique, sorted |
+| `institutions` | object | yes | no | `requirement` is `unrestricted`, `restricted`, or `unknown`. `names` is empty unless `restricted`, then 1..30 strings |
+| `source_wording` | string | yes | no | 1..4000. The source sentence, or `Not stated by the source.` when unknown, or `[withdrawn]` on a tombstone |
 
-`fields_of_study` tokens: `any`, `unknown`, `agriculture`, `architecture`, `arts`, `business`, `computer_science`, `education`, `engineering`, `health`, `humanities`, `law`, `mathematics`, `medicine`, `natural_sciences`, `social_sciences`, `other`.
+`restricted` requires at least one of `stages`, `qualifications`, `courses`, `years`, or `institutions.names` to be non-empty. `unrestricted` and `unknown` require those arrays to be empty and `institutions.requirement` to match `education.requirement`.
 
-`year_of_study` tokens: `100`, `200`, `300`, `400`, `500`, `postgraduate`, `any`, `unknown`, `not_applicable`. These correspond to the current onboard levels `100L`–`500L` and `Postgraduate`.
+Course tokens: `agriculture`, `architecture`, `arts`, `business`, `computer_science`, `education`, `engineering`, `health`, `humanities`, `law`, `mathematics`, `medicine`, `natural_sciences`, `social_sciences`, `other`.
 
-`min_cgpa`:
+`grade`:
 
-| Field | Type | Null | Constraints |
-| --- | --- | --- | --- |
-| `scale` | string | no | `4.0`, `5.0`, `none`, `unknown` |
-| `minimum_hundredths` | integer | yes | Null when scale is `none` or `unknown`. For `5.0`, integer 1..500. For `4.0`, integer 1..400. 350 means 3.50 |
-| `class_equivalent` | string | yes | Null, or `first_class`, `second_class_upper`, `second_class_lower`, `third_class`, `pass`. Must be null when scale is `unknown` |
+| Field | Type | Required | Null | Constraints |
+| --- | --- | --- | --- | --- |
+| `requirement` | string | yes | no | `explicit`, `none`, `unknown` |
+| `scale` | string | yes | yes | `4.0` or `5.0` when `explicit`, otherwise null |
+| `minimum_hundredths` | integer | yes | yes | 1..400 on `4.0`, 1..500 on `5.0`, otherwise null. 350 means 3.50 |
+| `source_wording` | string | yes | no | 1..400 |
 
-Hundredths avoid binary floats. The current `NUMERIC(3,2)` column is a storage detail of PathSync, not the exchange type.
+Do not convert a 4.0 grade into a 5.0 grade, or a degree class into a CGPA. Hundredths only avoid binary floats on a stated scale.
 
-`institutions`:
+`demographics.requirements` and `demographics.preferences` are arrays of `female`, `disability`, `first_generation`, `low_income`, `northern_nigeria`, `niger_delta`, `rural`. Each is unique and sorted. A token must not appear in both arrays.
 
-| Field | Type | Null | Constraints |
-| --- | --- | --- | --- |
-| `scope` | string | no | `any_accredited_nigerian_tertiary`, `named`, `not_restricted`, `unknown`, `not_applicable` |
-| `names` | array of string | no | Empty unless `scope` is `named`. Then 1..30 strings, each 1..160, unique, sorted |
+`audience_tags` tokens: `nigerian_university_student`, `nigerian_postgraduate`, `nigerian_secondary`, `african_student`, `open_international`. They describe audience. They are not citizenship and they are not a hard education rule.
 
 When `criteria_stated` is `false` and the row is not withdrawn, `criteria_text` MUST be exactly `Not stated by the source.` When `criteria_stated` is `true`, `criteria_text` MUST NOT be that sentence and MUST NOT be `[withdrawn]`. Withdrawn rows are specified in section 15.
 
@@ -465,33 +488,41 @@ A fixed deadline is expired at `evaluation_time` when `evaluation_time` > `fixed
 
 `audience_tags` MUST include `nigerian_university_student` only when the source covers Nigerian university students (undergraduates, or undergraduates and postgraduates together). `nigerian_postgraduate` is for postgraduate-only calls. `open_international` and `african_student` describe audience. They are not a citizenship requirement. A headline that says "international" or "Africa" does not set `citizenship.requirement` to `explicit` and does not put `NG` in `countries`. The producer sets `explicit` only from an actual nationality list, `unconstrained` only when the source says there is no nationality limit, and `unknown` when the source does not say.
 
-### 11.2 Student-surface filter
+### 11.2 Student match
 
-**Proposed.** This function is PathSync's. It is not the NaijaOpportunities record validator. The first validator card does not implement it.
+**Agreed policy.** This function is PathSync's. It is not the NaijaOpportunities record validator. No card implements it yet.
 
-`pathsync_student_surface(listing, student, evaluation_time) -> include | exclude(reason)`
+`pathsync_student_match(listing, student, evaluation_time) -> include | exclude(reason) | needs_check(label)`
 
-`student` is the signed-in profile, not a listing. Fields the consumer may use: `nationality` (to be collected at onboarding; not collected today), `level`, CGPA and its scale, `course`, and demographic selections. `goal` is not an exclude rule. Free-text leadership, projects, and about are for the later letter and CV. They MUST NOT be copied onto the listing.
+The result is guidance. `include` does not promise an award or a job. `needs_check` stays discoverable and must not be labelled eligible.
 
-Citizenship rule 4 is a settled instruction. Education rules 5 and 6 are the proposals in section 5.
+Onboarding, when built, collects and lets the student update: `nationality`, institution, qualification studied, current level or year, course, and expected graduation date (`YYYY-MM-DD`). CGPA and its scale are used only when both exist. Demographic answers are optional. The current screen does not collect nationality, qualification, or expected graduation. This contract does not change that screen. Free text must not be copied onto a listing. Nothing about eligibility is inferred from a name or a photo.
 
-Exclude reasons, first match wins:
+Outcomes, first match wins:
 
-| Order | Condition | `reason` |
+| Order | Condition | Result |
 | --- | --- | --- |
-| 1 | `synthetic` is true | `synthetic` |
-| 2 | `validate_active_feed` returns any error | `not_active` |
-| 3 | `kind` is not `scholarship`, `internship`, or `job` | `kind` |
-| 4 | `citizenship.requirement` is `explicit`, `student.nationality` is present, and it is not in `citizenship.countries` | `citizenship_mismatch` |
-| 5 | `education_levels` is `["secondary"]` | `education` |
-| 6 | `kind` is `scholarship` or `internship` and `education_levels` is `["unknown"]` | `education` |
-| 7 | `education_levels` is exactly `["postgraduate"]` and `student.level` is present and is not `Postgraduate` | `education` |
-| 8 | `year_of_study` is a specific list and `student.level` maps to a token outside that list | `year` |
-| 9 | `fields_of_study` contains neither `any` nor `unknown`, the course maps to a token other than `other`, and that token is absent | `field` |
-| 10 | Both CGPA sides are known and the converted student hundredths are below `minimum_hundredths` | `cgpa` |
-| 11 | Otherwise | include |
+| 1 | `synthetic` is true | `exclude(synthetic)` |
+| 2 | Active-feed checks fail | `exclude(not_active)` |
+| 3 | `kind` is not `scholarship`, `internship`, or `job` | `exclude(kind)` |
+| 4 | Citizenship `explicit`, nationality present, and not in `countries` | `exclude(citizenship_mismatch)` |
+| 5 | Citizenship `unknown`, or nationality missing on an `explicit` list | `needs_check(Check eligibility)` |
+| 6 | `education.requirement` is `unknown` | `needs_check(Check education eligibility)` |
+| 7 | `education.stages` is exactly `["secondary"]` | `exclude(education_stage)` |
+| 8 | Education is `restricted` and the student answered every restricted point, and none of the allowed stages, qualifications, courses, years, or institutions fits | `exclude` with `education_stage`, `education_course`, `education_year`, `education_qualification`, or `education_institution` |
+| 9 | Education is `restricted` and the student has not answered a restricted point | `needs_check(Check education eligibility)` |
+| 10 | A demographic token is in `requirements`, and the student answered and does not have it | `exclude(demographic_requirement)` |
+| 11 | A demographic token is in `requirements`, and the student did not answer | `needs_check(Check eligibility)` |
+| 12 | `grade.requirement` is `explicit`, the scales match, and the student's hundredths are below `minimum_hundredths` | `exclude(grade)` |
+| 13 | `grade.requirement` is `explicit` and the scale or the student's grade is missing or different | `needs_check(Check eligibility)` |
+| 14 | `grade.requirement` is `unknown` | `needs_check(Check eligibility)` |
+| 15 | Otherwise | `include` |
 
-`unconstrained`, `unknown` citizenship, `not_applicable` education, and a job with unknown education do not match rows 4 or 6. A missing `student.nationality` skips row 4. Missing student level, course, or CGPA skips rules 7, 8, 9, or 10 respectively. Skipping does not include a listing that failed an earlier rule.
+`education.requirement` `unrestricted` and `grade.requirement` `none` do not exclude. A job with those values stays in matching. Several stages mean a fit when any one stage matches. `preferences` never produce `exclude`. `audience_tags` never produce `exclude`.
+
+Level tokens: `100L`→`100`, `200L`→`200`, `300L`→`300`, `400L`→`400`, `500L`→`500`, `Postgraduate`→`postgraduate`.
+
+Course tokens for the current onboard list: Computer Science → `computer_science`; every Engineering row and Systems Engineering → `engineering`; Medicine & Surgery → `medicine`; Pharmacy and Nursing → `health`; Law → `law`; Economics, Accounting, and Business Administration → `business`; Mass Communication → `humanities`; Political Science, Sociology, and Psychology → `social_sciences`; Education → `education`; Agriculture and the current label `fishery` → `agriculture`; Architecture → `architecture`; Mathematics → `mathematics`; Physics, Chemistry, Biology, Biochemistry, and Microbiology → `natural_sciences`. `Other`, or a course that is not in this list, is not a confirmed mismatch. `fishery` mapped to `agriculture` is a reading of the current control, not a claim about faculties.
 
 Level map: `100L`→`100`, `200L`→`200`, `300L`→`300`, `400L`→`400`, `500L`→`500`, `Postgraduate`→`postgraduate`.
 
@@ -537,7 +568,7 @@ CGPA conversion uses integer hundredths. Scales are 400 or 500. To express stude
 
 Worked example: 3.20 on a 4.0 scale is `h=320`, `ss=400`, listing scale 5.0 is `ls=500`. `converted = (160000 + 200) // 400 = 400`, which is 4.00 on a 5.0 scale. Exclude only when `converted < minimum_hundredths`. A class equivalent without `minimum_hundredths` does not exclude.
 
-Demographic map, stored for display and ranking later, not for rule 1–11: `Female student`→`female`, `Student with disability`→`disability`, `First-generation student`→`first_generation`, `From a low-income family`→`low_income`, `From Northern Nigeria`→`northern_nigeria`, `From Niger Delta region`→`niger_delta`, `From rural area`→`rural`. `None of these` writes no tag.
+Demographic answers map as `Female student`→`female`, `Student with disability`→`disability`, `First-generation student`→`first_generation`, `From a low-income family`→`low_income`, `From Northern Nigeria`→`northern_nigeria`, `From Niger Delta region`→`niger_delta`, `From rural area`→`rural`. `None of these`, or a skipped question, stores no token. A skipped question is unknown, not a no.
 
 Deadline-tracker labels for an included listing:
 
@@ -545,7 +576,7 @@ Deadline-tracker labels for an included listing:
 - `rolling`: the words `Rolling admission`. No day count and no invented end date.
 - `unknown`: the words `Deadline not stated`. No day count and no invented end date.
 
-If `synthetic` were ignored, at `CONTRACT_EVALUATION_TIME` the open scholarship, the rolling internship, and the job would all be included. The job's unknown citizenship does not withhold it, and its kind does not withhold it. The historical scholarship and the tombstone exclude as `not_active`. With `synthetic: true`, which is how they are written, all five exclude as `synthetic`. They are fixtures, not a live feed.
+If `synthetic` were ignored, at `CONTRACT_EVALUATION_TIME` the open scholarship and the rolling internship can be `include` for a student who meets their explicit rules. The job stays in matching and is `needs_check(Check eligibility)` because its citizenship metadata is unknown, not because it is a job. The historical scholarship and the tombstone are `exclude(not_active)`. With `synthetic: true`, all five are `exclude(synthetic)`. They are fixtures, not a live feed.
 
 ## 12. Source provenance and URLs
 
@@ -570,18 +601,28 @@ Placeholder `provider.name` and `title`, compared after trimming and ASCII lower
 
 | Field | Type | Required | Null | Constraints |
 | --- | --- | --- | --- | --- |
-| `state` | string | yes | no | `unverified`, `machine_checked`, `human_verified` |
-| `last_checked_at` | string | yes | no | UTC timestamp, `>= created_at` and `<= updated_at` |
-| `fresh_until` | string | yes | no | UTC timestamp after `last_checked_at`, per the state |
-| `method` | string | yes | no | `page_fetch`, `manual_review`, `unchanged_hash` |
+| `state` | string | yes | no | `unverified` or `verified` |
+| `outcome` | string | yes | yes | Null only when `state` is `unverified`. Otherwise `confirmed_open`, `confirmed_closed`, `confirmed_expired`, `confirmed_withdrawn` |
+| `method` | string | yes | yes | Null only when there has been no attempt. Otherwise `automated_review` or `human_review` |
+| `reviewed_by` | string | yes | yes | `automation` or `human`, null only when `method` is null |
+| `reviewer_id` | string | yes | yes | Null when `reviewed_by` is not `human`. Otherwise a slug `^[a-z0-9]+(?:-[a-z0-9]+)*$`, length 1..64. Never a bot, and never a student name |
+| `source_checked_url` | string | yes | yes | Canonical `https` URL of the official provider source when a check was attempted, else null |
+| `evidence` | string | yes | yes | 1..2000 when a check was attempted, else null. Must name what was read. An HTTP status alone is not evidence |
+| `last_attempt_at` | string | yes | yes | UTC timestamp of the latest attempt, including a failure |
+| `last_attempt_outcome` | string | yes | yes | `confirmed_open`, `confirmed_closed`, `confirmed_expired`, `confirmed_withdrawn`, `inconclusive`, or `failed` |
+| `last_success_at` | string | yes | yes | UTC timestamp of the latest successful confirmation, else null |
+| `fresh_until` | string | yes | yes | Exactly 168 hours after `last_success_at`, else null |
 
-**Proposed.**
+**Agreed policy.**
 
-- `machine_checked` and `unverified`: `fresh_until` is exactly 168 hours after `last_checked_at`. Method is `page_fetch` or, for `machine_checked` only, `unchanged_hash` when the new fetch's relevant text hashed equal to the previous one. `unchanged_hash` is not the listing `content_hash`. It is the producer's page-text hash, and that hash is not a field in 1.0.0.
-- `human_verified`: method is `manual_review`. `fresh_until` is after `last_checked_at` and at most 2160 hours after it.
-- `unverified` means a fetch happened and the facts were not confirmed. PathSync still requires the structural fields. Student surfaces require `validate_active_feed` to pass, which an unverified-but-fresh open listing can. The UI MUST show the state. This proposal does not hide `unverified` solely for being unverified, because a 7-day clock already removes unreviewed rows. That choice is inside check 3.
-- Active feed, and only when `publication_status` is `published` and `status` is `open`: if `evaluation_time` > `fresh_until`, error `stale_listing` on `verification.fresh_until`.
-- Historical validation does not reject stale rows. The historical sample is stale at `CONTRACT_EVALUATION_TIME` (`fresh_until` `2026-11-07T23:00:00Z`) and is still a valid historical record.
+- `fresh_until` is null if and only if `last_success_at` is null. When both are set, the gap is exactly 168 hours.
+- `reviewed_by` `automation` requires `method` `automated_review` and `reviewer_id` null. `reviewed_by` `human` requires `method` `human_review` and a `reviewer_id`.
+- `outcome` `confirmed_open` requires `lifecycle` published and open. `confirmed_expired` requires `status` `expired`. `confirmed_withdrawn` requires `publication_status` `withdrawn`. `confirmed_closed` requires `status` `closed`.
+- `last_success_at`, when set, is `>= created_at` and `<= updated_at`. `source_checked_url` on a successful open check is the official provider or official application URL, not an aggregator page used as a substitute.
+- A later `failed` or `inconclusive` attempt updates `last_attempt_at` and `last_attempt_outcome` only.
+- Active feed, after the lifecycle and deadline checks: if `state` is not `verified` or `outcome` is not `confirmed_open`, error `not_verified` on `verification.state`. If it is `confirmed_open` and `evaluation_time` > `fresh_until`, error `stale_listing` on `verification.fresh_until`. Do not change `status` to `expired` for that case.
+- Equality with `fresh_until` is still active. The next second is stale. The script's freshness oracle measures `2026-11-08T09:00:00Z` plus 168 hours as `2026-11-15T09:00:00Z`, still active at that instant, and stale at `2026-11-15T09:00:01Z`.
+- Historical validation does not reject a stale row. The historical sample is expired, and its `fresh_until` `2026-11-08T00:00:00Z` is also before the pinned evaluation instant. Expiry is why it is off the active feed.
 
 ## 14. Lifecycle, active feed, and historical retention
 
@@ -609,9 +650,10 @@ Two functions share stages 1 and 2 (section 18) and then apply a different stage
 
 `validate_active_feed(listing, evaluation_time)` is what an active student feed must pass:
 
-- If `publication_status` is not `published` or `status` is not `open`: one error, `not_on_active_feed` on `lifecycle.status`. Do not also emit `expired_deadline`.
+- If `publication_status` is not `published` or `status` is not `open`: one error, `not_on_active_feed` on `lifecycle.status`. Do not also emit `expired_deadline` or `stale_listing`. Withdrawn, closed, and expired hide here, which is sooner than the seven-day window.
 - If it is published and open, and `deadline.kind` is `fixed`, and `evaluation_time` > `fixed_at`: `expired_deadline` on `deadline.fixed_at`.
-- If it is published and open and `evaluation_time` > `fresh_until`: `stale_listing` on `verification.fresh_until`.
+- If it is published and open, and verification is not `verified` with `outcome` `confirmed_open`: `not_verified` on `verification.state`.
+- If it is published, open, and successfully verified, and `evaluation_time` > `fresh_until`: `stale_listing` on `verification.fresh_until`. Leave `status` as `open`.
 - Rolling and unknown do not produce `expired_deadline`.
 
 `validate_historical(listing, evaluation_time)` is what a retained row must pass:
@@ -624,21 +666,31 @@ The invalid sample `invalid-expired-open` is the active-feed failure. The valid 
 
 ## 15. Identity, deduplication, update, and deletion
 
-**Proposed.**
+`identity`:
 
-- `listing_id` is assigned by the producer, once, and never reused, including after withdrawal.
-- PathSync may keep a local UUID. That UUID is not `listing_id`. The current `gen_random_uuid()` default is a local surrogate, not this id.
-- `dedupe_key` is `SHA-256` hex of the UTF-8 bytes of `kind + "\n" + application.url`. Section 16.
-- `application.url` is immutable, so `dedupe_key` is immutable for that id.
-- At most one row that is not `withdrawn` may share a `dedupe_key`. A second id is `duplicate_listing` on `dedupe_key`. The store returns the existing `listing_id`. This is a store rule. The single-record validator only checks that the key matches the kind and URL.
-- An update is the same `listing_id`. `revision` becomes `stored + 1` with no gaps. `updated_at` is greater than the stored `updated_at`. `content_hash` changes. The same revision and the same hash is an idempotent replay. The same revision and a different hash is `revision_conflict` on `revision`. A revision greater than `stored + 1`, or lower than stored, is the same code.
-- The single-record validator checks `revision >= 1`. It does not know the stored revision. Gap checks belong to the store, which is not the first card.
-- Deletion from the active feed is a new revision with `publication_status` `withdrawn`, `status` `closed`, and `closed_reason` `removed_by_producer` or `superseded`. There is no physical delete in the contract. The id remains so PathSync does not treat a reappearance as a new opportunity under a new id.
-- For 730 days after `withdrawn_at` (730 × 24 hours) the producer MUST NOT mint a new `listing_id` for that `dedupe_key`. After that, a new id MAY exist and SHOULD set `supersedes` to the withdrawn id when it is the same programme. 730 days is a proposal, measured in exact hours so it does not depend on calendar months.
-- Tombstone text, so personal data and stale instructions are not kept in the prose fields: `summary`, `description`, `how_to_apply`, and `eligibility.criteria_text` are exactly `[withdrawn]`. `criteria_stated` is `false`. `documents_required` is `[]`. `award.kind` is `not_stated` and the other award fields are null. `application.contact_email` is null. `title`, `provider`, `deadline`, `eligibility` structure, ids, and URLs stay. `title` MUST NOT be `[withdrawn]`.
-- PathSync removes a withdrawn id from student surfaces on the next sync and keeps the tombstone so the id is known.
+| Field | Type | Required | Null | Constraints |
+| --- | --- | --- | --- | --- |
+| `provider_key` | string | yes | no | Slug, 1..80 |
+| `opportunity_key` | string | yes | no | Slug, 1..80. The programme, not the year |
+| `round_key` | string | yes | no | Slug, 1..40. The application round. `unspecified` only when the source names none |
+| `round_evidence` | string | yes | no | 1..300. The source words, or a sentence that the source named no round |
 
-The record validator does not check the 730-day reservation or the previous revision. Those need the store. The tombstone sample must pass `validate_record` and `validate_historical`, and it must fail `validate_active_feed` with `not_on_active_feed` on `lifecycle.status`.
+A slug matches `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
+
+**Agreed policy.**
+
+- `listing_id` is assigned once for one round and is never reused, including after withdrawal.
+- PathSync may keep a local UUID. That UUID is not `listing_id`.
+- `dedupe_key` is SHA-256 hex of UTF-8 `kind`, newline, `provider_key`, newline, `opportunity_key`, newline, `round_key`. The application URL is not an input.
+- The same `dedupe_key` is the same round. A second `listing_id` is `duplicate_listing` on `dedupe_key`.
+- A different `round_key` is a new `listing_id` even when `application.url` is unchanged. `previous_round_id` is set only when the producer confirms that the new round continues an earlier one.
+- Restoring the same round keeps the id and increments `revision` after a successful verification.
+- An update is the same id. `revision` becomes `stored + 1`. `updated_at` increases. `content_hash` changes. The same revision and the same hash is an idempotent replay. The same revision and a different hash is `revision_conflict` on `revision`.
+- The single-record check does not know the stored revision. The store does. No card implements the store.
+- Withdrawal is a new revision with `publication_status` `withdrawn`, `status` `closed`, and `closed_reason` `removed_by_producer` or `superseded`. The id remains. PathSync shows Withdrawn on a saved row.
+- For 730 × 24 hours after `withdrawn_at` the historical feed keeps the minimal tombstone. That stops accidental reimport of the same round. It does not reserve the URL. Sensitive prose is already replaced by `[withdrawn]`.
+- Tombstone text: `summary`, `description`, `how_to_apply`, and `eligibility.criteria_text` are exactly `[withdrawn]`. `education.source_wording` is `[withdrawn]`. `criteria_stated` is false. `documents_required` is `[]`. `award` is `not_stated`. `contact_email` is null. Title, provider, deadline facts, ids, and URLs stay. `title` is not `[withdrawn]`.
+- After 730 days, reconciliation follows section 5. The tombstone sample passes `validate_record` and `validate_historical`, and fails `validate_active_feed` with `not_on_active_feed` on `lifecycle.status`.
 
 ## 16. Canonical JSON, dedupe key, and content hash
 
@@ -664,13 +716,13 @@ Algorithm, which the script performs and then checks:
 
 1. Parse the JSON object. Duplicate keys are invalid. Pretty printing does not matter.
 2. Apply Unicode NFC to every string. The hash is of those strings, encoded as UTF-8. Non-ASCII characters are not forced into `\u` escapes. `/` is not escaped.
-3. Designated arrays must already be unique and sorted by UTF-8 bytes: `citizenship.countries`, `education_levels`, `audience_tags`, `fields_of_study`, `year_of_study`, `demographic_focus`, `institutions.names`, and `documents_required`. The hash does not silently reorder them. A different order is a different hash.
+3. Designated arrays must already be unique and sorted by UTF-8 bytes: `citizenship.countries`, `education.stages`, `education.qualifications`, `education.courses`, `education.years`, `education.institutions.names`, `demographics.requirements`, `demographics.preferences`, `audience_tags`, and `documents_required`. The hash does not silently reorder them. A different order is a different hash.
 4. `application.url`, `source.url`, and a non-null `provider.url` must already be canonical: lowercase host, no userinfo, no port, no fragment, no tracking query (`utm_*`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `igshid`, `ref`), remaining query sorted by key then value, no trailing slash unless the path is empty. Identity: `listing_id` matches `^lst_[0-9A-HJKMNP-TV-Z]{26}$`.
 5. JSON null is kept. An absent key is not the same value and is not invented before hashing.
-6. `dedupe_key` is SHA-256, lowercase hex, of the UTF-8 bytes of `kind`, one newline (`U+000A`), and the canonical `application.url`. The stored field must already equal that digest.
+6. `dedupe_key` is SHA-256, lowercase hex, of the UTF-8 bytes of `kind`, a newline, `identity.provider_key`, a newline, `identity.opportunity_key`, a newline, and `identity.round_key`. Each of those four values is a slug. The application URL is not included. The stored field must already equal that digest. A new round changes the digest even when the URL does not. The same round keeps the digest even when the URL changes.
 7. `content_hash` is SHA-256, lowercase hex, of the UTF-8 JSON Canonicalization Scheme (RFC 8785) encoding of the object with `content_hash` removed and every other field kept, including `dedupe_key` and JSON null. This version has no fractional numbers, so sorted keys and no insignificant whitespace match JCS for these values.
 8. A fixed `fixed_at` must equal the `zoneinfo` conversion of `display_date` and `local_time` in `resolved_timezone`, using `fold=0`. The script measures that. It does not accept a hand-typed offset.
-9. Among the five fixtures, `listing_id` values must differ and `dedupe_key` values must differ. A later store treats the same `dedupe_key` on another id as `duplicate_listing`. The same `listing_id` and `revision` with a different `content_hash` is `revision_conflict`.
+9. Among the five fixtures, `listing_id` values must differ and `dedupe_key` values must differ. The same `dedupe_key` on another id is a duplicate of that round. The same `listing_id` and `revision` with a different `content_hash` is `revision_conflict`. The script also checks that `fresh_until` is exactly 168 hours after `last_success_at`.
 
 Stage 2 of a future validator recomputes both digests. Error codes: `hash_mismatch` on `content_hash`, `dedupe_mismatch` on `dedupe_key`. Stage 1 does not compute them. The missing-field and bad-type samples set `content_hash` to 64 zeroes on purpose. Implementations that stop after stage 1 MUST NOT report a hash error for them.
 
@@ -684,57 +736,62 @@ python: 3.12.3
 tzdata: version 2026e
 hash_excludes: content_hash
 hash_includes: dedupe_key and every other stored field, including JSON null
-collision_rule: same dedupe_key with a different listing_id is duplicate_listing
+collision_rule: same dedupe_key with a different listing_id is a duplicate of that round
+url_rule: application URL is not dedupe material and does not block a new round
 version_rule: same listing_id and revision with a different content_hash is revision_conflict
 self_check_null_vs_absent: null=d091f9c83c091f79652fe8786375b3fe4ce0861a56f5bfbafedbe431877ff0e8 absent=44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
 self_check_unicode_nfc: composed=86028b41ba792eaf82aa26a45b218f6734f7f1096a86f1746c8296e088a0ccb4
 self_check_array_order: GH before NG differs from NG before GH
 self_check_url: https://apply.river.example/Path?a=1&b=2
 self_check_identity: crockford listing_id accepted; I rejected
+self_check_round: same_round=65941874416207509e0b39022e94b84e6ac4b780cf92d6c45d356db44934eda4
+self_check_new_round: next_round=9c2f233946856cda8a68c3429c69b3d5d89a532240fc438f6923b89c104e5682
+self_check_url_not_in_dedupe: application URL is not dedupe material
 fixture: docs/listings/fixtures/valid-scholarship.json
 listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAV
 kind: scholarship
 revision: 1
-dedupe_key: fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609
-content_hash: eea1f8f31f86b2fb2a726acf4d2c2ac0aa01e7146f546166bb1fb8182c96d885
+dedupe_key: f18f8da3972c4d1932d54f31f674ec259d4b939fb38b184876341d978895e96f
+content_hash: 64b7f2a8104bb0600312e75af20769ea4d78e47250f8c19396e9fce585680653
 deadline_fixed_at: 2027-03-31T22:59:59Z
 assert: match
 fixture: docs/listings/fixtures/valid-internship.json
 listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAW
 kind: internship
 revision: 1
-dedupe_key: b1d7db3f769b7fc8a52a021d37bd8c8e77cb5834ca6795e897621e4bdfbfc984
-content_hash: bbe4c50ecfd12ed5e149e6a2134b78d7a59d9918ae2f0deda8e2471f40449897
+dedupe_key: 695c935abed9b17a0774037c5c74101395f73462836a7116d69040237f73a58c
+content_hash: 3fbfadf0f3208ac0591f3c91b4e9103705d9e4e25041870a8f139432ea8065a1
 deadline_fixed_at: n/a
 assert: match
 fixture: docs/listings/fixtures/valid-job.json
 listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAX
 kind: job
 revision: 1
-dedupe_key: 007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb
-content_hash: 025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa
+dedupe_key: 2803f370604f5557da4817c2197a5035d9ee966a99f5bfbfb7ef6e52bee73c41
+content_hash: 7b0feda2e51ec39b8a18ff91b0e9f2081114b9896bead2309c02dbdf0748b537
 deadline_fixed_at: n/a
 assert: match
 fixture: docs/listings/fixtures/valid-historical-expired.json
 listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FAY
 kind: scholarship
 revision: 2
-dedupe_key: 40c390e2260ade57b9af50863b4d13e1b9edc72123a261f9c880eb62c4385a5a
-content_hash: b7d35504f741c15389b79ee5f1c5e1cdb59fb8bb4fd17ec9ddf4aded25b3318c
+dedupe_key: 65941874416207509e0b39022e94b84e6ac4b780cf92d6c45d356db44934eda4
+content_hash: 1a9c667969f8fc7a83776750d01cab23243c7dc8994435a9e6174285bc225044
 deadline_fixed_at: 2026-10-31T23:59:59Z
 assert: match
 fixture: docs/listings/fixtures/valid-tombstone.json
 listing_id: lst_01ARZ3NDEKTSV4RRFFQ69G5FB3
 kind: scholarship
 revision: 2
-dedupe_key: 2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c
-content_hash: acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12
+dedupe_key: 7eb7658492e0e678f476dcc16e5830feb49afc1e13ee480b6d218f07f2d4d6a3
+content_hash: 6a664c2050a125fbee1e56590467fd3d48d48c9963ed3f121c60a35ca57ab9ab
 deadline_fixed_at: 2027-03-31T22:59:59Z
 assert: match
 oracle: date_only_no_zone stated=none resolved=Africa/Lagos local=2027-03-31T23:59:59 fixed_at=2027-03-31T22:59:59Z
 oracle: date_only_europe_london stated=Europe/London resolved=Europe/London local=2026-10-31T23:59:59 fixed_at=2026-10-31T23:59:59Z
 oracle: date_only_wat_default_check stated=none resolved=Africa/Lagos local=2026-01-15T23:59:59 fixed_at=2026-01-15T22:59:59Z
 oracle: instant_europe_paris stated=Europe/Paris resolved=Europe/Paris local=2027-06-01T15:00:00 fixed_at=2027-06-01T13:00:00Z
+oracle_freshness: success=2026-11-08T09:00:00Z fresh_until=2026-11-15T09:00:00Z still_active_at=2026-11-15T09:00:00Z stale_at=2026-11-15T09:00:01Z
 fixtures_checked: 5
 result: ok
 ```
@@ -789,7 +846,7 @@ The first card's bad-type sample sets `revision` to the JSON string `"1"`. The o
 
 ### Stage 2 — constraints that do not use `evaluation_time`
 
-Apply sections 6 and 8–16, except the bullets that mention `evaluation_time`. Enums, patterns, lengths, sorts, uniqueness, citizenship consistency, deadline shape, lifecycle table, tombstone text, award consistency, employment-by-kind, canonical URLs, placeholder names, personal-data patterns, `dedupe_key`, and `content_hash`. Also `listing_id` alphabet and `supersedes` shape. Errors use `invalid_constraint`, `invalid_enum`, `placeholder_name`, `non_canonical_url`, `forbidden_personal_data`, `hash_mismatch`, or `dedupe_mismatch`, each with its field. Stop if any stage-2 error exists.
+Apply sections 6 and 8–16, except the bullets that mention `evaluation_time`. Enums, patterns, lengths, sorts, uniqueness, citizenship consistency, deadline shape, lifecycle table, tombstone text, award consistency, employment-by-kind, canonical URLs, placeholder names, personal-data patterns, `dedupe_key`, and `content_hash`. Also `listing_id` alphabet and `previous_round_id` shape. Errors use `invalid_constraint`, `invalid_enum`, `placeholder_name`, `non_canonical_url`, `forbidden_personal_data`, `hash_mismatch`, or `dedupe_mismatch`, each with its field. Stop if any stage-2 error exists.
 
 ### Stage 3 — mode
 
@@ -809,7 +866,7 @@ After approval, the validator card in NaijaOpportunities is measured against thi
 | --- | --- | --- |
 | `valid-scholarship` | `validate_record`, `validate_active_feed`, `validate_historical` | no errors |
 | `valid-internship` | all three | no errors |
-| `valid-job` | all three | no errors. With `synthetic` false it stays in student matching. Unknown citizenship does not remove it |
+| `valid-job` | all three | no errors. With `synthetic` false it stays discoverable. Unknown citizenship is Check eligibility, not a hide |
 | `valid-historical-expired` | `validate_record`, `validate_historical` | no errors |
 | `valid-historical-expired` | `validate_active_feed` | `not_on_active_feed` on `lifecycle.status` |
 | `valid-tombstone` | `validate_record`, `validate_historical` | no errors |
@@ -904,13 +961,13 @@ This task does not add that lock, does not open a pull request in the other repo
 
 All seven fixtures use `synthetic: true`. Hosts end in `.example`. They are not live programmes. Hashes below are properties of the JSON objects, recomputed by the algorithm in section 16. Pretty printing is not significant. Key order in these blocks is for reading.
 
-The two stage-1 failures set `content_hash` to 64 zeroes. `dedupe_key` is the real digest of kind and application URL. Those fields are not the defect. Stage 1 must stop before hashing.
+The two stage-1 failures set `content_hash` to 64 zeroes. `dedupe_key` is the real digest of kind, provider, opportunity, and round. Those fields are not the defect. Stage 1 must stop before hashing.
 
 `CONTRACT_EVALUATION_TIME` for every judgement in this section is `2026-11-08T12:00:00Z`.
 
 ### 21.1 Valid scholarship — fixed deadline, still open
 
-Passes all three validator functions. The source date has no zone, so the resolved zone is Africa/Lagos and `fixed_at` is the measured instant `2027-03-31T22:59:59Z`. Citizenship is an explicit `NG` requirement. Ignoring `synthetic`, a student whose nationality is `NG` and whose course and CGPA fit would be included. Fresh until `2026-11-15T09:00:00Z`.
+Passes all three validator functions. The source date has no zone, so the resolved zone is Africa/Lagos and `fixed_at` is the measured instant `2027-03-31T22:59:59Z`. Citizenship is an explicit `NG` requirement. Ignoring `synthetic`, a student whose nationality is `NG`, whose stage and course fit, and whose CGPA is on the 5.0 scale and at least 3.50 would be included. A 4.0-scale grade is not converted. Fresh until `2026-11-15T09:00:00Z`.
 
 <!-- sample:valid-scholarship -->
 ```json
@@ -941,31 +998,9 @@ Passes all three validator functions. The source date has no zone, so the resolv
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": true,
     "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
     "citizenship": {
@@ -973,6 +1008,39 @@ Passes all three validator functions. The source date has no zone, so the resolv
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1010,10 +1078,17 @@ Passes all three validator functions. The source date has no zone, so the resolv
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://apply.rivertrust.example/2027",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1023,15 +1098,21 @@ Passes all three validator functions. The source date has no zone, so the resolv
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609",
-  "content_hash": "eea1f8f31f86b2fb2a726acf4d2c2ac0aa01e7146f546166bb1fb8182c96d885",
-  "supersedes": null
+  "dedupe_key": "f18f8da3972c4d1932d54f31f674ec259d4b939fb38b184876341d978895e96f",
+  "content_hash": "64b7f2a8104bb0600312e75af20769ea4d78e47250f8c19396e9fce585680653",
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "undergraduate-engineering-award",
+    "round_key": "2027",
+    "round_evidence": "The source names the 2027 award."
+  },
+  "previous_round_id": null
 }
 ```
 
 ### 21.2 Valid internship — rolling deadline
 
-Passes all three functions. `deadline.kind` is `rolling`. No date was invented. `citizenship.requirement` is `unconstrained`, which means the fictional source stated no nationality limit. Ignoring `synthetic`, it would be included for any student nationality.
+Passes all three functions. `deadline.kind` is `rolling`. No date was invented. Citizenship is unconstrained and the grade requirement is none. Education is restricted to computer science at undergraduate or postgraduate stage, so a student in either stage can match. Ignoring `synthetic`, nationality does not exclude anyone.
 
 <!-- sample:valid-internship -->
 ```json
@@ -1062,37 +1143,47 @@ Passes all three functions. `deadline.kind` is `rolling`. No date was invented. 
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "postgraduate",
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student",
       "open_international"
     ],
-    "fields_of_study": [
-      "computer_science"
-    ],
-    "year_of_study": [
-      "any"
-    ],
-    "min_cgpa": {
-      "scale": "unknown",
-      "minimum_hundredths": null,
-      "class_equivalent": null
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": true,
-    "criteria_text": "Open to Nigerian university students in computer science. No minimum CGPA is stated by the source.",
+    "criteria_text": "Open to university students in computer science. No nationality limit and no minimum CGPA are stated.",
     "citizenship": {
       "requirement": "unconstrained",
       "countries": [
         "*"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "postgraduate",
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor",
+        "master"
+      ],
+      "courses": [
+        "computer_science"
+      ],
+      "years": [],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "Open to university students in computer science. No nationality limit and no minimum CGPA are stated."
+    },
+    "grade": {
+      "requirement": "none",
+      "scale": null,
+      "minimum_hundredths": null,
+      "source_wording": "The source states no minimum grade."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1134,10 +1225,17 @@ Passes all three functions. `deadline.kind` is `rolling`. No date was invented. 
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://apply.rivertrust.example/interns/2027",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1147,15 +1245,21 @@ Passes all three functions. `deadline.kind` is `rolling`. No date was invented. 
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "b1d7db3f769b7fc8a52a021d37bd8c8e77cb5834ca6795e897621e4bdfbfc984",
-  "content_hash": "bbe4c50ecfd12ed5e149e6a2134b78d7a59d9918ae2f0deda8e2471f40449897",
-  "supersedes": null
+  "dedupe_key": "695c935abed9b17a0774037c5c74101395f73462836a7116d69040237f73a58c",
+  "content_hash": "3fbfadf0f3208ac0591f3c91b4e9103705d9e4e25041870a8f139432ea8065a1",
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "campus-internship",
+    "round_key": "2027",
+    "round_evidence": "The source names the 2027 internship."
+  },
+  "previous_round_id": null
 }
 ```
 
 ### 21.3 Valid job — unknown deadline and unknown citizenship
 
-Passes all three functions. The unknown deadline is not expired and is not a fabricated date. `citizenship.requirement` is `unknown`, so the listing is not withheld for citizenship. `kind` is `job`, and jobs stay in student matching. Ignoring `synthetic`, this fixture would be included.
+Passes all three functions. The unknown deadline is not expired and is not a fabricated date. Education is unrestricted, so the lack of a degree requirement does not remove this job from matching. Citizenship is unknown, so a student sees it as Check eligibility rather than as a confirmed match. Ignoring `synthetic`, it is not hidden for being a job.
 
 <!-- sample:valid-job -->
 ```json
@@ -1186,31 +1290,34 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "not_applicable"
-    ],
     "audience_tags": [],
-    "fields_of_study": [
-      "unknown"
-    ],
-    "year_of_study": [
-      "not_applicable"
-    ],
-    "min_cgpa": {
-      "scale": "none",
-      "minimum_hundredths": null,
-      "class_equivalent": null
-    },
-    "institutions": {
-      "scope": "not_applicable",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": false,
     "criteria_text": "Not stated by the source.",
     "citizenship": {
       "requirement": "unknown",
       "countries": []
+    },
+    "education": {
+      "requirement": "unrestricted",
+      "stages": [],
+      "qualifications": [],
+      "courses": [],
+      "years": [],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "The source states no education requirement."
+    },
+    "grade": {
+      "requirement": "none",
+      "scale": null,
+      "minimum_hundredths": null,
+      "source_wording": "The source states no minimum grade."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1249,10 +1356,17 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://rivertransit.example",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1262,9 +1376,15 @@ Passes all three functions. The unknown deadline is not expired and is not a fab
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb",
-  "content_hash": "025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa",
-  "supersedes": null
+  "dedupe_key": "2803f370604f5557da4817c2197a5035d9ee966a99f5bfbfb7ef6e52bee73c41",
+  "content_hash": "7b0feda2e51ec39b8a18ff91b0e9f2081114b9896bead2309c02dbdf0748b537",
+  "identity": {
+    "provider_key": "river-transit",
+    "opportunity_key": "operations-analyst",
+    "round_key": "unspecified",
+    "round_evidence": "The source does not name an application round."
+  },
+  "previous_round_id": null
 }
 ```
 
@@ -1301,31 +1421,9 @@ The source names the United Kingdom, so `stated_timezone` and `resolved_timezone
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": true,
     "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
     "citizenship": {
@@ -1333,6 +1431,39 @@ The source names the United Kingdom, so `stated_timezone` and `resolved_timezone
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1370,10 +1501,17 @@ The source names the United Kingdom, so `stated_timezone` and `resolved_timezone
     "closed_reason": "deadline_passed"
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-01T00:00:00Z",
-    "fresh_until": "2026-11-08T00:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_expired",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://apply.rivertrust.example/bridge-2026",
+    "evidence": "Official provider page shows the deadline has passed. Open status, deadline, eligibility, and the application link were checked. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-01T00:00:00Z",
+    "last_attempt_outcome": "confirmed_expired",
+    "last_success_at": "2026-11-01T00:00:00Z",
+    "fresh_until": "2026-11-08T00:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-09-01T08:00:00Z",
@@ -1383,9 +1521,15 @@ The source names the United Kingdom, so `stated_timezone` and `resolved_timezone
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "40c390e2260ade57b9af50863b4d13e1b9edc72123a261f9c880eb62c4385a5a",
-  "content_hash": "b7d35504f741c15389b79ee5f1c5e1cdb59fb8bb4fd17ec9ddf4aded25b3318c",
-  "supersedes": null
+  "dedupe_key": "65941874416207509e0b39022e94b84e6ac4b780cf92d6c45d356db44934eda4",
+  "content_hash": "1a9c667969f8fc7a83776750d01cab23243c7dc8994435a9e6174285bc225044",
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "bridge-award",
+    "round_key": "2026",
+    "round_evidence": "The source names the 2026 United Kingdom round."
+  },
+  "previous_round_id": null
 }
 ```
 
@@ -1422,31 +1566,9 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": false,
     "criteria_text": "[withdrawn]",
     "citizenship": {
@@ -1454,6 +1576,39 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "[withdrawn]"
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1488,10 +1643,17 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "closed_reason": "removed_by_producer"
   },
   "verification": {
-    "state": "human_verified",
-    "last_checked_at": "2026-11-08T10:00:00Z",
-    "fresh_until": "2027-02-06T10:00:00Z",
-    "method": "manual_review"
+    "state": "verified",
+    "outcome": "confirmed_withdrawn",
+    "method": "human_review",
+    "reviewed_by": "human",
+    "reviewer_id": "editor-synthetic-01",
+    "source_checked_url": "https://apply.rivertrust.example/withdrawn-2027",
+    "evidence": "Official provider page says this round was withdrawn. Open status, deadline, eligibility, and the application link were checked. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T10:00:00Z",
+    "last_attempt_outcome": "confirmed_withdrawn",
+    "last_success_at": "2026-11-08T10:00:00Z",
+    "fresh_until": "2026-11-15T10:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1501,9 +1663,15 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "closed_at": null,
     "withdrawn_at": "2026-11-08T10:00:00Z"
   },
-  "dedupe_key": "2c4c09be0f200675e536c3df4c200b58a6473a71a2a226b3452f01d40563610c",
-  "content_hash": "acd61b770a33343b35b7749da420a167a306f9ec736d4576fc975b747522ab12",
-  "supersedes": null
+  "dedupe_key": "7eb7658492e0e678f476dcc16e5830feb49afc1e13ee480b6d218f07f2d4d6a3",
+  "content_hash": "6a664c2050a125fbee1e56590467fd3d48d48c9963ed3f121c60a35ca57ab9ab",
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "withdrawn-example",
+    "round_key": "2027",
+    "round_evidence": "The source names the 2027 example round."
+  },
+  "previous_round_id": null
 }
 ```
 
@@ -1547,31 +1715,9 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": true,
     "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
     "citizenship": {
@@ -1579,6 +1725,39 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1616,10 +1795,17 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://apply.rivertrust.example/2027",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1629,9 +1815,15 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609",
+  "dedupe_key": "f18f8da3972c4d1932d54f31f674ec259d4b939fb38b184876341d978895e96f",
   "content_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-  "supersedes": null
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "undergraduate-engineering-award",
+    "round_key": "2027",
+    "round_evidence": "The source names the 2027 award."
+  },
+  "previous_round_id": null
 }
 ```
 
@@ -1678,31 +1870,9 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": true,
     "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
     "citizenship": {
@@ -1710,6 +1880,39 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1747,10 +1950,17 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://apply.rivertrust.example/2027",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1760,9 +1970,15 @@ Active mode fails with `not_on_active_feed` on `lifecycle.status`. Record and hi
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "fe013cbe8335afaf831e075cc8a6ddd673dcd385033639950850e0038ddf9609",
+  "dedupe_key": "f18f8da3972c4d1932d54f31f674ec259d4b939fb38b184876341d978895e96f",
   "content_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-  "supersedes": null
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "undergraduate-engineering-award",
+    "round_key": "2027",
+    "round_evidence": "The source names the 2027 award."
+  },
+  "previous_round_id": null
 }
 ```
 
@@ -1808,31 +2024,9 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "undergraduate"
-    ],
     "audience_tags": [
       "nigerian_university_student"
     ],
-    "fields_of_study": [
-      "computer_science",
-      "engineering"
-    ],
-    "year_of_study": [
-      "200",
-      "300",
-      "400"
-    ],
-    "min_cgpa": {
-      "scale": "5.0",
-      "minimum_hundredths": 350,
-      "class_equivalent": "second_class_upper"
-    },
-    "institutions": {
-      "scope": "any_accredited_nigerian_tertiary",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": true,
     "criteria_text": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale.",
     "citizenship": {
@@ -1840,6 +2034,39 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
       "countries": [
         "NG"
       ]
+    },
+    "education": {
+      "requirement": "restricted",
+      "stages": [
+        "undergraduate"
+      ],
+      "qualifications": [
+        "bachelor"
+      ],
+      "courses": [
+        "computer_science",
+        "engineering"
+      ],
+      "years": [
+        "200",
+        "300",
+        "400"
+      ],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "Nigerian citizen. Undergraduate in 200, 300, or 400 level. Engineering or computer science. Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "grade": {
+      "requirement": "explicit",
+      "scale": "5.0",
+      "minimum_hundredths": 350,
+      "source_wording": "Minimum CGPA 3.50 on a 5.0 scale."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -1877,10 +2104,17 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://apply.rivertrust.example/bridge-2026-open",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -1890,9 +2124,15 @@ Stages 1 and 2 pass. `lifecycle.status` is still `open`. `fixed_at` is `2026-01-
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "8c74fbc06dcf6a0657d31d2ea77e949657dd5a5e51c01ae01667d7557d2988d6",
-  "content_hash": "c36f3fe721781eb394690bd583e64d735e9af1a869630020bb890a517c4e8493",
-  "supersedes": null
+  "dedupe_key": "16628e74dcf38ae0cda6ad4165bfe68e4b9dfa26983cb0781b93485ef6aa49bb",
+  "content_hash": "410fe92ecc5237623ac290f2ba4dbb1bf895fc8c13fbc1d1532ae1f13cd5e0ab",
+  "identity": {
+    "provider_key": "river-trust",
+    "opportunity_key": "bridge-award-open-counterexample",
+    "round_key": "2026",
+    "round_evidence": "Synthetic counterexample of a 2026 round left open after the deadline."
+  },
+  "previous_round_id": null
 }
 ```
 
@@ -1910,9 +2150,10 @@ These were not resolved by inventing a value.
 8. Server timezone for `datetime.now()` on the current host is unknown. That is one reason the proposal refuses wall-clock checks.
 9. Architecture decision 0002's heading says accepted and its closing lines say proposed. This contract does not resolve that. Embeddings stay out of the listing.
 10. The README deployment story (Render) and decision 0001 (Heroku) disagree. Hosting is out of scope.
-11. Whether a human editor currently reviews listings before they reach students is unknown. The `human_verified` state is available for when that happens. It is not a claim that it happens today.
-12. The 7-day and 90-day freshness windows and the 730-day dedupe reservation are still proposals (section 5). They are not measurements of current scraper behaviour. West Africa Time as the default for a date with no stated zone is a settled instruction. The sample instants were measured with tzdata 2026e.
+11. Whether a person currently reviews listings before they reach students is unknown. The agreed rule sends ambiguous evidence to a human and forbids calling a bot review human. That is not a claim that a human reviews every listing today.
+12. Freshness, education matching, demographic hard requirements, and round identity were agreed on 9 November 2026 (WAT). The 90-day human window and the 730-day URL block are not rules. West Africa Time remains the default only when a date has no stated zone. Sample instants were measured with tzdata 2026e.
 13. No count was made of live listings that lack a citizenship value. Coverage is unknown.
+14. How `demographics.preferences` change sort order is not defined. It is not an agreed ranking rule.
 
 ## 23. Out of scope and non-goals
 
@@ -1922,13 +2163,13 @@ This file does not implement a product validator, a scraper, a migration, or a s
 
 | Field | Value |
 | --- | --- |
-| Status | Pending owner approval |
+| Policies 1 to 4 | Agreed by Goodness on 9 November 2026 (WAT) |
+| This revised commit | Awaiting final owner approval before any card |
 | Owner | Goodness |
-| Approved SHA | — |
-| Approved on (Africa/Lagos date) | — |
-| Amendments | — |
+| Approved implementation SHA | — |
+| Amendments | The four agreements replace the proposals in `cb68a3c7e32121681f4bae04d661fd3fad735b27` |
 
-No planner card may start while the approved SHA is blank. The first card after a SHA is written here is the NaijaOpportunities listings validator described in the status block at the top. Its done test is the table in section 18. That card is not started.
+No planner card may start while the implementation SHA is blank. The first card after a SHA is written here is the NaijaOpportunities listings validator described at the top. Its done test is the table in section 18. That card is not started.
 
 ## 25. Completeness checklist
 
@@ -1942,7 +2183,7 @@ The lead considers this document complete for approval review only when each lin
 - Jobs stay in student matching. Unknown listing citizenship does not withhold a student. Only an explicit list that misses the student's nationality does.
 - Source and application URLs, provenance, verification, and freshness are specified.
 - Publication, closed, expired, and withdrawn states are specified.
-- Deduplication, immutable application URL, revisioned update, and tombstone deletion are specified.
+- Deduplication uses kind, provider, opportunity, and round. The application URL does not block a new round. Updates are revisioned. Tombstones are retained for 730 days without reserving the URL.
 - Timestamps are UTC to the second. A date-only deadline ends at 23:59:59 in the stated zone, or in Africa/Lagos when no zone is stated. `evaluation_time` is an argument.
 - Rolling and unknown deadlines have no fabricated dates.
 - Version `1.0.0` and major/minor/patch rules are specified.

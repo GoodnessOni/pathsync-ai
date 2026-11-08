@@ -25,31 +25,34 @@
     "contact_email": null
   },
   "eligibility": {
-    "education_levels": [
-      "not_applicable"
-    ],
     "audience_tags": [],
-    "fields_of_study": [
-      "unknown"
-    ],
-    "year_of_study": [
-      "not_applicable"
-    ],
-    "min_cgpa": {
-      "scale": "none",
-      "minimum_hundredths": null,
-      "class_equivalent": null
-    },
-    "institutions": {
-      "scope": "not_applicable",
-      "names": []
-    },
-    "demographic_focus": [],
     "criteria_stated": false,
     "criteria_text": "Not stated by the source.",
     "citizenship": {
       "requirement": "unknown",
       "countries": []
+    },
+    "education": {
+      "requirement": "unrestricted",
+      "stages": [],
+      "qualifications": [],
+      "courses": [],
+      "years": [],
+      "institutions": {
+        "requirement": "unrestricted",
+        "names": []
+      },
+      "source_wording": "The source states no education requirement."
+    },
+    "grade": {
+      "requirement": "none",
+      "scale": null,
+      "minimum_hundredths": null,
+      "source_wording": "The source states no minimum grade."
+    },
+    "demographics": {
+      "requirements": [],
+      "preferences": []
     }
   },
   "deadline": {
@@ -88,10 +91,17 @@
     "closed_reason": null
   },
   "verification": {
-    "state": "machine_checked",
-    "last_checked_at": "2026-11-08T09:00:00Z",
-    "fresh_until": "2026-11-15T09:00:00Z",
-    "method": "page_fetch"
+    "state": "verified",
+    "outcome": "confirmed_open",
+    "method": "automated_review",
+    "reviewed_by": "automation",
+    "reviewer_id": null,
+    "source_checked_url": "https://rivertransit.example",
+    "evidence": "Official provider page checked for open status, deadline, eligibility, and the application link. This is not an HTTP status alone.",
+    "last_attempt_at": "2026-11-08T09:00:00Z",
+    "last_attempt_outcome": "confirmed_open",
+    "last_success_at": "2026-11-08T09:00:00Z",
+    "fresh_until": "2026-11-15T09:00:00Z"
   },
   "timestamps": {
     "created_at": "2026-10-01T08:00:00Z",
@@ -101,7 +111,13 @@
     "closed_at": null,
     "withdrawn_at": null
   },
-  "dedupe_key": "007941f690b5ef4c9033f276aea54c382cf51d6de414538a1c84686021b1a1bb",
-  "content_hash": "025d2d7838f523f28081662830bf2402a4583daab73ead9869cf37a3d1eba2aa",
-  "supersedes": null
+  "dedupe_key": "2803f370604f5557da4817c2197a5035d9ee966a99f5bfbfb7ef6e52bee73c41",
+  "content_hash": "7b0feda2e51ec39b8a18ff91b0e9f2081114b9896bead2309c02dbdf0748b537",
+  "identity": {
+    "provider_key": "river-transit",
+    "opportunity_key": "operations-analyst",
+    "round_key": "unspecified",
+    "round_evidence": "The source does not name an application round."
+  },
+  "previous_round_id": null
 }

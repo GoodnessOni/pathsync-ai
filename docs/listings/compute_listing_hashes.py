@@ -12,6 +12,10 @@ The script reads the five fixture files, checks them against the matching
 JSON samples in docs/data-contract.md, recomputes both digests, checks
 fixed-deadline instants with the IANA timezone data, and exits non-zero
 on any mismatch. Synthetic fixtures are not production listings.
+
+accept_url is the section 12.1 record check. It does not rewrite a URL.
+normalise_url is a separate producer helper. A rewritten string is not
+an accepted record until accept_url is applied to that new string.
 """
 
 from __future__ import annotations
@@ -103,38 +107,118 @@ def jcs_bytes(value) -> bytes:
     ).encode("utf-8")
 
 
-def canonical_url(url: str) -> str:
-    """Return the contract's canonical https URL. Reject anything it cannot normalise."""
-    if not isinstance(url, str) or re.search(r"\s", url):
-        raise ValueError("url has whitespace")
-    parts = urlsplit(url)
-    if parts.scheme != "https" or parts.username or parts.password or parts.fragment:
-        raise ValueError("url scheme, userinfo, or fragment")
-    host = parts.hostname
-    if host is None or parts.port is not None:
-        raise ValueError("url host or port")
-    host = host.lower().rstrip(".")
-    if ":" in host or re.fullmatch(r"\d+\.\d+\.\d+\.\d+", host):
-        raise ValueError("ip literal")
-    if host in {"example.com", "example.org", "example.net", "localhost"} or host.endswith(".localhost"):
-        raise ValueError("placeholder host")
+def _host_error(host: str):
+    if not host or ":" in host:
+        return "host"
+    if re.fullmatch(r"\d+\.\d+\.\d+\.\d+", host):
+        return "ip_literal"
+    reserved = ("example.com", "example.org", "example.net", "localhost")
+    if host in reserved or any(host.endswith("." + name) for name in reserved):
+        return "placeholder_host"
     labels = host.split(".")
     if any(not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label) for label in labels):
-        raise ValueError("host labels")
-    path = parts.path
+        return "host"
+    return None
+
+
+def _query_error(query: str):
+    if query == "":
+        return None
+    pairs = query.split("&")
+    parsed = []
+    for pair in pairs:
+        if "=" not in pair:
+            return "query"
+        key, value = pair.split("=", 1)
+        if not re.fullmatch(r"[a-z0-9._~-]+", key):
+            return "query_key"
+        if key in TRACKING:
+            return "tracking_query"
+        if value and not re.fullmatch(r"(?:[A-Za-z0-9._~-]|%[0-9A-F]{2})*", value):
+            return "query_value"
+        parsed.append((key, value))
+    if parsed != sorted(parsed):
+        return "query_order"
+    if len(parsed) != len(set(key for key, _ in parsed)):
+        return "query_duplicate"
+    return None
+
+
+def _path_error(path: str):
+    if path == "":
+        return None
+    if not path.startswith("/") or path.endswith("/") or "//" in path:
+        return "path"
+    segments = path.split("/")[1:]
+    for segment in segments:
+        if segment in {".", ".."} or not re.fullmatch(r"[A-Za-z0-9._~-]+", segment):
+            return "path"
+    return None
+
+
+def accept_url(url: str):
+    """Record acceptance. Returns an error name, or None. Does not rewrite the string.
+
+    This is the section 12.1 check. It is documentation support for that written
+    rule, not a product validator, and it is not normalise_url.
+    """
+    if not isinstance(url, str) or re.search(r"[\s]", url):
+        return "whitespace"
+    if "#" in url:
+        return "fragment"
+    if not url.startswith("https://"):
+        return "scheme"
+    rest = url[len("https://"):]
+    if not rest or "@" in rest.split("/")[0].split("?")[0]:
+        return "userinfo"
+    host_and_more = rest
+    if "/" in host_and_more:
+        host, tail = host_and_more.split("/", 1)
+        tail = "/" + tail
+    else:
+        host, tail = host_and_more, ""
+    if "?" in host:
+        return "host"
+    query = ""
+    path = tail
+    if "?" in tail:
+        path, query = tail.split("?", 1)
+        if "?" in query:
+            return "query"
+    if _host_error(host):
+        return _host_error(host)
+    path_error = _path_error(path)
+    if path_error:
+        return path_error
+    return _query_error(query)
+
+
+def normalise_url(url: str) -> str:
+    """Producer prep only. Not record acceptance.
+
+    A caller who stores the input unchanged has not accepted it. Compare the
+    input with accept_url separately. The result can still fail accept_url.
+    """
+    if not isinstance(url, str) or re.search(r"[\s]", url):
+        raise ValueError("whitespace")
+    parts = urlsplit(url)
+    if parts.scheme.lower() != "https" or parts.username or parts.password:
+        raise ValueError("not normalisable")
+    host = (parts.hostname or "").lower().rstrip(".")
+    if parts.port not in (None, 443):
+        raise ValueError("port")
+    path = parts.path or ""
     if path == "/":
         path = ""
-    if len(path) > 1 and path.endswith("/"):
+    elif len(path) > 1 and path.endswith("/"):
         path = path[:-1]
-    if path and not re.fullmatch(r"(?:/[A-Za-z0-9._~-]+)+", path):
-        raise ValueError("path")
-    query_pairs = []
-    for key, val in parse_qsl(parts.query, keep_blank_values=True):
+    pairs = []
+    for key, value in parse_qsl(parts.query, keep_blank_values=True):
         if key.lower() in TRACKING:
             continue
-        query_pairs.append((key, val))
-    query_pairs.sort()
-    query = urlencode(query_pairs)
+        pairs.append((key.lower(), value))
+    pairs.sort()
+    query = urlencode(pairs)
     return urlunsplit(("https", host, path, query, ""))
 
 
@@ -170,8 +254,9 @@ def assert_canonical_shape(listing: dict) -> None:
         value, present = walk(listing, path)
         if value is None:
             continue
-        if canonical_url(value) != value:
-            raise SystemExit(f"{listing['listing_id']} {'.'.join(path)} is not canonical")
+        reason = accept_url(value)
+        if reason:
+            raise SystemExit(f"{listing['listing_id']} {'.'.join(path)} rejected by accept_url: {reason}")
 
 
 def dedupe_key(listing: dict) -> str:
@@ -315,10 +400,43 @@ def self_checks() -> list[str]:
         raise SystemExit("array order did not change the hash")
     lines.append("self_check_array_order: GH before NG differs from NG before GH")
 
-    dirty = canonical_url("https://Apply.River.Example/Path/?utm_source=x&b=2&a=1")
-    if dirty != "https://apply.river.example/Path?a=1&b=2":
-        raise SystemExit(f"url canonicalisation produced {dirty}")
-    lines.append(f"self_check_url: {dirty}")
+    accepted = [
+        "https://apply.rivertrust.example/2027",
+        "https://rivertrust.example",
+        "https://apply.rivertrust.example/Path?a=1&b=2",
+    ]
+    rejected = [
+        ("http://apply.rivertrust.example/2027", "scheme"),
+        ("https://user:pass@apply.rivertrust.example/2027", "userinfo"),
+        ("https://apply.rivertrust.example/2027#form", "fragment"),
+        ("https://apply.rivertrust.example:443/2027", "host"),
+        ("https://Apply.Rivertrust.example/2027", "host"),
+        ("https://apply.rivertrust.example/2027/", "path"),
+        ("https://localhost/2027", "placeholder_host"),
+        ("https://example.com/2027", "placeholder_host"),
+        ("https://apply.example.com/2027", "placeholder_host"),
+        ("https://apply.rivertrust.example/2027?utm_source=x", "tracking_query"),
+        ("https://apply.rivertrust.example/2027?b=1&a=2", "query_order"),
+        ("https://apply.rivertrust.example/2027?B=1", "query_key"),
+        ("https://apply.rivertrust.example/2027?q=%2f", "query_value"),
+    ]
+    for url in accepted:
+        if accept_url(url) is not None:
+            raise SystemExit(f"expected accept {url} got {accept_url(url)}")
+        lines.append(f"url_accept: {url} ok")
+    for url, reason in rejected:
+        got = accept_url(url)
+        if got != reason:
+            raise SystemExit(f"expected reject {url} {reason} got {got}")
+        lines.append(f"url_reject: {url} {reason}")
+    dirty = "https://Apply.River.Example/Path/?utm_source=x&b=2&a=1"
+    cleaned = normalise_url(dirty)
+    if accept_url(dirty) is None or cleaned != "https://apply.river.example/Path?a=1&b=2" or accept_url(cleaned) is not None:
+        raise SystemExit(f"normaliser oracle failed: {accept_url(dirty)} {cleaned} {accept_url(cleaned)}")
+    lines.append(f"url_normalise_not_acceptance: input={dirty}")
+    lines.append("url_normalise_not_acceptance: input_accepted=no")
+    lines.append(f"url_normalise_not_acceptance: output={cleaned}")
+    lines.append("url_normalise_not_acceptance: output_accepted=yes")
 
     if LISTING_ID.match("lst_01ARZ3NDEKTSV4RRFFQ69G5FAV") is None:
         raise SystemExit("identity pattern rejected a known synthetic id")

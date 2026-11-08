@@ -11,7 +11,26 @@ version_rule: same listing_id and revision with a different content_hash is revi
 self_check_null_vs_absent: null=d091f9c83c091f79652fe8786375b3fe4ce0861a56f5bfbafedbe431877ff0e8 absent=44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
 self_check_unicode_nfc: composed=86028b41ba792eaf82aa26a45b218f6734f7f1096a86f1746c8296e088a0ccb4
 self_check_array_order: GH before NG differs from NG before GH
-self_check_url: https://apply.river.example/Path?a=1&b=2
+url_accept: https://apply.rivertrust.example/2027 ok
+url_accept: https://rivertrust.example ok
+url_accept: https://apply.rivertrust.example/Path?a=1&b=2 ok
+url_reject: http://apply.rivertrust.example/2027 scheme
+url_reject: https://user:pass@apply.rivertrust.example/2027 userinfo
+url_reject: https://apply.rivertrust.example/2027#form fragment
+url_reject: https://apply.rivertrust.example:443/2027 host
+url_reject: https://Apply.Rivertrust.example/2027 host
+url_reject: https://apply.rivertrust.example/2027/ path
+url_reject: https://localhost/2027 placeholder_host
+url_reject: https://example.com/2027 placeholder_host
+url_reject: https://apply.example.com/2027 placeholder_host
+url_reject: https://apply.rivertrust.example/2027?utm_source=x tracking_query
+url_reject: https://apply.rivertrust.example/2027?b=1&a=2 query_order
+url_reject: https://apply.rivertrust.example/2027?B=1 query_key
+url_reject: https://apply.rivertrust.example/2027?q=%2f query_value
+url_normalise_not_acceptance: input=https://Apply.River.Example/Path/?utm_source=x&b=2&a=1
+url_normalise_not_acceptance: input_accepted=no
+url_normalise_not_acceptance: output=https://apply.river.example/Path?a=1&b=2
+url_normalise_not_acceptance: output_accepted=yes
 self_check_identity: crockford listing_id accepted; I rejected
 self_check_round: same_round=65941874416207509e0b39022e94b84e6ac4b780cf92d6c45d356db44934eda4
 self_check_new_round: next_round=9c2f233946856cda8a68c3429c69b3d5d89a532240fc438f6923b89c104e5682

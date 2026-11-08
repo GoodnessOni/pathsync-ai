@@ -2,7 +2,7 @@
 
 ## Plain-English summary
 
-This document is the listings agreement between PathSync and NaijaOpportunities. Goodness agreed four policies on 9 November 2026 (WAT), replacing the four older proposals. This revision still awaits final approval of the commit. No planner card starts until the approval record names that commit.
+This document is the listings agreement between PathSync and NaijaOpportunities. Goodness approved the policies in commit `34969abca843462beb7b96ca1a7f3b4ffc723485` on 9 November 2026 (WAT). This correction keeps those policies and only repairs contradictions in the wording. The corrected commit is not the approved pin until section 24 names its SHA. No planner card starts before that.
 
 Jobs stay in student matching, including jobs with no degree requirement. Onboarding will ask for nationality, institution, qualification, level or year, course, and expected graduation, and those answers can be updated. The screen is not built here. Citizenship withholds a listing only when an explicit nationality list omits the student's nationality. Unconstrained citizenship can be included. Unknown citizenship stays discoverable as Check eligibility and is not called a match. Provider country and the word international are not a mismatch. A named time zone is used as stated. A date-only deadline ends at 23:59:59 in that zone. West Africa Time applies only when no zone was given. Rolling and unknown deadlines have no invented date.
 
@@ -12,7 +12,7 @@ Education is agreed. Each listing is unrestricted, restricted, or unknown, with 
 
 Demographics and marks are agreed. Hard requirements differ from preferences. A confirmed demographic mismatch is excluded from personalised matches, with an explanation. An unanswered question is unknown, not a no, and stays discoverable as Check eligibility. Those questions are optional, their purpose is explained, and nothing is inferred from a name or photo. A minimum grade applies only on the same stated scale. Unlike scales are not converted. A confirmed grade or course mismatch is excluded with a reason. Missing or ambiguous facts stay discoverable and are not called eligible. Preferences never hard-exclude. A match is guidance, not a guarantee.
 
-Withdrawals are agreed. A withdrawn listing leaves active matching and keeps its id, history, reason, and time. Saved listings say Withdrawn. The same round keeps that id if restored, and the revision increases. A new round gets a new id even if the link is reused, and confirmed rounds are linked. The link alone does not decide identity. A minimal withdrawal record is kept 730 days so saved copies can be updated and the same round is not imported twice. That period does not reserve the link and does not keep sensitive text.
+Withdrawals are agreed. A withdrawn listing leaves active matching and keeps its id, history, reason, and time. Saved listings say Withdrawn. The same round keeps that id if it is restored or if the provider's real application link changes, and the revision increases. A new round gets a new id even if the link is reused, and confirmed rounds are linked. The link alone does not decide identity. A minimal withdrawal record is kept 730 days so saved copies can be updated and the same round is not imported twice. That period does not reserve the link and does not keep sensitive text.
 
 The five samples are synthetic. Hashes come from docs/listings/compute_listing_hashes.py. Preference ranking is not defined and is not agreed.
 
@@ -21,13 +21,14 @@ The five samples are synthetic. Hashes come from docs/listings/compute_listing_h
 | Document | `docs/data-contract.md` |
 | Owner repository | `GoodnessOni/pathsync-ai` |
 | Author role | OGverse Lead |
-| Status | **PROPOSED — pending owner approval** |
+| Status | Policies approved in `34969abca843462beb7b96ca1a7f3b4ffc723485`. This correction awaits approval of the pin. |
 | Schema | `ogverse.listings` `1.0.0` |
 | Authored | 8 November 2026 |
 | Pinned evaluation instant used by every sample | `2026-11-08T12:00:00Z` (13:00 Africa/Lagos, WAT, UTC+1) |
-| Approval | Not granted. This file does not record an approval. |
+| Approved policy commit | `34969abca843462beb7b96ca1a7f3b4ffc723485` |
+| Approved corrected pin | Not granted. This correction does not name its own SHA as approved. |
 
-This is the lead's contract for listings. It is not a planner card, not a validator, and not product code. No card may start until Goodness approves this document. Approval means Goodness accepts this text, or a later commit replaces it and names the accepted git SHA. The jobs, nationality, and time-zone rules in the summary are settled instructions. The other normative rules are proposals until that approval.
+This is the lead's contract for listings. It is not a planner card, not a validator, and not product code. Goodness approved the policies in `34969abca843462beb7b96ca1a7f3b4ffc723485`. This correction does not change those policies. No card may start until Goodness approves the corrected pin in section 24. That approval is not implied by this file.
 
 The first card after approval, and not before, is a listings validator in the NaijaOpportunities repository against a pinned SHA of this file. That card is done when the valid samples in this document pass and a missing required field, an invalid type, and an expired deadline each fail with an error that names the field. This document does not start that card and does not change the NaijaOpportunities repository.
 
@@ -131,7 +132,7 @@ Observed 8 November 2026, read-only, default-branch tip commit `c737b4f` (20 Jun
 
 The plain-English summary is the owner-facing account. This section is the same register in the words the rest of the contract uses.
 
-Policies 1 to 4 below were agreed by Goodness on 9 November 2026 (WAT). They replace the four proposals in commit `cb68a3c7e32121681f4bae04d661fd3fad735b27`. Agreement to these policies, and to revising this contract, is not final approval of a commit for implementation. This revised text stays pending that final approval. No card starts before it.
+Policies 1 to 4 were agreed by Goodness on 9 November 2026 (WAT) and are approved in commit `34969abca843462beb7b96ca1a7f3b4ffc723485`. They replace the four proposals in `cb68a3c7e32121681f4bae04d661fd3fad735b27`. This later correction does not reopen them. It is not itself the approved pin. No card starts until section 24 names the corrected SHA.
 
 ### Settled — jobs stay in student matching
 
@@ -314,7 +315,7 @@ Constraints that need more than a cell are in sections 10–16. "Required" means
 | `name` | string | yes | no | 1..160. Not a placeholder |
 | `type` | string | yes | no | `government`, `tertiary_institution`, `company`, `foundation`, `ngo`, `multilateral`, `unknown` |
 | `country` | string | yes | no | ISO 3166-1 alpha-2, or `ZZ` when the source does not say |
-| `url` | string | yes | yes | Canonical `https` URL, or null |
+| `url` | string | yes | yes | Accepted `https` URL, section 12, or null |
 
 `provider.country` `ZZ` is allowed. It MUST NOT be used as proof that Nigerian students are eligible.
 
@@ -324,7 +325,7 @@ Constraints that need more than a cell are in sections 10–16. "Required" means
 | --- | --- | --- | --- | --- |
 | `name` | string | yes | no | 1..80, `^[a-z0-9]+(?:-[a-z0-9]+)*$` |
 | `kind` | string | yes | no | `official`, `aggregator`, `news`, `manual`, `unknown` |
-| `url` | string | yes | no | Canonical `https` URL of the page the facts were taken from |
+| `url` | string | yes | no | Accepted `https` URL, section 12, of the page the facts were taken from |
 | `retrieved_at` | string | yes | no | UTC timestamp. Not after `timestamps.updated_at` |
 
 `source.kind` is the producer's classification of that page. `news` is allowed and MUST NOT be labelled `official`. `unknown` is allowed and PathSync MUST NOT render it as the funder's own site.
@@ -333,7 +334,7 @@ Constraints that need more than a cell are in sections 10–16. "Required" means
 
 | Field | Type | Required | Null | Constraints |
 | --- | --- | --- | --- | --- |
-| `url` | string | yes | no | Canonical `https` URL. Immutable for a `listing_id` |
+| `url` | string | yes | no | Accepted `https` URL, section 12. Not an identity. The same round may change it on a later revision |
 | `url_kind` | string | yes | no | `direct_application`, `official_programme_page`, `aggregator_page`, `unknown` |
 | `contact_email` | string | yes | yes | Null, or one address, syntax only, length 1..120 |
 
@@ -560,13 +561,13 @@ Course map from the current `COURSES` list in `frontend/src/pages/Onboard.jsx`. 
 | Microbiology | `natural_sciences` |
 | Other | no field exclude |
 
-The string `fishery` is the current UI value. Mapping it to `agriculture` is a proposal about that control, not a claim about university faculties.
+The string `fishery` is the current UI value. Mapping it to `agriculture` is a reading of that control, not a claim about university faculties.
 
-CGPA conversion uses integer hundredths. Scales are 400 or 500. To express student hundredths `h` on scale `ss` as listing scale `ls`:
+A grade comparison uses the hundredths already recorded on one stated scale. 3.50 on a 5.0 scale is 350. There is no conversion into another scale, and a degree class is not turned into a CGPA.
 
-`converted = (h * ls + ss // 2) // ss`
-
-Worked example: 3.20 on a 4.0 scale is `h=320`, `ss=400`, listing scale 5.0 is `ls=500`. `converted = (160000 + 200) // 400 = 400`, which is 4.00 on a 5.0 scale. Exclude only when `converted < minimum_hundredths`. A class equivalent without `minimum_hundredths` does not exclude.
+- Listing `scale` `5.0` and `minimum_hundredths` 350, student 360 hundredths on `5.0`: the grade rule does not exclude.
+- Same listing, student 300 hundredths on `5.0`: `exclude(grade)`.
+- Same listing, student 320 hundredths on `4.0`: `needs_check(Check eligibility)`. Do not multiply by 5/4. Do not treat 320 as 400. Do not call the student eligible.
 
 Demographic answers map as `Female student`→`female`, `Student with disability`→`disability`, `First-generation student`→`first_generation`, `From a low-income family`→`low_income`, `From Northern Nigeria`→`northern_nigeria`, `From Niger Delta region`→`niger_delta`, `From rural area`→`rural`. `None of these`, or a skipped question, stores no token. A skipped question is unknown, not a no.
 
@@ -580,18 +581,57 @@ If `synthetic` were ignored, at `CONTRACT_EVALUATION_TIME` the open scholarship 
 
 ## 12. Source provenance and URLs
 
-**Proposed.** `source.url` is the page that was read. `application.url` is the best next page for the student. They MAY differ. They MUST both be canonical `https` URLs. The validator does not resolve DNS and does not fetch them. Trust is a recorded classification (`source.kind`, `application.url_kind`) plus deterministic syntax checks.
+`source.url` is the page the facts were taken from. `application.url` is the best next page for the student. They MAY differ. Neither is the listing's identity. `source.kind` and `application.url_kind` record what sort of page it is. The checks below do not resolve DNS and do not fetch the URL.
 
-A URL is canonical when all of the following hold:
+There are two operations. They are not interchangeable.
 
-1. No leading or trailing whitespace and no ASCII whitespace inside.
-2. Scheme `https`, no userinfo, no fragment, no port.
-3. Host is lowercase dot-separated LDH labels, not an IPv4 or IPv6 literal, not `localhost`, not ending in `.localhost`, and not exactly `example.com`, `example.org`, or `example.net`.
-4. Hosts ending in `.example` are syntactically allowed so these fixtures have a legal URL. Production rows MUST use the real fetched host. `.example` is not a placeholder bypass for `example.com`.
-5. Path is empty or matches `^(/[A-Za-z0-9._~-]+)*$`. Empty path is serialised with no slash (`https://rivertrust.example`, not `https://rivertrust.example/`). No trailing slash, no `.` or `..` segments.
-6. Query, if present, is `?` plus `key=value` pairs sorted by key then value, keys lowercase, percent-encoding in uppercase hex. These query names are forbidden and MUST be stripped by the producer before publish: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_id`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `igshid`, `ref`.
+### 12.1 Record acceptance
 
-A non-canonical URL is `non_canonical_url` on that field (`source.url`, `application.url`, or `provider.url`). The validator MUST NOT rewrite it.
+A stored `source.url`, `application.url`, non-null `provider.url`, and non-null `verification.source_checked_url` MUST already be an accepted URL. The check returns `non_canonical_url` on that field. It does not rewrite the string. `docs/listings/compute_listing_hashes.py` function `accept_url` is this check for the fixtures. It is not a product validator.
+
+An accepted URL:
+
+1. Contains no ASCII whitespace.
+2. Starts with `https://` and has no second scheme.
+3. Has no userinfo (`user:pass@`), no fragment (`#`), and no port, including `:443`.
+4. Has a lowercase host of dot-separated labels. Each label matches `^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`. The host is not an IPv4 literal. It is not `localhost` or a name ending `.localhost`. It is not `example.com`, `example.org`, or `example.net`, and it does not end with `.example.com`, `.example.org`, or `.example.net`.
+5. A host ending `.example` is accepted syntax so these synthetic fixtures have a legal string. A production row must still be the host that was fetched. Acceptance does not check that duty.
+6. The path is empty, written with no slash after the host (`https://rivertrust.example`), or one or more segments of `/` plus `[A-Za-z0-9._~-]+`. No trailing slash, no empty segment, and no `.` or `..` segment. Path case is kept.
+7. A query, if present, is `?` plus `key=value` pairs separated by `&`. Keys match `^[a-z0-9._~-]+$`. Values are empty or match `[A-Za-z0-9._~-]` and `%` plus two uppercase hex digits. Pairs are sorted by key, then value, and keys are unique. These keys are rejected: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_id`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `igshid`, `ref`.
+
+Accepted strings, measured by `accept_url` as `ok`:
+
+- `https://apply.rivertrust.example/2027`
+- `https://rivertrust.example`
+- `https://apply.rivertrust.example/Path?a=1&b=2`
+
+Rejected strings, measured by `accept_url`. The stored record stays the rejected string. The check does not replace it:
+
+| String | Reason |
+| --- | --- |
+| `http://apply.rivertrust.example/2027` | `scheme` |
+| `https://user:pass@apply.rivertrust.example/2027` | `userinfo` |
+| `https://apply.rivertrust.example/2027#form` | `fragment` |
+| `https://apply.rivertrust.example:443/2027` | `host` |
+| `https://Apply.Rivertrust.example/2027` | `host` |
+| `https://apply.rivertrust.example/2027/` | `path` |
+| `https://localhost/2027` | `placeholder_host` |
+| `https://example.com/2027` | `placeholder_host` |
+| `https://apply.example.com/2027` | `placeholder_host` |
+| `https://apply.rivertrust.example/2027?utm_source=x` | `tracking_query` |
+| `https://apply.rivertrust.example/2027?b=1&a=2` | `query_order` |
+| `https://apply.rivertrust.example/2027?B=1` | `query_key` |
+| `https://apply.rivertrust.example/2027?q=%2f` | `query_value` |
+
+### 12.2 Normalisation is not acceptance
+
+A producer may prepare a raw link before storing it. `normalise_url` in the same script is that helper. It lowercases the host, drops a trailing slash, drops the tracking keys above, sorts the query, and removes a fragment. It does not accept the input. If someone stores the raw string, `accept_url` still rejects it.
+
+Measured oracle, not a stored listing:
+
+- Input `https://Apply.River.Example/Path/?utm_source=x&b=2&a=1` is rejected.
+- `normalise_url` returns `https://apply.river.example/Path?a=1&b=2`.
+- That output passes `accept_url`. The input does not become the record by being normalised.
 
 Placeholder `provider.name` and `title`, compared after trimming and ASCII lowercasing, are `placeholder_name` on that field. Names: `various`, `see listing`, `see the listing`, `n/a`, `na`, `tbc`, `tba`, `unknown`, `test`, `none`, `null`, `not specified`, `not available`, `provider`, `company`, `remote`. Title-only additions to that test: `untitled`, `scholarship`, `job`, `internship`. The current scraper values `Various`, `See listing`, and `Remote` fail this rule on purpose.
 
@@ -606,7 +646,7 @@ Placeholder `provider.name` and `title`, compared after trimming and ASCII lower
 | `method` | string | yes | yes | Null only when there has been no attempt. Otherwise `automated_review` or `human_review` |
 | `reviewed_by` | string | yes | yes | `automation` or `human`, null only when `method` is null |
 | `reviewer_id` | string | yes | yes | Null when `reviewed_by` is not `human`. Otherwise a slug `^[a-z0-9]+(?:-[a-z0-9]+)*$`, length 1..64. Never a bot, and never a student name |
-| `source_checked_url` | string | yes | yes | Canonical `https` URL of the official provider source when a check was attempted, else null |
+| `source_checked_url` | string | yes | yes | Accepted `https` URL, section 12, of the official provider source when a check was attempted, else null |
 | `evidence` | string | yes | yes | 1..2000 when a check was attempted, else null. Must name what was read. An HTTP status alone is not evidence |
 | `last_attempt_at` | string | yes | yes | UTC timestamp of the latest attempt, including a failure |
 | `last_attempt_outcome` | string | yes | yes | `confirmed_open`, `confirmed_closed`, `confirmed_expired`, `confirmed_withdrawn`, `inconclusive`, or `failed` |
@@ -717,7 +757,7 @@ Algorithm, which the script performs and then checks:
 1. Parse the JSON object. Duplicate keys are invalid. Pretty printing does not matter.
 2. Apply Unicode NFC to every string. The hash is of those strings, encoded as UTF-8. Non-ASCII characters are not forced into `\u` escapes. `/` is not escaped.
 3. Designated arrays must already be unique and sorted by UTF-8 bytes: `citizenship.countries`, `education.stages`, `education.qualifications`, `education.courses`, `education.years`, `education.institutions.names`, `demographics.requirements`, `demographics.preferences`, `audience_tags`, and `documents_required`. The hash does not silently reorder them. A different order is a different hash.
-4. `application.url`, `source.url`, and a non-null `provider.url` must already be canonical: lowercase host, no userinfo, no port, no fragment, no tracking query (`utm_*`, `fbclid`, `gclid`, `mc_cid`, `mc_eid`, `igshid`, `ref`), remaining query sorted by key then value, no trailing slash unless the path is empty. Identity: `listing_id` matches `^lst_[0-9A-HJKMNP-TV-Z]{26}$`.
+4. `application.url`, `source.url`, a non-null `provider.url`, and a non-null `verification.source_checked_url` must already pass section 12.1 `accept_url`. The script does not run `normalise_url` on a stored fixture and then treat that rewrite as acceptance. `listing_id` matches `^lst_[0-9A-HJKMNP-TV-Z]{26}$`.
 5. JSON null is kept. An absent key is not the same value and is not invented before hashing.
 6. `dedupe_key` is SHA-256, lowercase hex, of the UTF-8 bytes of `kind`, a newline, `identity.provider_key`, a newline, `identity.opportunity_key`, a newline, and `identity.round_key`. Each of those four values is a slug. The application URL is not included. The stored field must already equal that digest. A new round changes the digest even when the URL does not. The same round keeps the digest even when the URL changes.
 7. `content_hash` is SHA-256, lowercase hex, of the UTF-8 JSON Canonicalization Scheme (RFC 8785) encoding of the object with `content_hash` removed and every other field kept, including `dedupe_key` and JSON null. This version has no fractional numbers, so sorted keys and no insignificant whitespace match JCS for these values.
@@ -742,7 +782,26 @@ version_rule: same listing_id and revision with a different content_hash is revi
 self_check_null_vs_absent: null=d091f9c83c091f79652fe8786375b3fe4ce0861a56f5bfbafedbe431877ff0e8 absent=44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
 self_check_unicode_nfc: composed=86028b41ba792eaf82aa26a45b218f6734f7f1096a86f1746c8296e088a0ccb4
 self_check_array_order: GH before NG differs from NG before GH
-self_check_url: https://apply.river.example/Path?a=1&b=2
+url_accept: https://apply.rivertrust.example/2027 ok
+url_accept: https://rivertrust.example ok
+url_accept: https://apply.rivertrust.example/Path?a=1&b=2 ok
+url_reject: http://apply.rivertrust.example/2027 scheme
+url_reject: https://user:pass@apply.rivertrust.example/2027 userinfo
+url_reject: https://apply.rivertrust.example/2027#form fragment
+url_reject: https://apply.rivertrust.example:443/2027 host
+url_reject: https://Apply.Rivertrust.example/2027 host
+url_reject: https://apply.rivertrust.example/2027/ path
+url_reject: https://localhost/2027 placeholder_host
+url_reject: https://example.com/2027 placeholder_host
+url_reject: https://apply.example.com/2027 placeholder_host
+url_reject: https://apply.rivertrust.example/2027?utm_source=x tracking_query
+url_reject: https://apply.rivertrust.example/2027?b=1&a=2 query_order
+url_reject: https://apply.rivertrust.example/2027?B=1 query_key
+url_reject: https://apply.rivertrust.example/2027?q=%2f query_value
+url_normalise_not_acceptance: input=https://Apply.River.Example/Path/?utm_source=x&b=2&a=1
+url_normalise_not_acceptance: input_accepted=no
+url_normalise_not_acceptance: output=https://apply.river.example/Path?a=1&b=2
+url_normalise_not_acceptance: output_accepted=yes
 self_check_identity: crockford listing_id accepted; I rejected
 self_check_round: same_round=65941874416207509e0b39022e94b84e6ac4b780cf92d6c45d356db44934eda4
 self_check_new_round: next_round=9c2f233946856cda8a68c3429c69b3d5d89a532240fc438f6923b89c104e5682
@@ -938,9 +997,9 @@ The consumer's sync cursor is per feed. PathSync does not assume the producer's 
 
 ## 20. Distribution pin
 
-**Proposed.** This path, `docs/data-contract.md` in `GoodnessOni/pathsync-ai`, is the only editable source of the contract. NaijaOpportunities does not keep a drifting copy of the prose.
+This path, `docs/data-contract.md` in `GoodnessOni/pathsync-ai`, is the only editable source of the contract. NaijaOpportunities does not keep a drifting copy of the prose.
 
-After Goodness approves a commit, the first validator card pins that commit. It does not pin branch `rebuild/pathsync-v2`, and it does not pin `main`. This proposal is not yet an approved SHA. `git_sha` stays null until approval. Nobody should point a validator at this file's moving branch tip.
+Goodness approved the policies in commit `34969abca843462beb7b96ca1a7f3b4ffc723485`. That commit is the policy decision. It is not the pin for this corrected text. The first validator card pins the corrected commit only after section 24 names that SHA. It does not pin branch `rebuild/pathsync-v2`, and it does not pin `main`. Until then the lock's `git_sha` stays null. Nobody should point a validator at this file's moving branch tip.
 
 The pin the future card adds in the NaijaOpportunities repository, and not in this task, is a lock of this shape:
 
@@ -2163,13 +2222,13 @@ This file does not implement a product validator, a scraper, a migration, or a s
 
 | Field | Value |
 | --- | --- |
-| Policies 1 to 4 | Agreed by Goodness on 9 November 2026 (WAT) |
-| This revised commit | Awaiting final owner approval before any card |
+| Policies 1 to 4, jobs, nationality, and time zone | Approved by Goodness in `34969abca843462beb7b96ca1a7f3b4ffc723485` on 9 November 2026 (WAT) |
+| This correction | Awaiting final approval of the corrected pin. Publishing this commit does not approve it. |
 | Owner | Goodness |
-| Approved implementation SHA | — |
-| Amendments | The four agreements replace the proposals in `cb68a3c7e32121681f4bae04d661fd3fad735b27` |
+| Approved corrected pin | — |
+| What the correction changes | Application URL is not immutable. Section 12 separates acceptance from normalisation. CGPA compares one stated scale only. No new policy. |
 
-No planner card may start while the implementation SHA is blank. The first card after a SHA is written here is the NaijaOpportunities listings validator described at the top. Its done test is the table in section 18. That card is not started.
+No planner card may start while the approved corrected pin is blank. The first card after that SHA is written here is the NaijaOpportunities listings validator described at the top. Its done test is the table in section 18. That card is not started. The policy commit `34969ab` is not a substitute pin for this corrected text.
 
 ## 25. Completeness checklist
 
@@ -2191,5 +2250,5 @@ The lead considers this document complete for approval review only when each lin
 - Privacy limits and a non-model sanitiser are specified.
 - Five synthetic valid listings and three invalid listings are embedded, including missing `title`, string `revision`, and expired `deadline.fixed_at`.
 - Active-feed expiry rejection is distinguished from retained expired history.
-- The pin back to this PathSync file is specified, with `git_sha` null until approval.
+- The approved policy commit is `34969abca843462beb7b96ca1a7f3b4ffc723485`. The corrected pin stays blank until Goodness approves it.
 - Uncertainties are listed instead of invented APIs or live database facts.

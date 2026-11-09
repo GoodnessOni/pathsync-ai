@@ -13,6 +13,8 @@ This page is the change history for the PathSync rebuild. The audience is a pers
 
 - 2026-11-09: Added docs/decision-log.md and docs/glossary.md. What changed: a decision log of the pinned listing rules, a glossary of those terms, and this line. The log records OGverse Lead's report of a 00:28 WAT policy-approval chat on 9 November 2026, distinct from the 00:25:31 WAT git author time, and keeps the reported corrected-pin approval at 00:42 WAT. Why: a newcomer needs the decisions, the reasons the contract states, the motives it leaves undocumented, and the handover, with the contract still the rule. Effects: start at the decision log, then check each rule against commit b50440dc738d86ff3070386d8709b8faf2bc5982. The contract, scripts, product code, main, and the 1 November 2026 notes above are unchanged. No product rule was added or amended. Docs updated: decision-log.md, glossary.md, changelog.md.
 
+- 2026-11-09: Recorded OGverse Lead's 02:11 WAT report on syntax checks and human review for ambiguous evidence. What changed: an update in the decision log, short glossary notes, and this line. Why: the report has to sit beside the pinned contract, and the validator handover needed a current status, without turning the chat into a contract amendment. Effects: the contract pin stays b50440dc738d86ff3070386d8709b8faf2bc5982. Test counts stay Lead's report of Test. A validator pass is not recorded as successful verification, genuine evidence, release readiness, or a finished human-review workflow. The contract file is unchanged. Docs updated: decision-log.md, glossary.md, changelog.md.
+
 ## How to check this page later
 
 1. Read the newest Unreleased line and open the files it names. Expected result: you find the decision log and the glossary.

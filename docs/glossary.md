@@ -16,6 +16,8 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Accepted URL.** A stored URL that already meets the section 12.1 list. The fixture check is `accept_url`. Failure returns `non_canonical_url` and does not rewrite the string.
 
+**Ambiguous evidence.** Evidence the contract sends to a human review because it is ambiguous, inaccessible, changed, or conflicting. Section 5, Agreed 1, and section 13. OGverse Lead reports that unprefixed custom strings such as `200 Fine` and `404 Nope` remain in that group. This page does not add a `Read:` marker or a new field for them.
+
 **Africa/Lagos.** The IANA zone the contract uses only when a deadline source names no zone. In the sample timezone data, tzdata `2026e`, it is a fixed UTC+1 offset. Section 10. The contract does not say why this zone is the fallback. That motive is not documented. OGverse Lead owns clarification.
 
 **Application URL.** `application.url`. The best next page for the student. It is not the listing's identity. The same round may change it on a later revision. Section 9.4.
@@ -50,7 +52,7 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Historical record.** A retained row checked with `validate_historical`. Expired and withdrawn rows can be retained. History is not a way to keep an open listing whose fixed deadline has already passed. Section 14.
 
-**Human review.** A person reviewed ambiguous, inaccessible, changed, or conflicting evidence. Stored with `reviewed_by` `human`, `method` `human_review`, and an opaque `reviewer_id`. The id is not a student's name. Section 13.
+**Human review.** A person reviewed ambiguous, inaccessible, changed, or conflicting evidence. Stored with `reviewed_by` `human`, `method` `human_review`, and an opaque `reviewer_id`. The id is not a student's name. Section 13. The contract names that review. OGverse Lead reports that the routing which would send a case to a person is not implemented or proven in the validator card reviewed at 02:11 WAT on 9 November 2026. An active-feed pass does not do that routing. OGverse Lead assigns any next card. This page does not describe the workflow.
 
 **Hundredths.** The integer form of a grade on one stated scale. 3.50 is 350. A 4.0 scale uses 1..400. A 5.0 scale uses 1..500. Unlike scales are not converted. Section 9.5.
 
@@ -64,7 +66,7 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Listing id.** `listing_id`. The stable id of one round. It matches `^lst_[0-9A-HJKMNP-TV-Z]{26}$`. It is never reused. It is not a URL, a title slug, or PathSync's local UUID. Section 9.1 and section 15.
 
-**Lock.** The pin record in section 20. Inside this contract file the sample lock has `git_sha` null, because the file does not name its own SHA. OGverse Lead reports that a validator card was later released with a lock of exact SHA `b50440dc738d86ff3070386d8709b8faf2bc5982`. This glossary does not assert that the other repository was inspected.
+**Lock.** The pin record in section 20. Inside this contract file the sample lock has `git_sha` null, because the file does not name its own SHA. OGverse Lead reports that a validator card was later released with a lock of exact SHA `b50440dc738d86ff3070386d8709b8faf2bc5982`. Lead later names a reviewed validator commit, `36bfd66f3875ca0796b000b0339cdc06ad9a71da`, in the other repository. That commit is not a new contract pin. This glossary does not assert that the other repository was inspected.
 
 **Nationality.** The country the student states, one ISO 3166-1 alpha-2 code. It lives on the student profile. It is not the listing's citizenship object. Section 5.
 
@@ -108,11 +110,15 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Synthetic.** `synthetic: true` marks a fixture. Student surfaces drop those rows. Production rows that real students could see use `false`. Section 8.
 
+**Syntax check.** OGverse Lead's name for the checks Goodness is reported to have approved at 02:11 WAT on 9 November 2026, together with human review for ambiguous evidence. This page does not define a new check. The pinned acceptance rules, and the rule that evidence must name what was read, stay in commit `b50440d`. The report is not approval of false evidence.
+
 **Tombstone.** The minimal withdrawn record kept in the historical feed for 730 × 24 hours after `withdrawn_at`. It lets saved copies say Withdrawn and stops the same round being imported twice. It does not reserve the URL. Sensitive prose is `[withdrawn]`. Section 15. The contract does not say why the length is 730 × 24 hours. That motive is not documented. OGverse Lead owns clarification.
 
 **Unconstrained citizenship.** The source says nationality is not a limit. `countries` is exactly `["*"]`. Citizenship does not exclude. Section 9.5.
 
 **Unknown citizenship.** The source does not say. `countries` is exactly `[]`. The listing stays discoverable as `Check eligibility`. Section 9.5.
+
+**Validator pass.** A run of the record check, the active-feed check, or the historical check that returns no errors. Section 18. OGverse Lead reports that a pass does not establish successful verification, genuine evidence, or release readiness. Product acceptance stays with OGverse Lead.
 
 **WAT.** West Africa Time, UTC+1. The contract uses it for the 9 November 2026 approval date and for the `Africa/Lagos` fallback. A stated source zone replaces that fallback on a deadline. Section 10. Git commit times written in WAT are clock readings of commits. They are not chat approval times. OGverse Lead reports a chat time of 00:28 WAT on 9 November 2026 for the policy approval of `34969ab`. That report is not the git author time 00:25:31 WAT. Lead also reports direct approval of the corrected SHA at 00:42 WAT.
 

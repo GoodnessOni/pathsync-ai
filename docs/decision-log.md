@@ -2,7 +2,7 @@
 
 This page records the listing decisions, the reasons the contract states, the motives it leaves undocumented, and the work handed on. The audience is a person who arrives about six months after 9 November 2026 and has not seen the original chats.
 
-Words used here are defined in `docs/glossary.md`. If this page and the pinned contract disagree about a listing rule, the pinned contract wins. Reports of approval and of a released card are handover records. They are not listing rules, and they are not edits to the contract. This page does not approve, amend, or reject a product rule.
+Words used here are defined in `docs/glossary.md`. If this page and the pinned contract disagree about a listing rule, the pinned contract wins. Reports of approval, of a released card, and of a later review are handover records. They are not listing rules, and they are not edits to the contract. This page does not approve, amend, or reject a product rule.
 
 ## How to read a sentence
 
@@ -88,6 +88,8 @@ Explicit evidence of closed, withdrawn, or expired changes `lifecycle` immediate
 NaijaOpportunities performs verification. PathSync applies the same freshness rule when it reads and matches. Automation does the routine check. Ambiguous, inaccessible, changed, or conflicting evidence is a human review. `reviewed_by` is `automation` or `human`. `reviewer_id` is set only for a human, and it is an opaque slug, not a student's name. A bot review must not be stored as `human`.
 
 A stale listing returns to the active feed only after a new successful check whose outcome is `confirmed_open` and whose facts are still accurate. That success starts a new 168-hour window.
+
+**Later report.** The update at 02:11 WAT on 9 November 2026 records a report from OGverse Lead about syntax checks and human review for ambiguous evidence. The rule in this decision stays the text of the pinned contract.
 
 **Measured window.** Success at `2026-11-08T09:00:00Z` gives `fresh_until` `2026-11-15T09:00:00Z`. That instant is still active. `2026-11-15T09:00:01Z` is stale.
 
@@ -225,13 +227,39 @@ Measured oracle, which the contract says is not a stored listing:
 
 **Reconsider when.** Goodness approves a later contract that defines the formula.
 
+## Update — reported at 02:11 WAT on 9 November 2026
+
+This update is a context record. It is not a new draft of the contract.
+
+**Source.** Reported by OGverse Lead. This repository has no transcript of the chat. This writer did not witness the approval and did not run the tests named below. The pinned contract is still `docs/data-contract.md` at `b50440dc738d86ff3070386d8709b8faf2bc5982`. This update does not repin it and does not edit it.
+
+**Reported approval.** Lead reports that Goodness directly approved syntax checks plus human review for ambiguous evidence, in Lead's chat on 9 November 2026 at 02:11 WAT. Lead reports that the approval followed an explicit recommendation. This page does not contain that recommendation's text. The earlier report that Goodness approved the corrected contract SHA at 00:42 WAT stays in the approval records above. The 02:11 report does not take the place of that pin.
+
+**How the report sits beside the pinned contract.** Section 5, Agreed 1, and section 13 already say that ambiguous, inaccessible, changed, or conflicting evidence is a human review. They already say that `verification.evidence` must name what was read. HTTP success alone is not a successful check. Lead states that the 02:11 approval leaves that duty in place. Lead states that the approval is not approval of false evidence. Lead states that a validator pass does not establish successful verification, genuine evidence, or release readiness. Those sentences are Lead's report of the limits. They are not a contract amendment written by this page.
+
+**Reported test note.** Lead reports that Test independently found 23 tests and 731 known-status controls passing. Lead reports that missing-space explicit forms were rejected, and that the original bundle and tombstone fixes were retained. Those results belong to Lead's report of Test. This page did not repeat the run. The validator commit Lead names as the current reviewed commit is https://github.com/GoodnessOni/naija-opportunities/commit/36bfd66f3875ca0796b000b0339cdc06ad9a71da . That URL is a reference only. This page did not open the repository and did not change it. The URL is not a new contract pin.
+
+**Ambiguous strings in that report.** Lead reports that unprefixed custom strings remain ambiguous and require human review. The examples Lead gives are `200 Fine` and `404 Nope`. This page does not add a `Read:` marker, a new schema field, or a further list of phrases to chase.
+
+**What remains unresolved.** The routing that would send a case to a person is not implemented in that validator card, and it is not proven there. That routing is a prerequisite before anyone calls the human-review workflow complete. The active-feed validator checks the listing record. It does not, by itself, carry out human review. The workflow design is unresolved. OGverse Lead owns assigning the next card. This page does not describe a queue, a screen, or a gate. Product acceptance of the validator stays bounded, and OGverse Lead owns that acceptance. This page does not grant it.
+
+**What a reader should do.**
+
+1. Read section 13 of the pinned contract. Expected result: a successful check still has to name what was read, and HTTP success alone is still not that check.
+2. Treat the 02:11 WAT approval as Lead's report. Expected result: you can say what Lead reports, and you do not treat the chat as a line added to section 24.
+3. Treat the counts of 23 tests and 731 known-status controls as Lead's report of Test. Expected result: you do not present them as a run from this repository.
+4. Leave `200 Fine`, `404 Nope`, and other unprefixed custom strings for human review. Expected result: you do not invent a `Read:` marker for them.
+5. Stop before calling the human-review workflow complete. Expected result: you ask OGverse Lead who will write the next card. You do not treat an active-feed pass as that workflow.
+
+**Reconsider when.** OGverse Lead assigns the routing card, or Goodness amends the pinned contract. Until one of those happens, the contract pin stays `b50440dc738d86ff3070386d8709b8faf2bc5982`.
+
 ## Handover
 
 **What the pinned file says about the card.** Section 18 describes the first card as a listings validator in `GoodnessOni/naija-opportunities`, measured against this document. The done test in that section is: the five valid fixtures pass `validate_record`, and a missing required field, an invalid type, and an expired deadline each fail with an error that names the field. Section 18 says that card is not started. Section 20 says the card pins the corrected commit only after section 24 names that SHA, and the lock in this file keeps `git_sha` null. Section 24 says no planner card may start while that cell is blank. Those sentences are the file at this SHA. They are the same self-referential metadata as the blank pin cell.
 
-**What OGverse Lead reports now.** Lead reports that the validator card has been released with a lock of exact SHA `b50440dc738d86ff3070386d8709b8faf2bc5982`. An earlier note in this handover said the card was ready for Lead review and had not been dispatched. This page follows Lead's later report. The report is attributed to OGverse Lead. This page does not assert that a validator was implemented, run, merged, or checked. This work did not open https://github.com/GoodnessOni/naija-opportunities and did not read branch `rebuild/listings-validator`.
+**Earlier handover, kept.** Lead reported that the validator card had been released with a lock of exact SHA `b50440dc738d86ff3070386d8709b8faf2bc5982`. Before that, the same handover said the card was ready for Lead review and had not been dispatched. Both sentences stay as reports from OGverse Lead. This page did not open https://github.com/GoodnessOni/naija-opportunities for them, and it did not read branch `rebuild/listings-validator`.
 
-Ranking stays undefined and outside that card. Decision 11.
+**Current handover for the validator review.** Use the 02:11 WAT update above when you need the latest reported status. Lead now names commit `36bfd66f3875ca0796b000b0339cdc06ad9a71da` as the reviewed validator commit. That report does not change the contract lock SHA. It does not show that human-review routing exists. Ranking stays undefined and outside that card. Decision 11.
 
 Architecture decisions `docs/decisions/0001-hosting.md` and `docs/decisions/0002-embedding-model.md` are a different set of records. The listings contract says hosting and embeddings are not settled in it. This log does not change those files. `docs/changelog.md` is the existing changelog. The 1 November 2026 notes in it are unchanged. This log does not replace that file.
 
@@ -245,7 +273,11 @@ Architecture decisions `docs/decisions/0001-hosting.md` and `docs/decisions/0002
 | Git times 00:25:31 WAT and 00:40:05 WAT on 9 November 2026 | Known commit timestamps. Not chat approval times. | Git history of this repository. |
 | Blank "Approved corrected pin" cell | Known metadata inside the pinned file. The file does not cite its own SHA. | No one fills it from this page. |
 | Direct approval of SHA `b50440d` at 00:42 WAT on 9 November 2026 | Reported by OGverse Lead. Not verified from a transcript here. | OGverse Lead. |
-| Validator card released with lock SHA `b50440d` | Reported by OGverse Lead. Implementation is not asserted here. | OGverse Lead. |
+| Validator card released with lock SHA `b50440d` | Earlier report by OGverse Lead. Kept. The contract pin is still this SHA. | OGverse Lead. |
+| 02:11 WAT approval of syntax checks plus human review for ambiguous evidence | Reported by OGverse Lead. Not witnessed here. Not a contract edit. Not a waiver of naming what was read. Not approval of false evidence. | OGverse Lead. |
+| Reviewed validator commit `36bfd66f3875ca0796b000b0339cdc06ad9a71da` | Reference URL reported by Lead. Not opened from this page. Not a new contract pin. | OGverse Lead. |
+| 23 tests and 731 known-status controls, missing-space forms, bundle and tombstone fixes | Lead's report of Test. Not an independent run recorded here. | OGverse Lead. |
+| Human-review routing workflow | Not implemented and not proven in that validator card. Prerequisite before the workflow can be called complete. Active-feed pass does not do this routing. | OGverse Lead, who assigns the next card. |
 | Preference ranking formula | Undefined. Out of the validator card's scope. | Goodness, through a later contract. OGverse Lead owns clarification meanwhile. |
 | Why seven days, why 730 × 24 hours, why `Africa/Lagos` | Rules are known. Motives are not documented. | OGverse Lead. |
 | Live database rows, scraper schedule, and canonical public hostname | Uncertain in section 22. | Left unknown by the contract. |
@@ -256,7 +288,7 @@ Do this before relying on the handover. The blob at `b50440d` does not change. R
 
 1. Open section 24 of `docs/data-contract.md` at SHA `b50440dc738d86ff3070386d8709b8faf2bc5982`. Expected result: "Approved corrected pin" is blank in that blob, and the policy row still names `34969ab`.
 2. Read the blank cell as metadata inside that commit, the 00:28 WAT figure as Lead's reported policy-approval chat time, and the 00:42 WAT figure as Lead's report of the corrected SHA. Expected result: you keep 00:25:31 WAT as the git author time, and you do not treat the blank cell as wiping out either reported approval.
-3. Ask OGverse Lead whether the reported validator release, with lock SHA `b50440d`, is still the handover they mean. Expected result: Lead confirms or corrects the report. You still do not treat this page as proof that the validator ran.
+3. Ask OGverse Lead whether commit `36bfd66f3875ca0796b000b0339cdc06ad9a71da` is still the reviewed validator commit, and whether a routing card has been assigned. Expected result: Lead confirms or replaces the commit, and says whether routing exists. The contract pin stays `b50440d` unless a later contract says otherwise. This page is not proof that the tests still pass.
 4. Ask OGverse Lead if you need the motive for seven days, for 730 × 24 hours, or for the `Africa/Lagos` fallback. Expected result: Lead supplies it, or confirms it is still undocumented. You do not fill the gap yourself.
 5. Compare the course and level labels in `frontend/src/pages/Onboard.jsx` with section 11.2 of the pin. Expected result: you notice drift. You do not edit the contract from this page.
 6. Leave the ranking formula undefined. Expected result: no score is invented for the validator card.
@@ -264,7 +296,7 @@ Do this before relying on the handover. The blob at `b50440d` does not change. R
 ## Steps for the next reader
 
 1. Read the glossary once. Expected result: the field names on this page have plain meanings.
-2. Read decisions 1 to 11 against the pinned sections. Expected result: you can repeat each rule without adding a rule.
+2. Read decisions 1 to 11 against the pinned sections, then read the 02:11 WAT update. Expected result: you can repeat each pinned rule, and you can separate Lead's later report from those rules.
 3. Keep the approval records in the section above as separate records. Expected result: 00:28 WAT stays Lead's reported chat time for the policy approval, 00:25:31 WAT stays the git author time, the blank cell stays file metadata, the 00:42 WAT report stays Lead's report of the corrected SHA, and the `34969ab` policy approval stays in place.
-4. Treat the validator release as Lead's report of 9 November 2026. Expected result: you know who to ask, and you do not claim the implementation was checked from this repository.
+4. Treat the validator review as Lead's report. Expected result: the contract pin stays `b50440d`, the reviewed code commit stays a reference, and you do not claim that this repository ran the tests or finished human-review routing.
 5. Ask OGverse Lead before you publish this page, dispatch further work, merge, deploy, or spend. Expected result: the owner answers. This page stays a record until that approval is given.

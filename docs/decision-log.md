@@ -330,3 +330,13 @@ Do this before relying on the handover. The blob at `b50440d` does not change. R
 3. Keep the approval records in the section above as separate records. Expected result: 00:28 WAT stays Lead's reported chat time for the policy approval, 00:25:31 WAT stays the git author time, the blank cell stays file metadata, the 00:42 WAT report stays Lead's report of the corrected SHA, and the `34969ab` policy approval stays in place.
 4. Treat the validator review and Card 2 as Lead's reports. Expected result: the contract pin stays `b50440d`, the code commits stay references, and you do not claim that this repository ran the tests, finished human-review routing, or released the gate.
 5. Ask OGverse Lead before you publish this page, dispatch further work, merge, deploy, or spend. Expected result: the owner answers. This page stays a record until that approval is given.
+
+## 2026-11-09 13:59 WAT: Trusted callers for verification assessments (Lead decision; Goodness approved recording it)
+Only NaijaOpportunities' own server-side pipeline and signed-in staff reviewers may supply a verification assessment. Students, the public API and listing data never supply one.
+
+## 2026-11-09 13:59 WAT: Card 3 accepted, offline human-review queue
+- Reference: NaijaOpportunities rebuild/listings-validator commit ab303c988300bae1cad7addff76032dbfecf31b8 (parent f754e3a). It adds listings/review_queue.py (+229) and listings/tests/test_review_queue.py (+261), and appends 45 lines to listings/HANDOVER.md.
+- Behaviour: enqueue accepts only ambiguous assessments and drops duplicates. list_pending returns the oldest first. resolve needs a reviewer id and a note naming what was read (contract section 13). Accept gives human_resolved; reject stays failed.
+- Measured by Lead on Lead's box: the queue tests gave 7 OK and the gate tests gave 11 OK. The validator suite gave 23 tests with 2 failures. The same 2 also fail at the earlier accepted commit f754e3a on that box. Lead attributes them to Python 3.13 with tzdata 2026f, against the pinned 3.12.3 reference.
+- Reported by the coding agent (not re-run by Docs or Lead): 23 OK in its own environment.
+- Not built yet: reviewer authorisation, durable storage, publication integration.

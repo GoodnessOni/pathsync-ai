@@ -131,3 +131,7 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 **WAT.** West Africa Time, UTC+1. The contract uses it for the 9 November 2026 approval date and for the `Africa/Lagos` fallback. A stated source zone replaces that fallback on a deadline. Section 10. Git commit times written in WAT are clock readings of commits. They are not chat approval times. OGverse Lead reports a chat time of 00:28 WAT on 9 November 2026 for the policy approval of `34969ab`. That report is not the git author time 00:25:31 WAT. Lead also reports direct approval of the corrected SHA at 00:42 WAT.
 
 **Withdrawn.** `publication_status` `withdrawn`. The listing leaves active matching and keeps its id. Saved copies say Withdrawn. Section 15.
+
+- **Trusted caller**: a system or person allowed to supply a verification assessment. Today this means NaijaOpportunities' own server-side pipeline and signed-in staff reviewers only.
+- **Human-review queue**: the offline list of ambiguous assessments that wait for a staff reviewer. A reviewer resolves each one with their id and a note naming what they read.
+- **human_resolved**: the status an ambiguous assessment gets when a reviewer accepts it. A rejected one stays failed.

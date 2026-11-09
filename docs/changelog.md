@@ -17,6 +17,8 @@ This page is the change history for the PathSync rebuild. The audience is a pers
 
 - 2026-11-09: Recorded OGverse Lead's acceptance of Card 2, the producer verification attempt gate, as a bounded primitive only. What changed: a Card 2 update in the decision log, glossary entries for decide_attempt, assessment, attempt gate, and bounded primitive, and this line. Why: the gate has to sit beside the 02:11 human-review report without being mistaken for that workflow or for a contract change. Effects: readers can see the reported meaning and the unimplemented limits. The contract pin stays b50440dc738d86ff3070386d8709b8faf2bc5982. Measurements stay Lead's report of Test. The page does not call the gate production-ready or release-ready, and it does not close human-review routing. Docs updated: decision-log.md, glossary.md, changelog.md.
 
+- 2026-11-09: Recorded the trusted-caller decision and Card 3, the offline human-review queue (NaijaOpportunities ab303c9). Why: Lead decided and accepted both at 13:59 WAT with Goodness's approval. Effect: assessments from students, the public API or listing data are out of scope. Lead's measured results are kept separate from the agent's reported ones. Authorisation, storage and publication remain open.
+
 ## How to check this page later
 
 1. Read the newest Unreleased line and open the files it names. Expected result: you find the decision log and the glossary.

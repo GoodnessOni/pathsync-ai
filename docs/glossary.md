@@ -143,3 +143,5 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 **Exclusion reason.** Why a listing was left out of the active feed. There are five: ambiguous, failed, missing (no decision for that listing_id), stale (past verification.fresh_until) and expired_deadline (past a fixed deadline).
 
 **Stale.** Past the listing's verification.fresh_until time. A listing whose time equals fresh_until is still active; one second later it is stale.
+
+**Student profile.** The object PathSync matches listings against (contract section 11.3). A skipped answer is unknown, not a no.

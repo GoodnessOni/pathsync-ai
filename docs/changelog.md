@@ -21,6 +21,8 @@ This page is the change history for the PathSync rebuild. The audience is a pers
 
 - 2026-11-09: Recorded Card 4, the offline active-feed publisher (NaijaOpportunities 065c666), and restyled the trusted-caller, human-review queue and human_resolved glossary entries to the page's "**Term.** text" style. Why: Lead accepted Card 4 at 14:04 WAT with Goodness's approval, and the 1377266 entries did not match the rest of the glossary. Effect: readers can see which listings the feed includes, the five exclusion reasons and the fresh_until boundary. Lead's measured results are kept separate from the agent's reported ones. Reviewer authorisation, durable storage and a live endpoint remain open. Docs updated: decision-log.md, glossary.md, changelog.md.
 
+- 2026-11-09: Added contract section 11.3, the student profile object. Why: Goodness approved it at 14:28 WAT, after the feed reader showed the contract had no profile shape. Effect: the reader and onboarding now share one field list. The reader at 2421f66 still needs aligning. Docs updated: data-contract.md, decision-log.md, glossary.md, changelog.md.
+
 ## How to check this page later
 
 1. Read the newest Unreleased line and open the files it names. Expected result: you find the decision log and the glossary.

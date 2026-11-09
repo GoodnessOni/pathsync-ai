@@ -348,3 +348,9 @@ Only NaijaOpportunities' own server-side pipeline and signed-in staff reviewers 
 - Measured by Lead on Lead's box: publish 8 OK, queue 7 OK, gate 11 OK. The validator suite gave 23 tests with the same 2 environment failures as before (Python 3.13 on that box against the pinned 3.12.3).
 - Reported by the coding agent (not re-run by Docs or Lead): 49 OK in total in its own environment.
 - Not built yet: reviewer authorisation, durable storage, a live publication endpoint.
+
+## 2026-11-09 14:28 WAT: Contract section 11.3, student profile object (Goodness approved)
+- Adds the student object read by pathsync_student_match: nationality, education (stage, qualification, course, year, institution, expected_graduation), grade (scale, hundredths) and demographics. All of them use section 9.5 tokens.
+- Null or skipped means unknown, never a mismatch. demographics [] means answered 'None of these'. An invalid profile is refused with an error naming the field.
+- The profile is PathSync personal data. It is never sent to NaijaOpportunities, and section 17 applies.
+- The feed reader at 2421f66 predates this section and is not yet aligned to it.

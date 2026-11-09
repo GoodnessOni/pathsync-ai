@@ -579,6 +579,59 @@ Deadline-tracker labels for an included listing:
 
 If `synthetic` were ignored, at `CONTRACT_EVALUATION_TIME` the open scholarship and the rolling internship can be `include` for a student who meets their explicit rules. The job stays in matching and is `needs_check(Check eligibility)` because its citizenship metadata is unknown, not because it is a job. The historical scholarship and the tombstone are `exclude(not_active)`. With `synthetic: true`, all five are `exclude(synthetic)`. They are fixtures, not a live feed.
 
+### 11.3 Student profile object
+
+**Proposed, 9 November 2026 WAT.** This is the object `pathsync_student_match` reads as `student`. It is PathSync's own data. It is never part of a listing or the NaijaOpportunities feed, and it is never sent to NaijaOpportunities. Tokens are the same ones used in section 9.5, so no translation layer is needed at match time. Onboarding stores tokens, not display strings. The maps in section 11.2 turn the current onboarding strings into tokens.
+
+| Field | Type | Required | Null | Constraints |
+| --- | --- | --- | --- | --- |
+| `nationality` | string | yes | yes | One ISO 3166-1 alpha-2 code, upper case. Null means not answered (row 5 of section 11.2), not "no nationality" |
+| `education` | object | yes | no | Fields below |
+| `grade` | object | yes | yes | Null means not answered. Fields below |
+| `demographics` | array of string | yes | yes | Null means the question was skipped (unknown, row 11). `[]` means "None of these" (answered, has none). Otherwise unique, sorted tokens from section 9.5 |
+
+`education` fields. Each one is nullable, and null means not answered (row 9), never a mismatch:
+
+| Field | Type | Null | Constraints |
+| --- | --- | --- | --- |
+| `stage` | string | yes | `secondary`, `undergraduate`, `postgraduate` |
+| `qualification` | string | yes | `secondary_school`, `bachelor`, `master`, `doctorate` |
+| `course` | string | yes | A course token from section 9.5. `other` is never a confirmed mismatch |
+| `year` | string | yes | `100`, `200`, `300`, `400`, `500`, `postgraduate` |
+| `institution` | string | yes | 1..200 characters, as the student typed it. It is compared with `institutions.names` after trimming and case-folding only, with no fuzzy match |
+| `expected_graduation` | string | yes | `YYYY-MM-DD`. Stored for later rules. No current row reads it |
+
+`grade` fields. Both are required when `grade` is not null:
+
+| Field | Type | Constraints |
+| --- | --- | --- |
+| `scale` | string | `4.0` or `5.0` |
+| `hundredths` | integer | 0..400 on `4.0`, 0..500 on `5.0`. 3.50 is 350 |
+
+Rules:
+
+- An unknown key, a wrong type, or a token outside its list makes the profile invalid. Matching then refuses the profile with an error naming the field. It never guesses or drops the field silently.
+- Nothing in this object is inferred from a name, photo, email, or free text.
+- The profile is personal data. Section 17 applies. It is not logged in full, and it is not copied onto a listing.
+
+Example (synthetic):
+
+```json
+{
+  "nationality": "NG",
+  "education": {
+    "stage": "undergraduate",
+    "qualification": "bachelor",
+    "course": "engineering",
+    "year": "300",
+    "institution": "University of Lagos",
+    "expected_graduation": "2028-07-31"
+  },
+  "grade": {"scale": "5.0", "hundredths": 412},
+  "demographics": null
+}
+```
+
 ## 12. Source provenance and URLs
 
 `source.url` is the page the facts were taken from. `application.url` is the best next page for the student. They MAY differ. Neither is the listing's identity. `source.kind` and `application.url_kind` record what sort of page it is. The checks below do not resolve DNS and do not fetch the URL.

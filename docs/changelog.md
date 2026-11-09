@@ -15,6 +15,8 @@ This page is the change history for the PathSync rebuild. The audience is a pers
 
 - 2026-11-09: Recorded OGverse Lead's 02:11 WAT report on syntax checks and human review for ambiguous evidence. What changed: an update in the decision log, short glossary notes, and this line. Why: the report has to sit beside the pinned contract, and the validator handover needed a current status, without turning the chat into a contract amendment. Effects: the contract pin stays b50440dc738d86ff3070386d8709b8faf2bc5982. Test counts stay Lead's report of Test. A validator pass is not recorded as successful verification, genuine evidence, release readiness, or a finished human-review workflow. The contract file is unchanged. Docs updated: decision-log.md, glossary.md, changelog.md.
 
+- 2026-11-09: Recorded OGverse Lead's acceptance of Card 2, the producer verification attempt gate, as a bounded primitive only. What changed: a Card 2 update in the decision log, glossary entries for decide_attempt, assessment, attempt gate, and bounded primitive, and this line. Why: the gate has to sit beside the 02:11 human-review report without being mistaken for that workflow or for a contract change. Effects: readers can see the reported meaning and the unimplemented limits. The contract pin stays b50440dc738d86ff3070386d8709b8faf2bc5982. Measurements stay Lead's report of Test. The page does not call the gate production-ready or release-ready, and it does not close human-review routing. Docs updated: decision-log.md, glossary.md, changelog.md.
+
 ## How to check this page later
 
 1. Read the newest Unreleased line and open the files it names. Expected result: you find the decision log and the glossary.

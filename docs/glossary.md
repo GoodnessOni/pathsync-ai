@@ -22,9 +22,15 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Application URL.** `application.url`. The best next page for the student. It is not the listing's identity. The same round may change it on a later revision. Section 9.4.
 
+**Assessment.** The caller's judgement passed into `decide_attempt`, as OGverse Lead describes Card 2. A trusted `clear`, or a human-resolved assessment, can allow a successful verification only when the attempt is also successful and record-valid. Lead reports that a caller can pass `clear` together with an unprefixed string such as `200 Fine` and still permit success. The caller's assessment is trust-critical. Caller trust is not implemented in that gate.
+
+**Attempt gate.** OGverse Lead's name for Card 2, the producer verification attempt gate. Lead accepts it as a bounded primitive only. It decides whether an attempt may count as a successful verification. It does not decide active-feed eligibility, and it does not implement the human-review routing workflow from the 02:11 WAT report.
+
 **Audience tags.** Descriptive labels such as `nigerian_university_student`. They are not a citizenship requirement and they do not hard-exclude a student. Section 9.5.
 
 **Automation.** A review done by a bot. Stored as `reviewed_by` `automation` and `method` `automated_review`, with `reviewer_id` null. A bot review is not stored as `human`. Section 13.
+
+**Bounded primitive.** OGverse Lead's limit on Card 2. The attempt gate is only the `decide_attempt` decision Lead describes. Caller trust, source inspection, reviewer authorisation, a review queue, storage, revocation, and publication integration are not part of it. Lead does not call it production-ready or release-ready.
 
 **Canonical IANA name.** A time-zone name that matches its own IANA key, `ZoneInfo(name).key == name`. This is a timezone term. It is not the URL helper. Section 10.
 
@@ -40,6 +46,8 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Dedupe key.** SHA-256 hex of `kind`, provider key, opportunity key, and round key. The application URL is not an input. The same key means the same round. Section 16.
 
+**decide_attempt.** The name OGverse Lead uses for the Card 2 gate. It allows a successful verification only when the assessment is a trusted `clear` or a human-resolved one, and the attempt is successful and record-valid. An ambiguous attempt blocks. A failed attempt blocks, and a failed attempt cannot renew an old success. Active-feed eligibility is a separate decision. This page does not describe the code.
+
 **Evaluation time.** The UTC instant passed into the active-feed check, the historical check, and the student filter. The checks do not read the wall clock. The samples use `2026-11-08T12:00:00Z`. Section 7.
 
 **Exclude.** The student-filter result that drops a listing for one student, with a reason. A confirmed explicit mismatch is an exclusion. An unknown fact is not an exclusion. Section 11.2.
@@ -52,7 +60,7 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Historical record.** A retained row checked with `validate_historical`. Expired and withdrawn rows can be retained. History is not a way to keep an open listing whose fixed deadline has already passed. Section 14.
 
-**Human review.** A person reviewed ambiguous, inaccessible, changed, or conflicting evidence. Stored with `reviewed_by` `human`, `method` `human_review`, and an opaque `reviewer_id`. The id is not a student's name. Section 13. The contract names that review. OGverse Lead reports that the routing which would send a case to a person is not implemented or proven in the validator card reviewed at 02:11 WAT on 9 November 2026. An active-feed pass does not do that routing. OGverse Lead assigns any next card. This page does not describe the workflow.
+**Human review.** A person reviewed ambiguous, inaccessible, changed, or conflicting evidence. Stored with `reviewed_by` `human`, `method` `human_review`, and an opaque `reviewer_id`. The id is not a student's name. Section 13. The contract names that review. OGverse Lead reports that the routing which would send a case to a person is not implemented or proven. An active-feed pass does not do that routing. Card 2's `decide_attempt` does not do it either. OGverse Lead assigns any next card. This page does not describe the workflow.
 
 **Hundredths.** The integer form of a grade on one stated scale. 3.50 is 350. A 4.0 scale uses 1..400. A 5.0 scale uses 1..500. Unlike scales are not converted. Section 9.5.
 

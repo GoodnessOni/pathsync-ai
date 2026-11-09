@@ -340,3 +340,11 @@ Only NaijaOpportunities' own server-side pipeline and signed-in staff reviewers 
 - Measured by Lead on Lead's box: the queue tests gave 7 OK and the gate tests gave 11 OK. The validator suite gave 23 tests with 2 failures. The same 2 also fail at the earlier accepted commit f754e3a on that box. Lead attributes them to Python 3.13 with tzdata 2026f, against the pinned 3.12.3 reference.
 - Reported by the coding agent (not re-run by Docs or Lead): 23 OK in its own environment.
 - Not built yet: reviewer authorisation, durable storage, publication integration.
+
+## 2026-11-09 14:04 WAT: Card 4 accepted, offline active-feed publisher (Lead acceptance; Goodness approved recording it)
+- Reference: NaijaOpportunities rebuild/listings-validator commit 065c666c93fce793665a4a44a2a06e4b63044ae3 (parent ab303c9). It adds listings/publish.py (+202) and listings/tests/test_publish.py (+345), and appends 53 lines to listings/HANDOVER.md.
+- Behaviour: build_active_feed(records, decisions, now) matches decisions to records by listing_id. A record is included only when its AttemptDecision is permitted, now is at or before verification.fresh_until, and, for a fixed deadline, now is at or before deadline.fixed_at. Every other record is left out with one of these reasons: ambiguous, failed, missing, stale or expired_deadline. The output is checked with validate_active_feed, and an ActiveFeedError is raised if the check fails.
+- Boundary: a listing whose time equals fresh_until stays active, and one second later it is stale. Freshness comes from the listing's verification.fresh_until, because AttemptDecision carries no timestamp.
+- Measured by Lead on Lead's box: publish 8 OK, queue 7 OK, gate 11 OK. The validator suite gave 23 tests with the same 2 environment failures as before (Python 3.13 on that box against the pinned 3.12.3).
+- Reported by the coding agent (not re-run by Docs or Lead): 49 OK in total in its own environment.
+- Not built yet: reviewer authorisation, durable storage, a live publication endpoint.

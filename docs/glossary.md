@@ -132,6 +132,14 @@ The meanings come from `docs/data-contract.md` at commit `b50440dc738d86ff307038
 
 **Withdrawn.** `publication_status` `withdrawn`. The listing leaves active matching and keeps its id. Saved copies say Withdrawn. Section 15.
 
-- **Trusted caller**: a system or person allowed to supply a verification assessment. Today this means NaijaOpportunities' own server-side pipeline and signed-in staff reviewers only.
-- **Human-review queue**: the offline list of ambiguous assessments that wait for a staff reviewer. A reviewer resolves each one with their id and a note naming what they read.
-- **human_resolved**: the status an ambiguous assessment gets when a reviewer accepts it. A rejected one stays failed.
+**Trusted caller.** A system or person allowed to supply a verification assessment. Today this means NaijaOpportunities' own server-side pipeline and signed-in staff reviewers only. Students, the public API and listing data never supply one.
+
+**Human-review queue.** The offline list of ambiguous assessments waiting for a staff reviewer. A reviewer resolves each one with their reviewer id and a note naming what they read (contract section 13).
+
+**human_resolved.** The status an ambiguous assessment gets when a reviewer accepts it. A rejected assessment stays failed.
+
+**Active feed.** The list of listings that may be shown to students right now. The offline publisher builds it (Card 4); it is not yet served from a live endpoint.
+
+**Exclusion reason.** Why a listing was left out of the active feed. There are five: ambiguous, failed, missing (no decision for that listing_id), stale (past verification.fresh_until) and expired_deadline (past a fixed deadline).
+
+**Stale.** Past the listing's verification.fresh_until time. A listing whose time equals fresh_until is still active; one second later it is stale.

@@ -19,6 +19,8 @@ This page is the change history for the PathSync rebuild. The audience is a pers
 
 - 2026-11-09: Recorded the trusted-caller decision and Card 3, the offline human-review queue (NaijaOpportunities ab303c9). Why: Lead decided and accepted both at 13:59 WAT with Goodness's approval. Effect: assessments from students, the public API or listing data are out of scope. Lead's measured results are kept separate from the agent's reported ones. Authorisation, storage and publication remain open.
 
+- 2026-11-09: Recorded Card 4, the offline active-feed publisher (NaijaOpportunities 065c666), and restyled the trusted-caller, human-review queue and human_resolved glossary entries to the page's "**Term.** text" style. Why: Lead accepted Card 4 at 14:04 WAT with Goodness's approval, and the 1377266 entries did not match the rest of the glossary. Effect: readers can see which listings the feed includes, the five exclusion reasons and the fresh_until boundary. Lead's measured results are kept separate from the agent's reported ones. Reviewer authorisation, durable storage and a live endpoint remain open. Docs updated: decision-log.md, glossary.md, changelog.md.
+
 ## How to check this page later
 
 1. Read the newest Unreleased line and open the files it names. Expected result: you find the decision log and the glossary.

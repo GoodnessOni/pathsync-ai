@@ -71,3 +71,5 @@ Then open http://localhost:3000. Without a key, scoring uses the labelled demo r
 - AI coding assistance to help write this prototype.
 
 No usage statistics or judged test results are claimed here. Try the app with a sample listing and a draft essay to see how the feedback looks.
+
+Deploy trigger: Vercel preview for WaleLab.

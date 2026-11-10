@@ -6,7 +6,7 @@ const path = require("path");
 const { URL } = require("url");
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 const MAX_LISTING = 12000;
 const MAX_ESSAY = 12000;
 

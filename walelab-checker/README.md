@@ -38,7 +38,7 @@ You need a Groq API key from [https://console.groq.com/keys](https://console.gro
 4. Add an environment variable:
    - Name: `GROQ_API_KEY`
    - Value: the key from the Groq console
-5. Optional: `GROQ_MODEL` (defaults to `llama-3.3-70b-versatile`).
+5. Optional: `GROQ_MODEL` (defaults to `openai/gpt-oss-120b`).
 6. Deploy. The app will be at the URL Vercel gives you. The API route is `/api/check`.
 
 Framework preset can stay as "Other". No build command is required. The output is static files plus the serverless function.
@@ -67,7 +67,7 @@ Then open http://localhost:3000. Without a key, scoring uses the labelled demo r
 
 ### AI tools used
 
-- Groq API (Llama model, default `llama-3.3-70b-versatile`) for essay feedback at runtime.
+- Groq API (open-weight model, default `openai/gpt-oss-120b`) for essay feedback at runtime.
 - AI coding assistance to help write this prototype.
 
 No usage statistics or judged test results are claimed here. Try the app with a sample listing and a draft essay to see how the feedback looks.

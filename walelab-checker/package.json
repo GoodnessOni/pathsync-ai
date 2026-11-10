@@ -1,0 +1,9 @@
+{
+  "name": "pathsync-application-readiness-checker",
+  "private": true,
+  "description": "PathSync Application Readiness Checker, a WaleLab NextGen AI Hackathon prototype.",
+  "scripts": {
+    "start": "node api/check.js",
+    "test": "node test-check.js"
+  }
+}
